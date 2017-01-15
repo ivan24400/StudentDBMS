@@ -2,7 +2,6 @@ package ivn.typh.admin;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
 
@@ -10,6 +9,9 @@ import javax.imageio.ImageIO;
 
 import org.bson.Document;
 
+import com.mongodb.client.MongoCollection;
+
+import ivn.typh.main.Engine;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -327,6 +329,8 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		
 		Document doc = new Document("name",tsname.getText()).append("sid",tsid.getText()).append("srno",tsrno.getText()).append("sdprt",tsdprt.getSelectionModel().getSelectedItem()).
 				append("sclass",tsclass.getText()).append("smail",tsmail.getText()).append("saddr",tsaddr.getText()).append("sphone",tsphone.getText()).append("pphone",tpphone.getText());
+		MongoCollection<Document> coll = Engine.db.getCollection("Students");
+		coll.insertOne(doc);
 		Button tmp = new Button(getStudent());
 		tmp.setOnAction(new Students(parent));
 		if (x < 6) {
