@@ -4,6 +4,8 @@ import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 
+import java.time.LocalDateTime;
+
 import org.bson.Document;
 import org.json.JSONObject;
 
@@ -29,6 +31,7 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import static com.mongodb.client.model.Filters.*;
 
 public class AdminUI implements Runnable {
 
@@ -40,8 +43,16 @@ public class AdminUI implements Runnable {
 	private static Button addDepartment;
 	private static Button addStudent;
 
+	private Label rts; 
+	private Label rtu ;
+	private Label rll ;
+	
+	
 	public AdminUI(Stage s) {
 		stage = s;
+		rts = new Label();
+		rtu = new Label();
+		rll = new Label();
 	}
 
 	public void startUI() {
@@ -58,9 +69,6 @@ public class AdminUI implements Runnable {
 		Label ts = new Label("Total Students");
 		Label tu = new Label("Total Users");
 		Label ll = new Label("Last Login");
-		Label rts = new Label();
-		Label rtu = new Label();
-		Label rll = new Label();
 		Label search = new Label("Search");
 		TextField srch = new TextField();
 		Label au = new Label("Active Users");
@@ -133,6 +141,7 @@ public class AdminUI implements Runnable {
 		
 		loadProfiles();
 
+		
 		addAcc.setOnAction((arg0) -> {
 			if (Departments.dprtList != null) {
 				UserAccounts dialog = new UserAccounts(stage, userGrid, addAcc);
@@ -161,9 +170,9 @@ public class AdminUI implements Runnable {
 			}
 		});
 
-		userGrid.add(addAcc, 0, 0);
-		studGrid.add(addStudent, 0, 0);
-		dprtGrid.add(addDepartment, 0, 0);
+		userGrid.add(addAcc, UserAccounts.x, UserAccounts.y);
+		studGrid.add(addStudent, Students.x, Students.y);
+		dprtGrid.add(addDepartment, Departments.x, Departments.y);
 
 		user.setContent(userGrid);
 		stud.setContent(scrollStud);
@@ -205,6 +214,11 @@ public class AdminUI implements Runnable {
 	}
 
 	private void loadProfiles() {
+		Document tmpdoc = Engine.db.getCollection("Users").find(eq("user","admin")).first();
+		rll.setText(tmpdoc.getString("lastLogin"));
+		
+		rtu.setText(Long.toString(Engine.db.getCollection("Users").count()-1));
+		Engine.db.getCollection("Users").updateOne(eq("user","admin"), new Document("$set",new Document("lastLogin",LocalDateTime.now().getDayOfMonth()+"-"+LocalDateTime.now().getMonthValue()+"-"+LocalDateTime.now().getYear()+"\t"+LocalDateTime.now().getHour()+":"+LocalDateTime.now().getMinute()+":"+LocalDateTime.now().getSecond())));
 		MongoCursor<Document> cursor;
 		// Department
 		cursor = Engine.db.getCollection("Departments").find().iterator();
@@ -218,7 +232,7 @@ public class AdminUI implements Runnable {
 			String rooms = Integer.toString(json.getInt("classrooms"));
 			String labs = Integer.toString(json.getInt("laboratory"));
 
-			Departments.dprtList.add(labs);
+			Departments.dprtList.add(name);
 
 			Button tmp = new Button(name);
 			tmp.setOnAction(new Departments(stage, dprtGrid, name, head, rooms, labs));
@@ -248,14 +262,14 @@ public class AdminUI implements Runnable {
 			String tsname= json.getString("name");   
 			String tsid= Integer.toString(json.getInt("sid"));     
 			String tsrno= Integer.toString(json.getInt("rno"));    
-			String tsclass= Integer.toString(json.getInt("class"));  
-			String tsbatch= Integer.toString(json.getInt("batch"));  
+			String tsclass= json.getString("class");  
+			String tsbatch= json.getString("batch");  
 			String tsmail= json.getString("email");   
 			String tsaddr= json.getString("address");   
 			String tsphone= Integer.toString(json.getInt("studentPhone"));  
 			String tpphone= Integer.toString(json.getInt("parentPhone"));  
 			String tsdprt= json.getString("department");
-			String img = json.getString("profilePic");
+			String img = json.getString("img");
 			
 			Students.studentList.add(tsdprt);
 
@@ -276,6 +290,8 @@ public class AdminUI implements Runnable {
 
 			}
 		}
+		
+		rts.setText(Integer.toString(Students.studentList.size()));
 		// UserAccounts
 		cursor = Engine.db.getCollection("Users").find().iterator();
 		UserAccounts.userList = FXCollections.observableArrayList();
@@ -284,26 +300,26 @@ public class AdminUI implements Runnable {
 
 			JSONObject json = new JSONObject(cursor.next().toJson());
 			String username = json.getString("user");      
-			String password=  json.getString("passwd");
-			String email = json.getString("email");  
-            
-       		UserAccounts.userList.add(json.getString("user"));
+			if (!username.equals("admin")) {
+				String password = json.getString("passwd");
+				String email = json.getString("email");
+				UserAccounts.userList.add(json.getString("user"));
+				Button tmp = new Button(username);
+				tmp.setOnAction(new UserAccounts(stage, userGrid, username, password, email));
+				if (UserAccounts.x < 6) {
+					UserAccounts.x++;
+					userGrid.add(tmp, UserAccounts.x - 1, UserAccounts.y);
+					GridPane.setColumnIndex(addAcc, UserAccounts.x);
+					GridPane.setRowIndex(addAcc, UserAccounts.y);
 
-			Button tmp = new Button(username);
-			tmp.setOnAction(new UserAccounts(stage, userGrid, username,password,email));
-			if (UserAccounts.x < 6) {
-				UserAccounts.x ++;
-				userGrid.add(tmp, UserAccounts.x  - 1, UserAccounts.y);
-				GridPane.setColumnIndex(addAcc, UserAccounts.x );
-				GridPane.setRowIndex(addAcc, UserAccounts.y);
+				} else {
+					UserAccounts.x = 1;
+					UserAccounts.y++;
+					userGrid.add(tmp, UserAccounts.x - 1, UserAccounts.y);
+					GridPane.setColumnIndex(addAcc, UserAccounts.x);
+					GridPane.setRowIndex(addAcc, UserAccounts.y);
 
-			} else {
-				UserAccounts.x  = 1;
-				UserAccounts.y++;
-				userGrid.add(tmp, UserAccounts.x  - 1, UserAccounts.y);
-				GridPane.setColumnIndex(addAcc, UserAccounts.x );
-				GridPane.setRowIndex(addAcc, UserAccounts.y);
-
+				} 
 			}
 		}
 

@@ -2,6 +2,8 @@ package ivn.typh.admin;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 
@@ -38,6 +40,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class Students extends Dialog<String> implements EventHandler<ActionEvent> {
@@ -60,6 +63,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 	private TextField tpphone;
 	private ImageView dpImgView;
 	private ToggleButton edit;
+	private Button upload;
 	private ComboBox<String> tsdprt;
 
 	
@@ -77,7 +81,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		tsphone = new TextField();
 		tpphone = new TextField();
 		tsdprt = new ComboBox<>();
-		
+		upload = new Button("Upload");
 		tsname.setText(n);
 		tsid.setText(i);
 		tsrno.setText(srno);
@@ -112,7 +116,9 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		tsphone = new TextField();
 		tpphone = new TextField();
 		tsdprt = new ComboBox<>();
+		upload = new Button("Upload");
 
+		dpImg=new String();
 	}
 
 	public void createUI(boolean first) {
@@ -136,6 +142,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		Label saddr = new Label("Address");
 		Label sphone = new Label("Phone");
 		Label pphone = new Label("Parent Phone");
+		System.out.println(new File(".").getAbsolutePath());
 		if(dpImg.isEmpty())
 			dpImgView = new ImageView(new Image(getClass().getResourceAsStream("raw/pic.jpg")));
 		else{
@@ -205,9 +212,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		tsname.setOnMouseMoved(arg->tool.hide());
 		tsphone.setOnMouseMoved(arg->tool.hide());
 		tpphone.setOnMouseMoved(arg->tool.hide());
-
 		
-		studentList = FXCollections.observableArrayList("None");
 		tsdprt.getItems().addAll(Departments.dprtList);
 		tsname.requestFocus();
 		
@@ -244,6 +249,15 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 			}
 
 		});
+		
+		upload.setOnAction(event->{
+			FileChooser file = new FileChooser();
+			file.setTitle("Upload a picture - Typh™");
+			file.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PNG", "*.png"),
+												new FileChooser.ExtensionFilter("JPG", "*.jpg"));
+			File tmp = file.showOpenDialog(parent);
+			dpImgView.setImage(new Image(tmp.getAbsolutePath()));
+		});
 		dPane.add(sname, 0, 0);
 		dPane.add(tsname, 1, 0);
 		dPane.add(sid, 0, 1);
@@ -264,24 +278,25 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		dPane.add(tsphone, 3, 3);
 		dPane.add(pphone, 2, 4);
 		dPane.add(tpphone, 3, 4);
-		dPane.add(dpImgView, 4, 0, 1, 5);
+		dPane.add(dpImgView, 4, 1, 1, 5);
+		dPane.add(upload, 4, 0,1,5);
 		
 		getDialogPane().setContent(dPane);
-		if(!first){
-			addEdit(dPane);
-			ButtonType save = new ButtonType("Save", ButtonData.OK_DONE);
-			getDialogPane().getButtonTypes().addAll(save, ButtonType.CANCEL);
-
-		setResultConverter(arg -> {
-			if (arg.equals(save)){
-				addButton();
-			}
-			return null;
-		});
-		show();
-		}else{
+//		if(!first){
+//			addEdit(dPane);
+//			ButtonType save = new ButtonType("Save", ButtonData.OK_DONE);
+//			getDialogPane().getButtonTypes().addAll(save, ButtonType.CANCEL);
+//
+//		setResultConverter(arg -> {
+//			if (arg.equals(save)){
+//				addButton();
+//			}
+//			return null;
+//		});
+//		show();
+//		}else{
+		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 			setResultConverter(arg -> {
-				getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
 				if (arg.equals(ButtonType.OK))
 					addButton();
@@ -291,7 +306,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 			});
 
 			show();
-		}
+//		}
 	}
 
 
@@ -327,8 +342,20 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 
 	private void addButton() {
 		
-		Document doc = new Document("name",tsname.getText()).append("sid",tsid.getText()).append("srno",tsrno.getText()).append("sdprt",tsdprt.getSelectionModel().getSelectedItem()).
-				append("sclass",tsclass.getText()).append("smail",tsmail.getText()).append("saddr",tsaddr.getText()).append("sphone",tsphone.getText()).append("pphone",tpphone.getText());
+		BufferedImage bf = SwingFXUtils.fromFXImage(dpImgView.getImage(),null);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		byte[] tmpb;
+		String tmpString = null;
+		try {
+			ImageIO.write(bf, "png", out);
+			tmpb = out.toByteArray();
+			tmpString = Base64.getEncoder().encodeToString(tmpb);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		Document doc = new Document("name",tsname.getText()).append("sid",tsid.getText()).append("rno",tsrno.getText()).append("department",tsdprt.getSelectionModel().getSelectedItem()).append("batch", tsbatch.getText()).
+				append("class",tsclass.getText()).append("email",tsmail.getText()).append("address",tsaddr.getText()).append("studentPhone",tsphone.getText()).append("parentPhone",tpphone.getText()).append("img",tmpString);
 		MongoCollection<Document> coll = Engine.db.getCollection("Students");
 		coll.insertOne(doc);
 		Button tmp = new Button(getStudent());
