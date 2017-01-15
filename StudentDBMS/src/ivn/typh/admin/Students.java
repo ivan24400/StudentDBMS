@@ -278,8 +278,10 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		dPane.add(tsphone, 3, 3);
 		dPane.add(pphone, 2, 4);
 		dPane.add(tpphone, 3, 4);
+		dPane.add(upload, 4, 0);
+		upload.setPrefWidth(dpImgView.getFitWidth());
+		GridPane.setFillWidth(upload, true);
 		dPane.add(dpImgView, 4, 1, 1, 5);
-		dPane.add(upload, 4, 0,1,5);
 		
 		getDialogPane().setContent(dPane);
 //		if(!first){

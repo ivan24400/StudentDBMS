@@ -1,9 +1,16 @@
 package ivn.typh.tchr;
 
+import static com.mongodb.client.model.Filters.eq;
+
 import java.awt.Toolkit;
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.bson.Document;
+
+import ivn.typh.main.BasicUI;
+import ivn.typh.main.Engine;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
@@ -62,9 +69,9 @@ import javafx.util.converter.IntegerStringConverter;
 public class TchrUI implements Runnable {
 
 	Stage stage;
-	
-	// Personal 
-	
+
+	// Personal
+
 	private ImageView dpImgView;
 	private TextField tsname;
 	private TextField tsid;
@@ -78,7 +85,7 @@ public class TchrUI implements Runnable {
 	private TextField tpphone;
 
 	// Academic
-	
+
 	private TableView<Marks> tsem1;
 	private TableView<Marks> tsem2;
 	private Button addEntry;
@@ -87,7 +94,7 @@ public class TchrUI implements Runnable {
 	private LineChart<String, Number> studProgress;
 
 	// Attendance
-	
+
 	private TableView<Attendance> atsem1;
 	private TableView<Attendance> atsem2;
 	private Button addat;
@@ -96,19 +103,27 @@ public class TchrUI implements Runnable {
 	private BarChart<String, Number> atBarChart;
 
 	// Projects
-	
+
 	private ListView<String> prList;
 
 	// Assignments
-	
+
 	private ListView<String> asList;
 	private Button addAssignment;
 	private Button removeAssignment;
 
-	public TchrUI(Stage s){
-		stage=s;
+	private Label prof;
+	private Label pname;
+	private Label dprt;
+	private Label pdprt;
+	private Label cls;
+	private Label pcls;
+	private Label tstuds;
+	private Label nstuds;
+
+	public TchrUI(Stage s) {
+		stage = s;
 	}
-	
 
 	@SuppressWarnings("unchecked")
 	public void startUI() {
@@ -122,14 +137,14 @@ public class TchrUI implements Runnable {
 		HBox topL = new HBox();
 		GridPane center = new GridPane();
 
-		Label prof = new Label("Professor");
-		Label pname = new Label();
-		Label dprt = new Label("Department");
-		Label pdprt = new Label();
-		Label cls = new Label("Class");
-		Label pcls = new Label();
-		Label tstuds = new Label("Total Students");
-		Label nstuds = new Label();
+		prof = new Label("Professor");
+		pname = new Label();
+		dprt = new Label("Department");
+		pdprt = new Label();
+		cls = new Label("Class");
+		pcls = new Label();
+		tstuds = new Label("Total Students");
+		nstuds = new Label();
 		Label srch = new Label("Search");
 		Search text = new Search();
 		Label reports = new Label("Reports");
@@ -142,7 +157,6 @@ public class TchrUI implements Runnable {
 		TitledPane[] tp = new TitledPane[cat.length];
 		Accordion accord = new Accordion();
 
-		
 		ToggleButton editable = new ToggleButton("Edit");
 		Button update = new Button("Update");
 		Button report = new Button("Report");
@@ -160,7 +174,7 @@ public class TchrUI implements Runnable {
 		cc1.setPercentWidth(65);
 		cc2.setPercentWidth(20);
 
-		StringBuffer reportText = new StringBuffer("asdf");
+		StringBuffer reportText = new StringBuffer("Enter your report ..");
 
 		report.setOnAction(arg -> {
 			Dialog<String> dialog = new Dialog<>();
@@ -185,7 +199,7 @@ public class TchrUI implements Runnable {
 				return "";
 
 			});
-			
+
 			dialog.showAndWait().ifPresent(result -> {
 				reportText.append(result);
 			});
@@ -199,8 +213,10 @@ public class TchrUI implements Runnable {
 		int scrollCount = cat.length;
 		ScrollPane[] scroll = new ScrollPane[scrollCount];
 
+		loadData();
+
 		//
-		//				Personal
+		// Personal
 		//
 
 		scroll[cat.length - (scrollCount)] = new ScrollPane();
@@ -215,12 +231,12 @@ public class TchrUI implements Runnable {
 		Label saddr = new Label("Address");
 		Label sphone = new Label("Phone");
 		Label pphone = new Label("Parent Phone");
-		
+
 		personal.setAlignment(Pos.CENTER);
 		personal.setPadding(new Insets(50));
 		personal.setHgap(20);
 		personal.setVgap(20);
-		
+
 		dpImgView = new ImageView(new Image(getClass().getResourceAsStream("raw/pic.jpg")));
 		tsname = new TextField();
 		tsid = new TextField();
@@ -247,62 +263,58 @@ public class TchrUI implements Runnable {
 		dpImgView.setEffect(new DropShadow());
 		dpImgView.setFitHeight(128);
 		dpImgView.setFitWidth(128);
-		dpImgView.setOnDragOver((arg0)-> {
-				Dragboard db = arg0.getDragboard();
-				if (db.hasFiles()) {
-					arg0.acceptTransferModes(TransferMode.COPY);
-				} else {
-					arg0.consume();
-				}
-			});
-
-		dpImgView.setOnDragDropped((arg0)-> {
-				Dragboard db = arg0.getDragboard();
-				boolean success = false;
-				if (db.hasFiles()) {
-					db.getFiles().forEach(file -> {
-						dpImgView.setImage(new Image(file.toURI().toString()));
-						System.out.println(file.getAbsolutePath());
-					});
-					success = true;
-				}
-				arg0.setDropCompleted(success);
+		dpImgView.setOnDragOver((arg0) -> {
+			Dragboard db = arg0.getDragboard();
+			if (db.hasFiles()) {
+				arg0.acceptTransferModes(TransferMode.COPY);
+			} else {
 				arg0.consume();
-			});
-		
+			}
+		});
+
+		dpImgView.setOnDragDropped((arg0) -> {
+			Dragboard db = arg0.getDragboard();
+			boolean success = false;
+			if (db.hasFiles()) {
+				db.getFiles().forEach(file -> {
+					dpImgView.setImage(new Image(file.toURI().toString()));
+					System.out.println(file.getAbsolutePath());
+				});
+				success = true;
+			}
+			arg0.setDropCompleted(success);
+			arg0.consume();
+		});
+
 		Tooltip tool = new Tooltip();
 		tool.setAutoHide(true);
-		
-		tsname.textProperty().addListener((obs,o,n)->{
-			if(!n.matches("\\D*")){
+
+		tsname.textProperty().addListener((obs, o, n) -> {
+			if (!n.matches("\\D*")) {
 				tool.setText("Enter alphabets only");
-				Point2D p = tsname.localToScene(0.0,0.0);
-				tool.show(tsname, p.getX()+tsname.getCaretPosition(), p.getY() + tsname.getHeight());
+				Point2D p = tsname.localToScene(0.0, 0.0);
+				tool.show(tsname, p.getX() + tsname.getCaretPosition(), p.getY() + tsname.getHeight());
 				tsname.setText(n.replaceAll("[\\d]", ""));
 			}
 		});
-		
-		tsphone.textProperty().addListener((obs,o,n)->{
-			if(!n.matches("\\d*")){
-				System.out.println(obs.getValue()+"\t"+o+"\t"+n);
-				Point2D p = tsphone.localToScene(0.0,0.0);
+
+		tsphone.textProperty().addListener((obs, o, n) -> {
+			if (!n.matches("\\d*")) {
+				System.out.println(obs.getValue() + "\t" + o + "\t" + n);
+				Point2D p = tsphone.localToScene(0.0, 0.0);
 				tool.setText("Enter numbers only");
-				tool.show(tsphone,
-						p.getX() + tsphone.getCaretPosition(),
-						p.getY() + tsphone.getHeight());
-				tsphone.setText(n.replaceAll("[^\\d]",""));
+				tool.show(tsphone, p.getX() + tsphone.getCaretPosition(), p.getY() + tsphone.getHeight());
+				tsphone.setText(n.replaceAll("[^\\d]", ""));
 			}
 		});
 
-		tpphone.textProperty().addListener((obs,o,n)->{
-			if(!n.matches("\\d*")){
-				Point2D p = tpphone.localToScene(0.0,0.0);
+		tpphone.textProperty().addListener((obs, o, n) -> {
+			if (!n.matches("\\d*")) {
+				Point2D p = tpphone.localToScene(0.0, 0.0);
 				tool.setText("Enter numbers only");
 
-				tool.show(tpphone,
-						p.getX() + tpphone.getCaretPosition(),
-						p.getY() + tpphone.getHeight());
-				tpphone.setText(n.replaceAll("[^\\d]",""));
+				tool.show(tpphone, p.getX() + tpphone.getCaretPosition(), p.getY() + tpphone.getHeight());
+				tpphone.setText(n.replaceAll("[^\\d]", ""));
 			}
 		});
 		GridPane.setMargin(dpImgView, new Insets(40));
@@ -334,7 +346,7 @@ public class TchrUI implements Runnable {
 		scroll[cat.length - (scrollCount--)].setContent(personal);
 
 		//
-		//				Academic
+		// Academic
 		//
 
 		scroll[cat.length - (scrollCount)] = new ScrollPane();
@@ -346,21 +358,19 @@ public class TchrUI implements Runnable {
 		ObservableList<Marks> subjects1 = FXCollections.observableArrayList();
 		ObservableList<Marks> subjects2 = FXCollections.observableArrayList();
 		ObservableList<String> yrs = FXCollections.observableArrayList();
-		
+
 		ComboBox<String> yrlst = new ComboBox<>(yrs);
 
 		yrs.addAll("FE", "SE", "TE", "BE");
-		
+
 		ColumnConstraints accc0 = new ColumnConstraints();
 		accc0.setHalignment(HPos.RIGHT);
 		academic.setPadding(new Insets(30));
 		academic.setHgap(20);
 		academic.setVgap(20);
 		academic.getColumnConstraints().add(accc0);
-				
 
-		//				Semester 1
-
+		// Semester 1
 
 		tsem1 = new TableView<>();
 		TableColumn<Marks, Integer> sub = new TableColumn<>("Subject");
@@ -437,23 +447,21 @@ public class TchrUI implements Runnable {
 			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
-		
+
 		back.setCellFactory(CheckBoxTableCell.forTableColumn(back));
 		back.setCellValueFactory(cvf -> cvf.getValue().getBacklog());
 		th.getColumns().addAll(scr0, total0);
 		oral.getColumns().addAll(scr1, total1);
 		prac.getColumns().addAll(scr2, total2);
 		tw.getColumns().addAll(scr3, total3);
-		
+
 		tsem1.getColumns().addAll(sub, th, oral, prac, tw, back);
 		tsem1.setTooltip(new Tooltip("Semester 1"));
 		tsem1.setItems(subjects1);
 		GridPane.setFillWidth(tsem1, true);
 
-		
-		//				Semester 2
+		// Semester 2
 
-		
 		tsem2 = new TableView<>();
 		TableColumn<Marks, Integer> sub1 = new TableColumn<>("Subject");
 		TableColumn<Marks, Integer> th1 = new TableColumn<>("Theory");
@@ -538,8 +546,7 @@ public class TchrUI implements Runnable {
 			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
-		
-		
+
 		back1.setCellFactory(CheckBoxTableCell.forTableColumn(back1));
 		back1.setCellValueFactory(cvf -> cvf.getValue().getBacklog());
 
@@ -566,10 +573,8 @@ public class TchrUI implements Runnable {
 		sp1.setContent(tsem1);
 		sp2.setContent(tsem2);
 
-		
-		//				Student Progress
+		// Student Progress
 
-		
 		CategoryAxis xaxis = new CategoryAxis();
 		xaxis.setCategories(FXCollections.observableArrayList("Semester 1", "Semester 2", "Semester 3", "Semester 4",
 				"Semester 5", "Semester 6", "Semester 7", "Semester 8"));
@@ -586,7 +591,6 @@ public class TchrUI implements Runnable {
 		studProgress.setTitle("Student Progress");
 		studProgress.setTitleSide(Side.TOP);
 
-		
 		academic.add(sp1, 0, 1, 5, 1);
 		academic.add(sp2, 0, 2, 5, 1);
 		academic.add(addEntry, 2, 0);
@@ -599,7 +603,7 @@ public class TchrUI implements Runnable {
 		scroll[cat.length - (scrollCount--)].setContent(academic);
 
 		//
-		//				Attendance
+		// Attendance
 		//
 
 		GridPane attendance = new GridPane();
@@ -620,10 +624,8 @@ public class TchrUI implements Runnable {
 		artg.getToggles().addAll(atrbsem1, atrbsem2);
 		artg.selectToggle(atrbsem1);
 
-		
-		//				Semester 1 table
+		// Semester 1 table
 
-		
 		atsem1 = new TableView<Attendance>();
 		TableColumn<Attendance, String> atsub = new TableColumn<>("Subjects");
 		TableColumn<Attendance, Integer> atAttended = new TableColumn<>("Attended");
@@ -647,17 +649,13 @@ public class TchrUI implements Runnable {
 		atTotal.setOnEditCommit(t -> {
 			((Attendance) t.getTableView().getItems().get(t.getTablePosition().getRow())).setTotal(t.getNewValue());
 		});
-		
-
 
 		atsem1.getColumns().addAll(atsub, atAttended, atTotal);
 		atsem1.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		atsem1.setItems(atsem1Data);
 
-		
 		// Semester 2 table
 
-		
 		atsem2 = new TableView<Attendance>();
 		TableColumn<Attendance, String> atsub1 = new TableColumn<>("Subjects");
 		TableColumn<Attendance, Integer> atAttended1 = new TableColumn<>("Attended");
@@ -683,16 +681,13 @@ public class TchrUI implements Runnable {
 		atTotal1.setOnEditCommit(t -> {
 			((Attendance) t.getTableView().getItems().get(t.getTablePosition().getRow())).setTotal(t.getNewValue());
 		});
-		
-	
-		
+
 		atsem2.getColumns().addAll(atsub1, atAttended1, atTotal1);
 		atsem2.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		atsem2.setItems(atsem2Data);
 
-		
-		//				Attendance Graph
-		
+		// Attendance Graph
+
 		CategoryAxis atXaxis = new CategoryAxis();
 		NumberAxis atYaxis = new NumberAxis(0.0, 100.0, 10.0);
 
@@ -723,7 +718,7 @@ public class TchrUI implements Runnable {
 		scroll[cat.length - (scrollCount--)].setHbarPolicy(ScrollBarPolicy.NEVER);
 
 		//
-		//				Projects
+		// Projects
 		//
 
 		GridPane projects = new GridPane();
@@ -740,60 +735,58 @@ public class TchrUI implements Runnable {
 		prList.setItems(prData);
 		prList.setTooltip(new Tooltip("Drag and Drop Files Over Here"));
 
-		prList.setCellFactory((arg0)-> {
-				
-				return (new Project());
-		
+		prList.setCellFactory((arg0) -> {
+
+			return (new Project());
+
 		});
-		
-		bin.setOnMouseEntered(value->{
+
+		bin.setOnMouseEntered(value -> {
 			Tooltip tip = new Tooltip();
 			tip.setAutoHide(true);
-			Point2D p = bin.localToScene(0.0,0.0);
+			Point2D p = bin.localToScene(0.0, 0.0);
 			tip.setText("Drag projects to delete");
-			tip.show(bin,p.getX(),p.getY());
+			tip.show(bin, p.getX(), p.getY());
 		});
-		
-		bin.setOnDragOver(value->{
-			if(value.getGestureSource() != null)
+
+		bin.setOnDragOver(value -> {
+			if (value.getGestureSource() != null)
 				value.acceptTransferModes(TransferMode.MOVE);
 		});
-		bin.setOnDragDropped(value->{
+		bin.setOnDragDropped(value -> {
 			Dragboard db = value.getDragboard();
 
 			boolean success = false;
-			if(value.getDragboard().hasString()){
-				int index =prList.getItems().indexOf(db.getString());
+			if (value.getDragboard().hasString()) {
+				int index = prList.getItems().indexOf(db.getString());
 				prList.getItems().remove(index);
 				success = true;
-			}	
-			
+			}
+
 			value.setDropCompleted(success);
 			value.consume();
 		});
 
-		
-		prList.setOnDragOver((arg0)-> {
-				Dragboard db = arg0.getDragboard();
-				if (db.hasFiles()) {
-					arg0.acceptTransferModes(TransferMode.COPY);
-				} else {
-					arg0.consume();
-				}
+		prList.setOnDragOver((arg0) -> {
+			Dragboard db = arg0.getDragboard();
+			if (db.hasFiles()) {
+				arg0.acceptTransferModes(TransferMode.COPY);
+			} else {
+				arg0.consume();
+			}
 		});
 
-		
-		prList.setOnDragDropped((arg0)-> {
-				Dragboard db = arg0.getDragboard();
-				boolean success = false;
-				if (db.hasFiles()) {
-					success = true;
-					for (File file : db.getFiles()) {
-						prData.add(file.getName());
-					}
+		prList.setOnDragDropped((arg0) -> {
+			Dragboard db = arg0.getDragboard();
+			boolean success = false;
+			if (db.hasFiles()) {
+				success = true;
+				for (File file : db.getFiles()) {
+					prData.add(file.getName());
 				}
-				arg0.setDropCompleted(success);
-				arg0.consume();
+			}
+			arg0.setDropCompleted(success);
+			arg0.consume();
 		});
 
 		projects.setPadding(new Insets(30));
@@ -806,10 +799,8 @@ public class TchrUI implements Runnable {
 
 		scroll[cat.length - (scrollCount--)].setContent(projects);
 
-		
-		//				Assignments
+		// Assignments
 
-		
 		scroll[cat.length - (scrollCount)] = new ScrollPane();
 		GridPane assignment = new GridPane();
 
@@ -830,19 +821,19 @@ public class TchrUI implements Runnable {
 		GridPane.setFillWidth(asList, true);
 
 		asList.setEditable(true);
-		asList.setCellFactory(CheckBoxListCell.forListView(new Callback<String,ObservableValue<Boolean>>(){
+		asList.setCellFactory(CheckBoxListCell.forListView(new Callback<String, ObservableValue<Boolean>>() {
 
 			@Override
 			public ObservableValue<Boolean> call(String arg) {
-					return new SimpleBooleanProperty();
+				return new SimpleBooleanProperty();
 			}
-			
+
 		}));
 
-		addAssignment.setOnAction(arg0->{
+		addAssignment.setOnAction(arg0 -> {
 			Dialog<String> dialog = new Dialog<>();
 			TextField asTitle = new TextField();
-			ButtonType add = new ButtonType("Add",ButtonData.OK_DONE);
+			ButtonType add = new ButtonType("Add", ButtonData.OK_DONE);
 			HBox pane = new HBox();
 			pane.setPadding(new Insets(30));
 
@@ -851,40 +842,38 @@ public class TchrUI implements Runnable {
 			dialog.setHeaderText("Enter assignment title");
 			asTitle.setPromptText("Enter title");
 			dialog.getDialogPane().setContent(pane);
-			dialog.getDialogPane().getButtonTypes().addAll(add,ButtonType.CANCEL);
-			
+			dialog.getDialogPane().getButtonTypes().addAll(add, ButtonType.CANCEL);
+
 			Node addNode = dialog.getDialogPane().lookupButton(add);
 			addNode.setDisable(true);
-			
-			asTitle.textProperty().addListener((obs,o,n)->{
+
+			asTitle.textProperty().addListener((obs, o, n) -> {
 				addNode.setDisable(n.trim().isEmpty());
 			});
-			
-		
-			dialog.setResultConverter(value->{
-				if(value.getButtonData().equals(ButtonData.OK_DONE) && !asTitle.getText().isEmpty()){
+
+			dialog.setResultConverter(value -> {
+				if (value.getButtonData().equals(ButtonData.OK_DONE) && !asTitle.getText().isEmpty()) {
 					return asTitle.getText();
-				}else if(value.getButtonData().equals(ButtonData.OK_DONE) && asTitle.getText().isEmpty()){
-					
+				} else if (value.getButtonData().equals(ButtonData.OK_DONE) && asTitle.getText().isEmpty()) {
+
 				}
 				return null;
 			});
-			
+
 			asTitle.setPrefWidth(500);
 
 			dialog.initOwner(stage);
 			Optional<String> result = dialog.showAndWait();
-			result.ifPresent(arg-> asList.getItems().add(arg));
+			result.ifPresent(arg -> asList.getItems().add(arg));
 		});
-		
+
 		removeAssignment.setTooltip(new Tooltip("Deletes last assignment by default"));
-		removeAssignment.setOnAction(value->{
-			asList.getSelectionModel().select(asList.getItems().size()-1);
-			int index=asList.getSelectionModel().getSelectedIndex();
+		removeAssignment.setOnAction(value -> {
+			asList.getSelectionModel().select(asList.getItems().size() - 1);
+			int index = asList.getSelectionModel().getSelectedIndex();
 			asList.getItems().remove(index);
 		});
-		
-		
+
 		assignment.add(asYr, 0, 0);
 		assignment.add(asyrlst, 1, 0);
 		assignment.add(addAssignment, 2, 0);
@@ -895,7 +884,7 @@ public class TchrUI implements Runnable {
 		scroll[cat.length - (scrollCount--)].setHbarPolicy(ScrollBarPolicy.NEVER);
 
 		//
-		// 				Adding all titled panes to the accordion
+		// Adding all titled panes to the accordion
 		//
 
 		for (int i = 0; i < cat.length; i++) {
@@ -932,7 +921,8 @@ public class TchrUI implements Runnable {
 		tgpane.add(center, 1, 1, 1, 2);
 		tgpane.add(right, 2, 0, 1, 2);
 
-		tgpane.setMaxSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),Toolkit.getDefaultToolkit().getScreenSize().getHeight());
+		tgpane.setMaxSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
+				Toolkit.getDefaultToolkit().getScreenSize().getHeight());
 		sctgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		sctgpane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		sctgpane.setContent(tgpane);
@@ -945,10 +935,18 @@ public class TchrUI implements Runnable {
 		stage.show();
 	}
 
+	private void loadData() {
+		pname.setText(BasicUI.user);
+		pdprt.setText((String) Engine.db.getCollection("Users").find(eq("user",BasicUI.user)).first().get("department"));
+		
+		Engine.db.getCollection("Users").updateOne(eq("user",BasicUI.user), new Document("$set",new Document("lastLogin",LocalDateTime.now().getDayOfMonth()+"-"+LocalDateTime.now().getMonthValue()+"-"+LocalDateTime.now().getYear()+"\t"+LocalDateTime.now().getHour()+":"+LocalDateTime.now().getMinute()+":"+LocalDateTime.now().getSecond())));
+
+	}
+
 	private void edAllFields(boolean flag) {
-		
+
 		// Personal Pane
-		
+
 		dpImgView.setDisable(!flag);
 		tsname.setEditable(flag);
 		tsname.setFocusTraversable(flag);
@@ -971,24 +969,23 @@ public class TchrUI implements Runnable {
 		tpphone.setEditable(flag);
 		tpphone.setFocusTraversable(flag);
 
-
 		// Academic Pane
-		
+
 		tsem1.setEditable(flag);
 		tsem2.setEditable(flag);
 		addEntry.setDisable(!flag);
 
 		// Attendance Pane
-		
+
 		atsem1.setEditable(flag);
 		atsem2.setEditable(flag);
 		addat.setDisable(!flag);
-		
+
 		// Projects Pane
 		prList.setEditable(flag);
 
 		// Assignments Pane
-		
+
 		asList.setEditable(flag);
 		addAssignment.setDisable(!flag);
 		removeAssignment.setDisable(!flag);
@@ -997,7 +994,7 @@ public class TchrUI implements Runnable {
 
 	@Override
 	public void run() {
-		Platform.runLater(()->{
+		Platform.runLater(() -> {
 			startUI();
 		});
 	}

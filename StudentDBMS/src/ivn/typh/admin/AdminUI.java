@@ -7,6 +7,7 @@ import javafx.geometry.Insets;
 import java.time.LocalDateTime;
 
 import org.bson.Document;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.mongodb.client.MongoCursor;
@@ -301,11 +302,17 @@ public class AdminUI implements Runnable {
 			JSONObject json = new JSONObject(cursor.next().toJson());
 			String username = json.getString("user");      
 			if (!username.equals("admin")) {
-				String password = json.getString("passwd");
-				String email = json.getString("email");
+				String password = null, email = null, dprt = null,full= null;
+				            
+				try{
+				password = json.getString("passwd");
+				email = json.getString("email");
+				dprt = json.getString("department");
+				full = json.getString("fullname");
+				}catch(JSONException e){}
 				UserAccounts.userList.add(json.getString("user"));
 				Button tmp = new Button(username);
-				tmp.setOnAction(new UserAccounts(stage, userGrid, username, password, email));
+				tmp.setOnAction(new UserAccounts(stage, userGrid, username,full, password, email,dprt));
 				if (UserAccounts.x < 6) {
 					UserAccounts.x++;
 					userGrid.add(tmp, UserAccounts.x - 1, UserAccounts.y);
