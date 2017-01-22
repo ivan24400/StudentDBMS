@@ -1,5 +1,7 @@
 package ivn.typh.main;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,6 +29,7 @@ public class BasicUI extends Application implements Runnable{
 			stage.setTitle(title);
 			stage.setScene(scene);
 			stage.setFullScreen(true);
+			stage.setAlwaysOnTop(true);
 			stage.show();
 		});
 	}
@@ -36,12 +39,10 @@ public class BasicUI extends Application implements Runnable{
 		MenuBar mb  = new MenuBar();
 		Menu file = new Menu("File");
 		Menu tools = new Menu("Tools");
-		Menu plugin = new Menu("Plugins");
 		Menu help = new Menu("Help");
 		
 		
-		MenuItem admin = new MenuItem("Administrator");
-		MenuItem prof = new MenuItem("Proffessor");
+
 		MenuItem exit = new MenuItem("Exit");
 		MenuItem tlm = new MenuItem("TyphLM");
 		MenuItem tictac = new MenuItem("TicTacToe");
@@ -55,9 +56,8 @@ public class BasicUI extends Application implements Runnable{
 		
 		file.getItems().addAll(new SeparatorMenuItem(),exit);
 		tools.getItems().addAll(tictac,tlm);
-		plugin.getItems().addAll(admin,prof);
 		help.getItems().addAll(howto,new SeparatorMenuItem(),about);
-		mb.getMenus().addAll(file,tools,plugin,help);
+		mb.getMenus().addAll(file,tools,help);
 		pane.setCenter(login);
 		login.setOnAction(arg ->
 		{
@@ -77,7 +77,12 @@ public class BasicUI extends Application implements Runnable{
 	}
 	
 	public void loadGame(){
-		
+		try {
+			Runtime.getRuntime().exec("java -jar "+System.getProperty("user.dir")+File.separator+"game.jar");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override

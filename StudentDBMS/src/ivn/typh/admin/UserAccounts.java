@@ -4,8 +4,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import org.bson.Document;
+import org.json.JSONObject;
+
+import com.mongodb.client.MongoCursor;
 
 import ivn.typh.main.Engine;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -37,6 +41,7 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 
 	private TextField username;
 	private TextField fullname;
+	private ObservableList<String> classList;
 	private PasswordField password;
 	private TextField email;
 	private ToggleButton freeze;
@@ -62,6 +67,7 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		email = new TextField();
 		dprtMember = new ComboBox<>();
 		fullname = new TextField();
+		classList = FXCollections.observableArrayList();
 	}
 
 	public UserAccounts(Stage arg, GridPane gp, Button addB) {
@@ -85,6 +91,19 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 
 		dprtMember.getItems().addAll(Departments.dprtList);
 
+		MongoCursor<Document> cursor = Engine.db.getCollection("Students").find().iterator();
+		
+		while(cursor.hasNext()){
+			JSONObject json = new JSONObject(cursor.next().toJson());
+			boolean exist=false;
+			for(String s: classList){
+				if(s.equals(json.getString("department")))
+					exist=true;
+			}
+			if(!exist)
+				classList.add(json.getString("department"));
+		}
+		
 		Label lusername = new Label("User Name");
 		Label lfullname = new Label("Full Name");
 		Label lpassword = new Label("Password");
