@@ -7,14 +7,19 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.time.LocalDateTime;
+import com.mongodb.client.gridfs.GridFSBucket;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.gridfs.GridFSBuckets;
+
 
 public class Engine {
 	public static MongoClient mongo;
 	public static MongoDatabase db;
+	public static GridFSBucket gfs;
+
 
 	public static void main(String[] args) {
 //		try {

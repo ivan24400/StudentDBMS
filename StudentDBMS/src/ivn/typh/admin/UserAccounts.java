@@ -47,6 +47,8 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 	private ToggleButton freeze;
 	private ToggleButton edit;
 	private ComboBox<String> dprtMember;
+	private ComboBox<String> classIncharge;
+	private ComboBox<String> year;
 
 	public UserAccounts(Stage s,GridPane pane,String u,String f,String p,String e,String dprt){
 		this(s);
@@ -66,8 +68,11 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		password = new PasswordField();
 		email = new TextField();
 		dprtMember = new ComboBox<>();
+		classIncharge = new ComboBox<>();
+		year = new ComboBox<>();
 		fullname = new TextField();
 		classList = FXCollections.observableArrayList();
+
 	}
 
 	public UserAccounts(Stage arg, GridPane gp, Button addB) {
@@ -90,18 +95,19 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		dPane.setVgap(20);
 
 		dprtMember.getItems().addAll(Departments.dprtList);
-
+		year.getItems().addAll("FE","SE","TE","BE");
 		MongoCursor<Document> cursor = Engine.db.getCollection("Students").find().iterator();
 		
 		while(cursor.hasNext()){
 			JSONObject json = new JSONObject(cursor.next().toJson());
-			boolean exist=false;
-			for(String s: classList){
-				if(s.equals(json.getString("department")))
-					exist=true;
+			boolean exists=false;
+
+			for(String s:classList){
+				if(s.equals(json.getString("class")))
+					exists=true;
 			}
-			if(!exist)
-				classList.add(json.getString("department"));
+			if(!exists)
+				classList.add(json.getString("class"));
 		}
 		
 		Label lusername = new Label("User Name");

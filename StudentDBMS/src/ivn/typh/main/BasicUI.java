@@ -62,7 +62,7 @@ public class BasicUI extends Application implements Runnable{
 		login.setOnAction(arg ->
 		{
 			ExecutorService execsrv = Executors.newSingleThreadExecutor();
-			execsrv.execute(new LogIn(stage));
+			execsrv.execute(new LogIn(stage,pane,basic));
 			execsrv.shutdown();
 			
 		});
@@ -80,7 +80,6 @@ public class BasicUI extends Application implements Runnable{
 		try {
 			Runtime.getRuntime().exec("java -jar "+System.getProperty("user.dir")+File.separator+"game.jar");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

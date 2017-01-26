@@ -19,6 +19,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -26,16 +27,21 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class LogIn implements Runnable {
 
-	Stage stage;
-	GridPane gpane;
-
-	public LogIn(Stage arg) {
+	private Stage stage;
+	private GridPane gpane;
+	private BorderPane pane;
+	private Scene scene;
+	
+	public LogIn(Stage arg,BorderPane p,Scene s) {
+		scene=s;
 		stage = arg;
+		pane=p;
 	}
 
 	public void startUI() {
@@ -157,10 +163,10 @@ public class LogIn implements Runnable {
 	}
 	private void loadUI() {
 		if (BasicUI.user.equals(new String("admin"))) {
-			Thread at = new Thread(new AdminUI(stage));
+			Thread at = new Thread(new AdminUI(stage,pane));
 			at.start();
 		} else {
-			Thread tt = new Thread(new TchrUI(stage));
+			Thread tt = new Thread(new TchrUI(stage,pane,scene));
 			tt.start();
 		}
 

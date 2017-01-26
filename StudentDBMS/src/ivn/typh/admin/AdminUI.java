@@ -14,7 +14,6 @@ import com.mongodb.client.MongoCursor;
 import ivn.typh.main.Engine;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -25,6 +24,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -47,10 +47,11 @@ public class AdminUI implements Runnable {
 	private Label rts; 
 	private Label rtu ;
 	private Label rll ;
+	private BorderPane pane;
 	
-	
-	public AdminUI(Stage s) {
+	public AdminUI(Stage s,BorderPane p) {
 		stage = s;
+		pane=p;
 		rts = new Label();
 		rtu = new Label();
 		rll = new Label();
@@ -207,10 +208,7 @@ public class AdminUI implements Runnable {
 		gpane.setMaxWidth(1360);
 
 		sgpane.setContent(gpane);
-		Scene scene = new Scene(sgpane);
-		stage.setScene(scene);
-		stage.setFullScreen(true);
-		stage.show();
+		pane.setCenter(sgpane);
 
 	}
 

@@ -8,12 +8,15 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -35,15 +38,14 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 	private TextField dhead;
 	private TextField tlabs;
 	private TextField tcrooms;
+	private TextField tsrooms;
+	private CheckBox library;
 	private ToggleButton edit;
 
 	public Departments(Stage arg, GridPane pane, String name, String head, String labs, String crooms) {
 		this(arg);
 		home = pane;
-		dname = new TextField();
-		dhead = new TextField();
-		tlabs = new TextField();
-		tcrooms = new TextField();
+		
 
 		dname.setText(name);
 		dhead.setText(head);
@@ -54,17 +56,18 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 	public Departments(Stage arg) {
 		parent = arg;
 		initOwner(parent);
-
+		dname = new TextField();
+		dhead = new TextField();
+		tlabs = new TextField();
+		tcrooms = new TextField();
+		tsrooms = new TextField();
+		library = new CheckBox();
 	}
 
 	public Departments(Stage arg, GridPane pane, Button b) {
 		this(arg);
 		home = pane;
 		addDprt = b;
-		dname = new TextField();
-		dhead = new TextField();
-		tlabs = new TextField();
-		tcrooms = new TextField();
 	}
 
 	public void createUI(boolean first) {
@@ -81,12 +84,20 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 		dname.setPromptText("Department Name");
 		dhead.setPromptText("Department Head");
 		tlabs.setPromptText("Number of Labs");
-		tcrooms.setPromptText("Number of Rooms");
+		tcrooms.setPromptText("Number of Class Rooms");
+		tsrooms.setPromptText("Number of Staff Rooms");
 
 		Label ldname = new Label("Department Name");
 		Label ldhead = new Label("Head of the Deapartment");
 		Label ltlabs = new Label("Total number of labs");
-		Label ltcrooms = new Label("Total number of rooms");
+		Label ltcrooms = new Label("Total number of class rooms");
+		Label ltsrooms = new Label("Total number of staff rooms");
+		Label lib = new Label("Library");
+		lib.setGraphic(library);
+		lib.setContentDisplay(ContentDisplay.RIGHT);
+		
+		HBox lbox =new HBox(lib);
+		lbox.setAlignment(Pos.BASELINE_CENTER);
 		Tooltip tool = new Tooltip();
 
 		if (!first)
@@ -144,10 +155,31 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 				});
 			}
 		});
+		
+		tsrooms.textProperty().addListener((obs, o, n) -> {
+			if (!n.matches("\\d*")) {
+				tool.setText("Enter numbers only !");
+				Bounds screen = tsrooms.localToScreen(tsrooms.getBoundsInLocal());
+				tool.show(tsrooms, screen.getMinX() + tsrooms.getCaretPosition(),
+						screen.getMinY() + tsrooms.getScene().getY());
+				tsrooms.setText(tsrooms.getText().replaceAll("[^\\d]", ""));
+			} else if (tsrooms.getText().length() > 5) {
+				tool.setText("Cannot add more rooms !");
+				Bounds screen = tsrooms.localToScreen(tsrooms.getBoundsInLocal());
+				tool.show(tsrooms, screen.getMinX() + tsrooms.getCaretPosition(),
+						screen.getMinY() + tsrooms.getScene().getY());
+				Platform.runLater(() -> {
+					tsrooms.setText(tsrooms.getText().substring(0, 5));
+					tsrooms.positionCaret(tsrooms.getText().length());
+				});
+			}
+		});
+		
 
 		dhead.setOnMouseMoved(value -> tool.hide());
 		tlabs.setOnMouseMoved(value -> tool.hide());
 		tcrooms.setOnMouseMoved(value -> tool.hide());
+		tsrooms.setOnMouseMoved(value -> tool.hide());
 
 		dPane.add(ldname, 0, 0);
 		dPane.add(dname, 1, 0);
@@ -157,7 +189,11 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 		dPane.add(tlabs, 1, 2);
 		dPane.add(ltcrooms, 0, 3);
 		dPane.add(tcrooms, 1, 3);
-
+		dPane.add(ltsrooms, 0, 4);
+		dPane.add(tsrooms, 1, 4);
+		dPane.add(lbox, 0, 5,2,1);
+		
+		lib.setAlignment(Pos.BASELINE_CENTER);
 		ButtonType save = new ButtonType("Save", ButtonData.OK_DONE);
 		getDialogPane().setContent(dPane);
 		getDialogPane().getButtonTypes().addAll(save, ButtonType.CANCEL);
@@ -235,7 +271,7 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 			edAllFields(arg.getValue());
 		});
 		seBox.getChildren().add(edit);
-		pane.add(seBox, 0, 5, 2, 1);
+		pane.add(seBox, 0, 6, 2, 1);
 
 	}
 
