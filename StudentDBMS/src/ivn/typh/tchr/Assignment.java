@@ -1,52 +1,54 @@
 package ivn.typh.tchr;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public final class Assignment {
 
-	private final static StringProperty year = new SimpleStringProperty();
-	private final static StringProperty title = new SimpleStringProperty();
-	private final static BooleanProperty completed = new SimpleBooleanProperty();
+	private final  IntegerProperty sem = new SimpleIntegerProperty();
+	private final  StringProperty title = new SimpleStringProperty();
+	private final  BooleanProperty completed = new SimpleBooleanProperty();
 	
-	public Assignment(String y,String t,boolean c){
-		setYear(y);
+	public Assignment(int y,String t,boolean c){
+		setSem(y);
 		setTitle(t);
 		setCompleted(c);
 	}
 	
 
-	public static String getYear() {
-		return year.get();
+	public  int getSem() {
+		return sem.get();
 	}
 
-	public static String getTitle() {
+	public  String getTitle() {
 		return title.get();
 	}
 
-	public static boolean getCompleted() {
+	public  boolean getCompleted() {
 		return completed.get();
 	}
 
-	public static StringProperty titleProperty(){
+	public  StringProperty titleProperty(){
 		return title;
 	}
 	
-	public static BooleanProperty completedProperty(){
+	public  BooleanProperty completedProperty(){
 		return completed;
 	}
 	
-	public static void setYear(String y) {
-		year.set(y);
+	public  void setSem(int y) {
+		sem.set(y);
 	}
 
-	public static void setTitle(String t) {
+	public  void setTitle(String t) {
 		title.set(t);
 	}
 
-	public static void setCompleted(boolean c) {
+	public  void setCompleted(boolean c) {
 		completed.set(c);
 	}
 

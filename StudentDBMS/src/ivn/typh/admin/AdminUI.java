@@ -12,12 +12,14 @@ import org.json.JSONObject;
 
 import com.mongodb.client.MongoCursor;
 import ivn.typh.main.Engine;
+import ivn.typh.main.Notification;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Tab;
@@ -43,13 +45,14 @@ public class AdminUI implements Runnable {
 	private static Button addAcc;
 	private static Button addDepartment;
 	private static Button addStudent;
-
+private MenuBar mb;
 	private Label rts; 
 	private Label rtu ;
 	private Label rll ;
 	private BorderPane pane;
 	
-	public AdminUI(Stage s,BorderPane p) {
+	public AdminUI(Stage s,BorderPane p,MenuBar m) {
+		mb=m;
 		stage = s;
 		pane=p;
 		rts = new Label();

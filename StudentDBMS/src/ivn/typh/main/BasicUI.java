@@ -62,7 +62,7 @@ public class BasicUI extends Application implements Runnable{
 		login.setOnAction(arg ->
 		{
 			ExecutorService execsrv = Executors.newSingleThreadExecutor();
-			execsrv.execute(new LogIn(stage,pane,basic));
+			execsrv.execute(new LogIn(stage,pane,basic,mb));
 			execsrv.shutdown();
 			
 		});

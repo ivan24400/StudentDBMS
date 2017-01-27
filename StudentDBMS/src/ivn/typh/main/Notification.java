@@ -1,4 +1,4 @@
-package ivn.typh.admin;
+package ivn.typh.main;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;

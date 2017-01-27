@@ -31,6 +31,7 @@ public class Project extends ListCell<String>{
 	private Pane dummy;
 	private Button download;
 	private Label label;
+	private String id;
 	private Window w;
 	
 	public Project(Scene s){
@@ -47,32 +48,41 @@ public class Project extends ListCell<String>{
 		pane.getChildren().addAll(label,dummy,download);
 		download.setOnAction(value->{
 			DirectoryChooser dir = new DirectoryChooser();
+			dir.setTitle("Select a download path - Typh™");
 			dir.setInitialDirectory(new File(System.getProperty("user.home")));
 			File sel = dir.showDialog(w);
 			if(sel !=null){
-				try {
-					OutputStream out = new FileOutputStream(sel+File.separator+label.getText());
-					Engine.gfs.find().forEach(new Block<GridFSFile>(){
-						public void apply(final GridFSFile file){
-							if(label.getText().equals(file.getFilename())){
-								Engine.gfs.downloadToStream(file.getId(),out);
+				Engine.gfs.find().forEach(new Block<GridFSFile>(){
+					public void apply(final GridFSFile file){
+						
+						if((label.getText()).equals(getItemName(file.getFilename().split(":")[1]))){
+							OutputStream out = null;
+							try {
+								out = new FileOutputStream(sel+File.separator+file.getFilename().split(":")[1]);
+							} catch (FileNotFoundException e) {
+								e.printStackTrace();
 							}
+							Engine.gfs.downloadToStream(file.getId(),out);
 						}
-					});
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				}
+					}
+				});
 			}
 		});
 		
-//		setOnDragDetected(arg->{
-//				Dragboard db = startDragAndDrop(TransferMode.MOVE);
-//				ClipboardContent content = new ClipboardContent();
-//				content.putString(getItem());
-//				db.setContent(content);
-//				db.setDragView(new Image("raw/pic.jpg"));
-//			arg.consume();
-//		});
+		setOnDragDetected(event -> {
+            if (getItem() == null) {
+                return;
+            }
+
+            Dragboard dragboard = startDragAndDrop(TransferMode.MOVE);
+            ClipboardContent content = new ClipboardContent();
+            content.putString(getItem());
+            dragboard.setDragView(new Image(getClass().getResourceAsStream("raw/pic.jpg")));
+            dragboard.setContent(content);
+
+            event.consume();
+        });
+
 		
 	}
 
@@ -83,20 +93,18 @@ public class Project extends ListCell<String>{
 			setText(null);
 			setGraphic(null);
 		}else{
-			label.setText((item!=null) ? getItemName():null);
+			label.setText((item!=null) ? getItemName(item):null);
 			setGraphic(pane);
 		}
 	}
-
-	private String getItemName() {
-		String n = label.getText();
+	
+	private String getItemName(String n) {
 		int position = n.lastIndexOf(".");
 		if(position==-1)
 			return n;
 		
 		return n.substring(0,position);
 	}
-	
 	
 	
 }

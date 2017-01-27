@@ -10,7 +10,6 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import ivn.typh.admin.AdminUI;
-import ivn.typh.admin.Notification;
 import ivn.typh.tchr.TchrUI;
 
 import static com.mongodb.client.model.Filters.*;
@@ -24,6 +23,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
@@ -37,8 +37,10 @@ public class LogIn implements Runnable {
 	private GridPane gpane;
 	private BorderPane pane;
 	private Scene scene;
+	private MenuBar mb;
 	
-	public LogIn(Stage arg,BorderPane p,Scene s) {
+	public LogIn(Stage arg,BorderPane p,Scene s,MenuBar m) {
+		mb = m;
 		scene=s;
 		stage = arg;
 		pane=p;
@@ -163,10 +165,10 @@ public class LogIn implements Runnable {
 	}
 	private void loadUI() {
 		if (BasicUI.user.equals(new String("admin"))) {
-			Thread at = new Thread(new AdminUI(stage,pane));
+			Thread at = new Thread(new AdminUI(stage,pane,mb));
 			at.start();
 		} else {
-			Thread tt = new Thread(new TchrUI(stage,pane,scene));
+			Thread tt = new Thread(new TchrUI(stage,pane,scene,mb));
 			tt.start();
 		}
 
