@@ -28,26 +28,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.mongodb.Block;
-import com.mongodb.DB;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
 import com.mongodb.client.gridfs.model.GridFSFile;
-import com.mongodb.gridfs.GridFS;
-import com.mongodb.gridfs.GridFSInputFile;
 
 import ivn.typh.main.BasicUI;
 import ivn.typh.main.Engine;
 import ivn.typh.main.Notification;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -66,13 +58,13 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
+import javafx.scene.layout.HBox;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
@@ -84,6 +76,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.control.cell.CheckBoxTableCell;
@@ -97,7 +90,6 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -107,16 +99,18 @@ import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
 public class TchrUI implements Runnable {
+	private String tmp;
 
 	private Stage stage;
 	private Scene scene;
+	private String classIncharge;
 	private BorderPane pane;
 	private static ObservableList<String> studList;
-	private static ObservableList<String> dprtList;
+	private static ObservableMap<String, String> dprtList;
 	private ObservableList<String> repList;
 	private Button update;
 	private Button report;
-	private MenuBar mb;
+	private ToolBar mb;
 	private ListView<Report> reps;
 	private ComboBox<String> slist;
 	private ComboBox<String> yrlst;
@@ -124,7 +118,7 @@ public class TchrUI implements Runnable {
 	private Accordion accord;
 	private Label srch;
 	private Search text;
-	private	Label reports;
+	private Label reports;
 	private Label student;
 
 	private Label prof;
@@ -141,10 +135,11 @@ public class TchrUI implements Runnable {
 	private ImageView dpImgView;
 	private TextField tsname;
 	private TextField tsid;
-	private TextField tsrno;
-	private ComboBox<String> tsdprt;
-	private TextField tsclass;
-	private TextField tsbatch;
+	private ChoiceBox<String> tsrno;
+	private ChoiceBox<String> tsdprt;
+	private ChoiceBox<String> tsclass;
+	private ChoiceBox<String> tsbatch;
+	private ChoiceBox<String> tsyear;
 	private TextField tsmail;
 	private TextField tsaddr;
 	private TextField tsphone;
@@ -173,8 +168,7 @@ public class TchrUI implements Runnable {
 	// Projects
 
 	private ListView<String> prList;
-	private Map<String,String> prtmp;
-
+	private Map<String, String> prtmp;
 
 	// Assignments
 
@@ -182,15 +176,14 @@ public class TchrUI implements Runnable {
 	private Button addAssignment;
 	private Button removeAssignment;
 
-	
-	public TchrUI(Stage s,BorderPane p, Scene scen,MenuBar m) {
-		mb=m;	
-		pane=p;
+	public TchrUI(Stage s, BorderPane p, Scene scen, ToolBar mb2) {
+		mb = mb2;
+		pane = p;
 		stage = s;
 		scene = scen;
 		repList = FXCollections.observableArrayList();
 		studList = FXCollections.observableArrayList();
-		dprtList = FXCollections.observableArrayList();
+		dprtList = FXCollections.observableHashMap();
 		Engine.gfs = GridFSBuckets.create(Engine.db, "projects");
 	}
 
@@ -202,19 +195,17 @@ public class TchrUI implements Runnable {
 
 		GridPane center = new GridPane();
 		VBox left = new VBox();
-		VBox right = new VBox();
 		HBox top = new HBox();
 		HBox topL = new HBox();
 		HBox aboveAcc = new HBox();
 
 		String[] cat = new String[] { "Personal", "Academic", "Attendance", "Projects", "Assignments" };
-		MenuItem logout = new MenuItem("Log Out");
+		Button logout = new Button("Log Out");
 		ToggleButton editable = new ToggleButton("Edit");
 
 		ColumnConstraints cc0 = new ColumnConstraints();
 		ColumnConstraints cc1 = new ColumnConstraints();
-		ColumnConstraints cc2 = new ColumnConstraints();
-		
+
 		prof = new Label("Professor");
 		pname = new Label();
 		dprt = new Label("Department");
@@ -224,57 +215,56 @@ public class TchrUI implements Runnable {
 		tstuds = new Label("Total Students");
 		nstuds = new Label();
 		reps = new ListView<>();
-		slist = new ComboBox<>(studList);
+		slist = new ComboBox<>();
 		srch = new Label("Search");
 		text = new Search();
 		reports = new Label("Reports");
 		student = new Label("Student");
 		tp = new TitledPane[cat.length];
 		accord = new Accordion();
-		 update = new Button("Update");
-		 report = new Button("Report");
-		 yrlst = new ComboBox<>();
+		update = new Button("Update");
+		report = new Button("Report");
+		yrlst = new ComboBox<>();
+		tsyear = new ChoiceBox<>();
+		yrlst.getItems().addAll(FXCollections.observableArrayList("FE", "SE", "TE", "BE"));
+		tsyear.getItems().addAll(yrlst.getItems());
+		
+		yrlst.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
+			loadReport(n);
+			loadAcademicData(n);
+			loadAttendanceData(n);
+			loadProjectData(n);
+			loadAssignmentData(n);
+		});
 
-			yrlst.getItems().addAll("FE", "SE", "TE", "BE");
-			
-			yrlst.getSelectionModel().selectedItemProperty().addListener((obs,o,n)->{
-				loadAcademicData(n);
-				loadAttendanceData(n);
-				loadProjectData(n);
-				loadAssignmentData(n);
-				loadReport(n);
-			});
-
-		aboveAcc.getChildren().addAll(student, slist, new Label("Select Year"),yrlst,editable, update, report);
+		aboveAcc.getChildren().addAll(student, slist, new Label("Select Year"), yrlst, editable, update, report);
 		aboveAcc.setSpacing(30);
 		aboveAcc.setAlignment(Pos.CENTER);
 
+		cc0.setPercentWidth(20);
+		cc1.setPercentWidth(80);
 
-		cc0.setPercentWidth(15);
-		cc1.setPercentWidth(65);
-		cc2.setPercentWidth(20);
-		
-		logout.setOnAction(arg->{
+		logout.setOnAction(arg -> {
 			stage.setScene(scene);
 		});
-		
 
-		update.setOnAction(arg->{
+		update.setOnAction(arg -> {
 			uploadData(tsid.getText());
 		});
 
+		ScrollPane spReport = new ScrollPane();
 		ContextMenu repcm = new ContextMenu();
 		MenuItem del = new MenuItem("Delete this report");
-		del.setOnAction(arg->{
+		del.setOnAction(arg -> {
 			repList.remove(reps.getSelectionModel().getSelectedIndex());
 		});
 		repcm.getItems().add(del);
-		
+
 		reps.setContextMenu(repcm);
-		
+
 		reps.getSelectionModel().selectLast();
 		
-		StringConverter<Report> rconvertor = new StringConverter<Report>(){
+		StringConverter<Report> rconvertor = new StringConverter<Report>() {
 			@Override
 			public Report fromString(String arg0) {
 				return null;
@@ -282,11 +272,11 @@ public class TchrUI implements Runnable {
 
 			@Override
 			public String toString(Report arg) {
-				return "[Semester "+arg.getSem()+"]\t"+arg.getReport();
+				return "[Semester " + arg.getSem() + "]\t" + arg.getReport();
 			}
-			
+
 		};
-		reps.setCellFactory(CheckBoxListCell.forListView(Report::seenProperty,rconvertor));
+		reps.setCellFactory(CheckBoxListCell.forListView(Report::seenProperty, rconvertor));
 		report.setOnAction(arg -> {
 			Dialog<String> dialog = new Dialog<>();
 			ButtonType reportb = new ButtonType("Report", ButtonData.OK_DONE);
@@ -315,17 +305,16 @@ public class TchrUI implements Runnable {
 		});
 
 		editable.selectedProperty().addListener((arg, o, n) -> {
-			edAllFields(n);
+			disableAll(!n);
 		});
 
 		int scrollCount = cat.length;
 		ScrollPane[] scroll = new ScrollPane[scrollCount];
 
-		slist.getSelectionModel().selectedItemProperty().addListener((arg,o,n)->{
+		slist.getSelectionModel().selectedItemProperty().addListener((arg, o, n) -> {
 			loadStudentProfile(n.split(":")[1]);
 		});
-		
-		
+
 		//
 		// Personal
 		//
@@ -342,7 +331,7 @@ public class TchrUI implements Runnable {
 		Label saddr = new Label("Address");
 		Label sphone = new Label("Phone");
 		Label pphone = new Label("Parent Phone");
-		
+
 		personal.setAlignment(Pos.CENTER);
 		personal.setPadding(new Insets(50));
 		personal.setHgap(20);
@@ -351,26 +340,21 @@ public class TchrUI implements Runnable {
 		dpImgView = new ImageView(new Image(getClass().getResourceAsStream("raw/pic.jpg")));
 		tsname = new TextField();
 		tsid = new TextField();
-		tsrno = new TextField();
-		tsdprt = new ComboBox<>();
-		tsclass = new TextField();
-		tsbatch = new TextField();
+		tsrno = new ChoiceBox<>();
+		tsdprt = new ChoiceBox<>();
+		tsclass = new ChoiceBox<>();
+		tsbatch = new ChoiceBox<>();
 		tsmail = new TextField();
 		tsaddr = new TextField();
 		tsphone = new TextField();
 		tpphone = new TextField();
-		
-		
+
 		tsname.setPromptText("Name");
 		tsid.setPromptText("ID");
-		tsrno.setPromptText("Roll No");
-		tsclass.setPromptText("Class");
-		tsbatch.setPromptText("Batch");
 		tsmail.setPromptText("Email");
 		tsaddr.setPromptText("Address");
 		tsphone.setPromptText("Phone");
 		tpphone.setPromptText("Parent Phone");
-		tsdprt.setItems(dprtList);
 
 		dpImgView.setEffect(new DropShadow());
 		dpImgView.setFitHeight(128);
@@ -429,7 +413,27 @@ public class TchrUI implements Runnable {
 				tpphone.setText(n.replaceAll("[^\\d]", ""));
 			}
 		});
+
+		ContextMenu tsidcm = new ContextMenu();
+		MenuItem tsida = new MenuItem("Generate ID");
+		tsida.setOnAction(arg -> {
+			dprtList.forEach((key, val) -> {
+				if (val == tsdprt.getValue()) {
+					tsid.setText(getSId());
+
+				}
+			});
+		});
+
+		tsidcm.getItems().add(tsida);
+		tsid.setContextMenu(tsidcm);
 		GridPane.setMargin(dpImgView, new Insets(40));
+		spReport.setContent(reps);
+		reps.prefWidthProperty().bind(spReport.widthProperty());
+		reps.setPrefHeight(150);
+		spReport.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		spReport.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		
 		personal.add(sname, 0, 1);
 		personal.add(tsname, 1, 1);
 		personal.add(sid, 0, 2);
@@ -451,11 +455,21 @@ public class TchrUI implements Runnable {
 		personal.add(pphone, 2, 5);
 		personal.add(tpphone, 3, 5);
 		personal.add(dpImgView, 4, 1, 1, 5);
+		personal.add(reports, 0, 6);
+		personal.add(spReport, 0, 7, 5, 1);
 		personal.setAlignment(Pos.CENTER);
-		
+
 		scroll[cat.length - (scrollCount)].setHbarPolicy(ScrollBarPolicy.NEVER);
 		scroll[cat.length - (scrollCount)].setVbarPolicy(ScrollBarPolicy.NEVER);
 		scroll[cat.length - (scrollCount--)].setContent(personal);
+
+		loadData();
+
+		studList.forEach(student -> {
+			String tmp = student.split("]")[0].substring(1);
+			if (classIncharge.equals(tmp))
+				slist.getItems().add(student);
+		});
 
 		//
 		// Academic
@@ -464,7 +478,6 @@ public class TchrUI implements Runnable {
 		scroll[cat.length - (scrollCount)] = new ScrollPane();
 		GridPane academic = new GridPane();
 
-		
 		ScrollPane sp1 = new ScrollPane();
 		ScrollPane sp2 = new ScrollPane();
 		ObservableList<Marks> subjects1 = FXCollections.observableArrayList();
@@ -475,8 +488,6 @@ public class TchrUI implements Runnable {
 		academic.setHgap(20);
 		academic.setVgap(20);
 		academic.getColumnConstraints().add(accc0);
-		
-
 
 		// Semester 1
 
@@ -496,7 +507,7 @@ public class TchrUI implements Runnable {
 		TableColumn<Marks, Integer> total3 = new TableColumn<>("Total");
 		TableColumn<Marks, Boolean> back = new TableColumn<>("BackLog");
 
-		sub.setCellValueFactory(new PropertyValueFactory<Marks,String>("subject"));
+		sub.setCellValueFactory(new PropertyValueFactory<Marks, String>("subject"));
 		scr0.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("theoryScored"));
 		scr1.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("oralScored"));
 		scr2.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("pracsScored"));
@@ -517,8 +528,8 @@ public class TchrUI implements Runnable {
 		total1.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 		total2.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 		total3.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-		
-		sub.setOnEditCommit(arg->{
+
+		sub.setOnEditCommit(arg -> {
 			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow())).setSubject(arg.getNewValue());
 		});
 		scr0.setOnEditCommit(arg -> {
@@ -599,7 +610,7 @@ public class TchrUI implements Runnable {
 		tsem2.setTooltip(new Tooltip("Semester 2"));
 		tsem2.setItems(subjects2);
 		GridPane.setFillWidth(tsem2, true);
-		sub1.setCellValueFactory(new PropertyValueFactory<Marks,String>("subject"));
+		sub1.setCellValueFactory(new PropertyValueFactory<Marks, String>("subject"));
 
 		scr01.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("theoryScored"));
 		scr11.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("oralScored"));
@@ -620,8 +631,8 @@ public class TchrUI implements Runnable {
 		total11.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 		total21.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 		total31.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-	
-		sub1.setOnEditCommit(arg->{
+
+		sub1.setOnEditCommit(arg -> {
 			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow())).setSubject(arg.getNewValue());
 		});
 		scr01.setOnEditCommit(arg -> {
@@ -699,7 +710,6 @@ public class TchrUI implements Runnable {
 
 		NumberAxis yaxis = new NumberAxis(0.0, 100.0, 10.0);
 		yaxis.setLabel("Percentage");
-		
 
 		studProgress = new LineChart<>(xaxis, yaxis);
 		studProgress.setTitle("Student Progress");
@@ -728,19 +738,17 @@ public class TchrUI implements Runnable {
 		attendance.setHgap(20);
 		attendance.setVgap(20);
 
-		
 		atrbsem1 = new RadioButton("Semester 1");
 		atrbsem1.setUserData(1);
 		atrbsem2 = new RadioButton("Semester 2");
 		atrbsem2.setUserData(2);
 		ToggleGroup artg = new ToggleGroup();
 		artg.getToggles().addAll(atrbsem1, atrbsem2);
-		artg.selectToggle(atrbsem1);
-		
-		artg.selectedToggleProperty().addListener((obs,o,n)->{
-			loadAttendanceChart(yrlst.getSelectionModel().getSelectedItem(),Integer.parseInt(n.getUserData().toString()));
-		});
 
+		artg.selectedToggleProperty().addListener((obs, o, n) -> {
+			loadAttendanceChart(yrlst.getSelectionModel().getSelectedItem(),
+					Integer.parseInt(n.getUserData().toString()));
+		});
 
 		// Semester 1 table
 
@@ -806,8 +814,8 @@ public class TchrUI implements Runnable {
 
 		// Attendance Graph
 
-		 atXaxis = new CategoryAxis();
-		 atYaxis = new NumberAxis(0.0, 100.0, 10.0);
+		atXaxis = new CategoryAxis();
+		atYaxis = new NumberAxis(0.0, 100.0, 10.0);
 
 		atYaxis.setLabel("Percentage");
 		atXaxis.setLabel("Subjects");
@@ -843,23 +851,24 @@ public class TchrUI implements Runnable {
 		prtmp = new HashMap<>();
 		Button upload = new Button("Upload");
 
-		
 		Circle bin = new Circle(20);
+		bin.setEffect(new DropShadow());
 		bin.setFill(Color.AQUA);
 		prList = new ListView<>();
 		prList.setPrefWidth(600);
 		prList.setTooltip(new Tooltip("Drag and Drop Files Over Here"));
-		
-		upload.setOnAction(event->{
+
+		upload.setOnAction(event -> {
 			FileChooser fc = new FileChooser();
 			fc.setTitle("Upload a Project - Typh™");
-			FileChooser.ExtensionFilter filter= new FileChooser.ExtensionFilter("Compressed files only","*.zip","*.rar","*.tar","*.7z","*.xz","*.gz");
+			FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Compressed files only", "*.zip",
+					"*.rar", "*.tar", "*.7z", "*.xz", "*.gz");
 			fc.getExtensionFilters().add(filter);
 			File uploadFile = fc.showOpenDialog(scene.getWindow());
 			prtmp.put(uploadFile.getName(), uploadFile.getAbsolutePath());
 			prList.getItems().add(uploadFile.getName());
 		});
-		
+
 		prList.setCellFactory((arg0) -> {
 
 			return (new Project(scene));
@@ -871,10 +880,10 @@ public class TchrUI implements Runnable {
 			tip.hide();
 			Point2D p = bin.localToScene(0.0, 0.0);
 			tip.setText("Drag projects to delete");
-			tip.show(bin, p.getX(), p.getY()+bin.getRadius());
+			tip.show(bin, p.getX(), p.getY() + bin.getRadius());
 		});
-		
-		bin.setOnMouseExited(value->{
+
+		bin.setOnMouseExited(value -> {
 			tip.hide();
 		});
 
@@ -889,7 +898,8 @@ public class TchrUI implements Runnable {
 			if (value.getDragboard().hasString()) {
 				int index = prList.getItems().indexOf(db.getString());
 				prList.getItems().remove(index);
-				Notification.message(stage, AlertType.INFORMATION, "Project - Typh™","Project "+db.getString()+" deleted !!!");
+				Notification.message(stage, AlertType.INFORMATION, "Project - Typh™",
+						"Project " + db.getString() + " deleted !!!");
 				success = true;
 			}
 
@@ -912,7 +922,7 @@ public class TchrUI implements Runnable {
 			if (db.hasFiles()) {
 				success = true;
 				for (File file : db.getFiles()) {
-					prtmp.put(file.getName(),file.getAbsolutePath());
+					prtmp.put(file.getName(), file.getAbsolutePath());
 					prList.getItems().add(file.getName());
 				}
 			}
@@ -923,9 +933,9 @@ public class TchrUI implements Runnable {
 		projects.setPadding(new Insets(30));
 		projects.setHgap(20);
 		projects.setVgap(20);
-		projects.add(upload, 2, 0);
-		projects.add(prList, 0, 1, 3, 1);
-		projects.add(bin, 3, 1);
+		projects.add(upload, 1, 0);
+		projects.add(prList, 0, 0, 1, 2);
+		projects.add(bin, 1, 1);
 
 		scroll[cat.length - (scrollCount--)].setContent(projects);
 
@@ -933,7 +943,7 @@ public class TchrUI implements Runnable {
 
 		scroll[cat.length - (scrollCount)] = new ScrollPane();
 		GridPane assignment = new GridPane();
-
+		ScrollPane spAssignment = new ScrollPane();
 		assignment.setPadding(new Insets(30));
 		assignment.setHgap(20);
 		assignment.setVgap(20);
@@ -943,8 +953,10 @@ public class TchrUI implements Runnable {
 
 		asList.setPrefWidth(600);
 		GridPane.setFillWidth(asList, true);
-
-		StringConverter<Assignment> converter = new StringConverter<Assignment>(){
+		spAssignment.setContent(asList);
+		spAssignment.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		spAssignment.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		StringConverter<Assignment> converter = new StringConverter<Assignment>() {
 
 			@Override
 			public Assignment fromString(String arg0) {
@@ -952,14 +964,11 @@ public class TchrUI implements Runnable {
 			}
 
 			public String toString(Assignment assignment) {
-				return "[Semester "+assignment.getSem()+"]\t"+assignment.getTitle();
+				return "[Semester " + assignment.getSem() + "]\t" + assignment.getTitle();
 			}
 
-
-			
 		};
-		asList.setCellFactory(CheckBoxListCell.forListView(Assignment::completedProperty,converter));
-
+		asList.setCellFactory(CheckBoxListCell.forListView(Assignment::completedProperty, converter));
 		addAssignment.setOnAction(arg0 -> {
 			Dialog<Assignment> dialog = new Dialog<>();
 			TextField asTitle = new TextField();
@@ -967,9 +976,11 @@ public class TchrUI implements Runnable {
 			ButtonType add = new ButtonType("Add", ButtonData.OK_DONE);
 			HBox pane = new HBox();
 			pane.setPadding(new Insets(30));
-
-			asYear.getItems().addAll("Semester 1","Semester 2","Semester 3","Semester 4","Semester 5","Semester 6","Semester 7","Semester 8");
-			pane.getChildren().addAll(asYear,asTitle);
+			pane.setSpacing(20);
+			asYear.getItems().addAll("Semester 1", "Semester 2", "Semester 3", "Semester 4", "Semester 5", "Semester 6",
+					"Semester 7", "Semester 8");
+			asYear.getSelectionModel().selectFirst();
+			pane.getChildren().addAll(asYear, asTitle);
 			dialog.setTitle("Assignments - Typh™");
 			dialog.setHeaderText("Enter assignment title");
 			asTitle.setPromptText("Enter title");
@@ -985,7 +996,7 @@ public class TchrUI implements Runnable {
 
 			dialog.setResultConverter(value -> {
 				if (value.getButtonData().equals(ButtonData.OK_DONE) && !asTitle.getText().isEmpty()) {
-					return new Assignment(asYear.getSelectionModel().getSelectedIndex()+1,asTitle.getText(),false);
+					return new Assignment(asYear.getSelectionModel().getSelectedIndex() + 1, asTitle.getText(), false);
 				} else if (value.getButtonData().equals(ButtonData.OK_DONE) && asTitle.getText().isEmpty()) {
 
 				}
@@ -1004,12 +1015,12 @@ public class TchrUI implements Runnable {
 			asList.getSelectionModel().select(asList.getItems().size() - 1);
 			int index = asList.getSelectionModel().getSelectedIndex();
 			asList.getItems().remove(index);
-					
+
 		});
 
 		assignment.add(addAssignment, 2, 0);
 		assignment.add(removeAssignment, 3, 0);
-		assignment.add(asList, 0, 1, 4, 1);
+		assignment.add(spAssignment, 0, 1, 4, 1);
 
 		scroll[cat.length - (scrollCount)].setContent(assignment);
 		scroll[cat.length - (scrollCount--)].setHbarPolicy(ScrollBarPolicy.NEVER);
@@ -1021,9 +1032,7 @@ public class TchrUI implements Runnable {
 		for (int i = 0; i < cat.length; i++) {
 			tp[i] = new TitledPane(cat[i], scroll[i]);
 		}
-
-		Menu tmp = mb.getMenus().get(0);
-		tmp.getItems().add(0, logout);
+		mb.getItems().add(0, logout);
 		accord.getPanes().addAll(tp);
 		accord.setExpandedPane(tp[0]);
 
@@ -1033,26 +1042,24 @@ public class TchrUI implements Runnable {
 		center.setVgap(20);
 		center.setPadding(new Insets(30));
 		tgpane.setPadding(new Insets(30));
-		tgpane.getColumnConstraints().addAll(cc0, cc1, cc2);
-
-		right.setPadding(new Insets(30));
-		topL.getChildren().add(prof);
-		left.getChildren().addAll(pname, dprt, pdprt, cls, pcls, tstuds, nstuds);
-
+		tgpane.getColumnConstraints().addAll(cc0, cc1);
+		
 		top.getChildren().addAll(srch, text);
 		top.setAlignment(Pos.CENTER);
 		top.setSpacing(20);
+		topL.getChildren().add(prof);
+		
+		left.getChildren().addAll(pname, dprt, pdprt, cls, pcls, tstuds, nstuds);
+		left.setCenterShape(true);
+
 
 		center.add(aboveAcc, 0, 0);
 		center.add(accord, 0, 1, 3, 1);
-
-		right.getChildren().addAll(reports, reps);
 
 		tgpane.add(topL, 0, 0, 1, 2);
 		tgpane.add(left, 0, 2, 1, 1);
 		tgpane.add(top, 1, 0);
 		tgpane.add(center, 1, 1, 1, 2);
-		tgpane.add(right, 2, 0, 1, 2);
 
 		tgpane.setMaxSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
 				Toolkit.getDefaultToolkit().getScreenSize().getHeight());
@@ -1061,57 +1068,83 @@ public class TchrUI implements Runnable {
 		sctgpane.setContent(tgpane);
 
 		pane.setCenter(sctgpane);
-		edAllFields(false);
-		loadData();
-
+		
+		disableAll(true);
+		slist.getSelectionModel().selectFirst();
+		yrlst.getSelectionModel().selectFirst();
 	}
 
-
-
 	private void loadReport(String n) {
-	
-		String data = Engine.db.getCollection("Students").find(eq("sid",tsid.getText())).first().toJson();
+
+		reps.getItems().clear();
+		String data = Engine.db.getCollection("Students").find(eq("sid", tsid.getText())).first().toJson();
 		JSONArray rep = new JSONObject(data).getJSONArray("reports");
 		Iterator<?> it = rep.iterator();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			JSONObject j = (JSONObject) it.next();
 			boolean b = j.getBoolean("seen");
 			int sem = j.getInt("sem");
 			String r = j.getString("report");
-			if(sMatchesY(sem,n))
-			reps.getItems().add(new Report(b,sem,r));
-		}		
+			if (sMatchesY(sem, n) == 1)
+				reps.getItems().add(new Report(b, sem, r));
+		}
 	}
 
 	private void uploadData(String sid) {
-		Bson filter = new Document("sid",sid);
-		Bson newValue = new Document("name",tsname.getText()).append("rno",tsrno.getText()).append("batch",tsbatch.getText()).append("class",tsclass.getText()).append("email",tsmail.getText()).append("address",tsaddr.getText())
-		.append("studentPhone",tsphone.getText()).append("parentPhone",tpphone.getText()).append("department",tsdprt.getSelectionModel().getSelectedItem());
-		Bson query = new Document("$set",newValue);
+		Bson filter = new Document("sid", sid);
+		Bson newValue = new Document("name", tsname.getText()).append("rno", tsrno.getValue())
+				.append("batch", tsbatch.getValue()).append("class", tsclass.getValue())
+				.append("email", tsmail.getText()).append("address", tsaddr.getText())
+				.append("studentPhone", tsphone.getText()).append("parentPhone", tpphone.getText())
+				.append("department", tsdprt.getSelectionModel().getSelectedItem());
+//		{
+//	        "name" : "tesubject",
+//	        "thScored" : 47,
+//	        "thTotal" : 50,
+//	        "orScored" : 12,
+//	        "orTotal" : 25,
+//	        "prScored" : 23,
+//	        "prTotal" : 25,
+//	        "back" : false,
+//	        "attended" : 17,
+//	        "attendedTotal" : 25,
+//	        "twScored" : 11,
+//	        "twTotal" : 25,
+//	        "sem" : 5
+//	},
+		Document s1 = new Document("name",).append("thScored",).append("thTotal",).append("orScored",).append("orTotal",).append("prScored",).append("prTotal",).append("back",).append("attended",).append("attendedTotal",).append("twScored",).append("twTotal",).append("sem",);
+		Document te = new Document("te",);
+		Bson query = new Document("$set", newValue);
 		Engine.db.getCollection("Students").updateOne(filter, query);
-		
-		GridFSBucket gfsBucket = GridFSBuckets.create(Engine.db,"projects");
-		prtmp.forEach((key,val)->{
+
+		GridFSBucket gfsBucket = GridFSBuckets.create(Engine.db, "projects");
+		prtmp.forEach((key, val) -> {
 			InputStream in = null;
 			try {
 				in = new FileInputStream(new File(val));
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
-			gfsBucket.uploadFromStream(tsid.getText()+":"+key, in);
+			gfsBucket.uploadFromStream(getSId() + ":" + key, in);
 		});
+	}
+
+	private String getSId() {
+		dprtList.forEach((k,v)->{
+			tmp = k+String.format("%02d",sMatchesY(0,tsyear.getValue()))+tsclass.getValue()+tsrno.getValue();
+		});
+		return tmp;
 	}
 
 	@SuppressWarnings("unchecked")
 	private void loadStudentProfile(String student) {
-		
-		String json = Engine.db.getCollection("Students").find(eq("name",student.substring(1))).first().toJson();
-		JSONObject jsonData = new JSONObject (json);
 
-		
-	//			Personal 
-		
-		byte[] deci = Base64.getDecoder().decode(jsonData.getString("img"));	
+		String json = Engine.db.getCollection("Students").find(eq("name", student.substring(1))).first().toJson();
+		JSONObject jsonData = new JSONObject(json);
+
+		// Personal
+
+		byte[] deci = Base64.getDecoder().decode(jsonData.getString("img"));
 		BufferedImage bf = null;
 		try {
 			bf = ImageIO.read(new ByteArrayInputStream(deci));
@@ -1119,185 +1152,186 @@ public class TchrUI implements Runnable {
 			e.printStackTrace();
 		}
 		dpImgView.setImage(SwingFXUtils.toFXImage(bf, null));
-		tsname.setText(jsonData.getString("name"));           
-		tsid.setText(jsonData.getString("sid"));            
-		tsrno.setText(jsonData.getString("rno"));           
-		tsdprt.getSelectionModel().select(jsonData.getString("department"));     
-		tsclass.setText(jsonData.getString("batch" ));        
-		tsbatch.setText(jsonData.getString("class"));          
-		tsmail.setText(jsonData.getString("email"));          
-		tsaddr.setText(jsonData.getString("address"));          
-		tsphone.setText(jsonData.getString( "studentPhone"));  
-		tpphone.setText(jsonData.getString("parentPhone"));  
-		
-	//			Academic
-		
+		tsname.setText(jsonData.getString("name"));
+		tsid.setText(jsonData.getString("sid"));
+		tsrno.getSelectionModel().select(jsonData.getString("rno"));
+		tsdprt.getSelectionModel().select(jsonData.getString("department"));
+		tsclass.getSelectionModel().select(jsonData.getString("batch"));
+		tsbatch.getSelectionModel().select(jsonData.getString("class"));
+		tsmail.setText(jsonData.getString("email"));
+		tsaddr.setText(jsonData.getString("address"));
+		tsphone.setText(jsonData.getString("studentPhone"));
+		tpphone.setText(jsonData.getString("parentPhone"));
+		tsyear.getSelectionModel().select(jsonData.getString("year"));
+		// Academic
+
 		studProgress.getData().clear();
-		
+
 		XYChart.Series<String, Number> data = new XYChart.Series<>();
-		for(int j=0;j<8;j++){
+		for (int j = 1; j <= 8; j++) {
 			float p = getSemesterPercent(j);
-			if(p!=0)
-				data.getData().addAll(new XYChart.Data<>("Semester "+(j+1),p));
+			if (p != 0)
+				data.getData().addAll(new XYChart.Data<>("Semester " + j, p));
 		}
-		studProgress.getData().add(data);		
-		
-		//		Projects
-		
-		Engine.gfs = GridFSBuckets.create(Engine.db,"projects");
-		
+		studProgress.getData().add(data);
+
+		// Projects
+
+		Engine.gfs = GridFSBuckets.create(Engine.db, "projects");
+
 	}
 
+	private void loadAttendanceChart(String year, int semester) {
+		if (year.equals("SE"))
+			semester = semester + 2;
+		else if (year.equals("TE"))
+			semester = semester + 4;
+		else if (year.equals("BE"))
+			semester = semester + 6;
 
-	private void loadAttendanceChart(String year,int semester) {
-		if(year.equals("SE"))
-			semester=semester+2;
-		else if(year.equals("TE"))
-			semester=semester+4;
-		else if(year.equals("BE"))
-			semester=semester+6;
-		
-		String data = Engine.db.getCollection("Students").find(eq("sid",tsid.getText())).first().toJson();
+		String data = Engine.db.getCollection("Students").find(eq("sid", tsid.getText())).first().toJson();
 		JSONArray jsona = new JSONObject(data).getJSONArray(year.toLowerCase());
 		Iterator<?> it = jsona.iterator();
-		
+
 		atBarChart.getData().clear();
-		XYChart.Series<String,Number> cdata = new XYChart.Series<String, Number>();
-		while(it.hasNext()){
+		XYChart.Series<String, Number> cdata = new XYChart.Series<String, Number>();
+		while (it.hasNext()) {
 			JSONObject json = (JSONObject) it.next();
-			if(json.getInt("sem")==semester){
+			if (json.getInt("sem") == semester) {
 				String name = json.getString("name");
 				float at = json.getInt("attended");
 				float att = json.getInt("attendedTotal");
-				at=(at/att)*100;
+				at = (at / att) * 100;
 				atXaxis.getCategories().add(name);
-				cdata.getData().add(new XYChart.Data<>(name,at));
+				cdata.getData().add(new XYChart.Data<>(name, at));
 			}
 		}
 		atBarChart.getData().add(cdata);
 	}
 
 	private float getSemesterPercent(int i) {
-		String data = Engine.db.getCollection("Students").find(eq("sid",tsid.getText())).first().toJson();
+		String data = Engine.db.getCollection("Students").find(eq("sid", tsid.getText())).first().toJson();
 		JSONObject json = new JSONObject(data);
-		float percent = 0,scored,total;
-		int theory = 0,oral = 0,practical = 0,termwork = 0,theoryt = 0,oralt = 0,practicalt = 0,termworkt = 0;
-		if(i==1 || i==2){
+		float percent = 0, scored, total;
+		int theory = 0, oral = 0, practical = 0, termwork = 0, theoryt = 0, oralt = 0, practicalt = 0, termworkt = 0;
+		if (i == 1 || i == 2) {
 			JSONArray jsona = json.getJSONArray("fe");
 			Iterator<?> it = jsona.iterator();
-			while(it.hasNext()){
+			while (it.hasNext()) {
 				JSONObject tmp = (JSONObject) it.next();
-				if(tmp.getInt("sem")==i){
-					theory=theory+tmp.getInt("thScored");
-					theoryt=theoryt+tmp.getInt("thTotal");
-					oral=oral+tmp.getInt("orScored");
-					oralt=oralt+tmp.getInt("orTotal");
-					practical = practical+tmp.getInt("prScored");
-					practicalt = practicalt+tmp.getInt("prTotal");
-					termwork = termwork +tmp.getInt("twScored");
-					termworkt = termworkt +tmp.getInt("twTotal");
-					
+				if (tmp.getInt("sem") == i) {
+					theory = theory + tmp.getInt("thScored");
+					theoryt = theoryt + tmp.getInt("thTotal");
+					oral = oral + tmp.getInt("orScored");
+					oralt = oralt + tmp.getInt("orTotal");
+					practical = practical + tmp.getInt("prScored");
+					practicalt = practicalt + tmp.getInt("prTotal");
+					termwork = termwork + tmp.getInt("twScored");
+					termworkt = termworkt + tmp.getInt("twTotal");
+
 				}
 			}
-		}else if(i==3 || i==4){
+		} else if (i == 3 || i == 4) {
 			JSONArray jsona = json.getJSONArray("se");
 			Iterator<?> it = jsona.iterator();
-			while(it.hasNext()){
+			while (it.hasNext()) {
 				JSONObject tmp = (JSONObject) it.next();
-				if(tmp.getInt("sem")==i){
-					theory=theory+tmp.getInt("thScored");
-					theoryt=theoryt+tmp.getInt("thTotal");
-					oral=oral+tmp.getInt("orScored");
-					oralt=oralt+tmp.getInt("orTotal");
-					practical = practical+tmp.getInt("prScored");
-					practicalt = practicalt+tmp.getInt("prTotal");
-					termwork = termwork +tmp.getInt("twScored");
-					termworkt = termworkt +tmp.getInt("twTotal");
-					
+				if (tmp.getInt("sem") == i) {
+					theory = theory + tmp.getInt("thScored");
+					theoryt = theoryt + tmp.getInt("thTotal");
+					oral = oral + tmp.getInt("orScored");
+					oralt = oralt + tmp.getInt("orTotal");
+					practical = practical + tmp.getInt("prScored");
+					practicalt = practicalt + tmp.getInt("prTotal");
+					termwork = termwork + tmp.getInt("twScored");
+					termworkt = termworkt + tmp.getInt("twTotal");
+
 				}
 			}
-		}else if(i==5 || i==6){
+		} else if (i == 5 || i == 6) {
 			JSONArray jsona = json.getJSONArray("te");
 			Iterator<?> it = jsona.iterator();
-			while(it.hasNext()){
+			while (it.hasNext()) {
 				JSONObject tmp = (JSONObject) it.next();
-				if(tmp.getInt("sem")==i){
-					theory=theory+tmp.getInt("thScored");
-					theoryt=theoryt+tmp.getInt("thTotal");
-					oral=oral+tmp.getInt("orScored");
-					oralt=oralt+tmp.getInt("orTotal");
-					practical = practical+tmp.getInt("prScored");
-					practicalt = practicalt+tmp.getInt("prTotal");
-					termwork = termwork +tmp.getInt("twScored");
-					termworkt = termworkt +tmp.getInt("twTotal");
-					
+				if (tmp.getInt("sem") == i) {
+					theory = theory + tmp.getInt("thScored");
+					theoryt = theoryt + tmp.getInt("thTotal");
+					oral = oral + tmp.getInt("orScored");
+					oralt = oralt + tmp.getInt("orTotal");
+					practical = practical + tmp.getInt("prScored");
+					practicalt = practicalt + tmp.getInt("prTotal");
+					termwork = termwork + tmp.getInt("twScored");
+					termworkt = termworkt + tmp.getInt("twTotal");
+
 				}
 			}
-		}else if(i==7 || i==8){
+		} else if (i == 7 || i == 8) {
 			JSONArray jsona = json.getJSONArray("be");
 			Iterator<?> it = jsona.iterator();
-			while(it.hasNext()){
+			while (it.hasNext()) {
 				JSONObject tmp = (JSONObject) it.next();
-				if(tmp.getInt("sem")==i){
-					theory=theory+tmp.getInt("thScored");
-					theoryt=theoryt+tmp.getInt("thTotal");
-					oral=oral+tmp.getInt("orScored");
-					oralt=oralt+tmp.getInt("orTotal");
-					practical = practical+tmp.getInt("prScored");
-					practicalt = practicalt+tmp.getInt("prTotal");
-					termwork = termwork +tmp.getInt("twScored");
-					termworkt = termworkt +tmp.getInt("twTotal");
-					
+				if (tmp.getInt("sem") == i) {
+					theory = theory + tmp.getInt("thScored");
+					theoryt = theoryt + tmp.getInt("thTotal");
+					oral = oral + tmp.getInt("orScored");
+					oralt = oralt + tmp.getInt("orTotal");
+					practical = practical + tmp.getInt("prScored");
+					practicalt = practicalt + tmp.getInt("prTotal");
+					termwork = termwork + tmp.getInt("twScored");
+					termworkt = termworkt + tmp.getInt("twTotal");
+
 				}
 			}
 		}
-		scored = theory+oral+practical+termwork;
-		total = theoryt+oralt+practicalt+termworkt;
+		scored = theory + oral + practical + termwork;
+		total = theoryt + oralt + practicalt + termworkt;
 
-		percent=(scored/total)*100;
+		percent = (scored / total) * 100;
 
 		return percent;
 	}
-	
 
 	private void loadAssignmentData(String n) {
 		JSONArray jsona = null;
 		try {
-			String data = Engine.db.getCollection("Students").find(eq("sid",tsid.getText())).first().toJson();
-			jsona = new JSONObject(data).getJSONArray(n.toLowerCase()+"Assignments");
-		} catch (JSONException e) {}
-		asList.getItems().clear();
-		Iterator<?> it = jsona.iterator();
-		while(it.hasNext()){
-			JSONObject json = (JSONObject) it.next();
-			String title = json.getString("title");
-			int semester = json.getInt("sem");
-			boolean flag = json.getBoolean("completed");
-			asList.getItems().add(new Assignment(semester,title,flag));
+			String data = Engine.db.getCollection("Students").find(eq("sid", tsid.getText())).first().toJson();
+			jsona = new JSONObject(data).getJSONArray(n.toLowerCase() + "Assignments");
+
+			asList.getItems().clear();
+			Iterator<?> it = jsona.iterator();
+			while (it.hasNext()) {
+				JSONObject json = (JSONObject) it.next();
+				String title = json.getString("title");
+				int semester = json.getInt("sem");
+				boolean flag = json.getBoolean("completed");
+				asList.getItems().add(new Assignment(semester, title, flag));
+			}
+		} catch (JSONException | NullPointerException e) {
 		}
 	}
 
 	private void loadAttendanceData(String n) {
 		JSONArray jsona = null;
 		try {
-			String data = Engine.db.getCollection("Students").find(eq("sid",tsid.getText())).first().toJson();
+			String data = Engine.db.getCollection("Students").find(eq("sid", tsid.getText())).first().toJson();
 			jsona = new JSONObject(data).getJSONArray(n.toLowerCase());
-		} catch (JSONException e) {}
+		} catch (JSONException e) {
+		}
 		Iterator<?> it = jsona.iterator();
 		atsem1.getItems().clear();
-		atsem2.getItems().clear();		
-		while(it.hasNext()){
+		atsem2.getItems().clear();
+		while (it.hasNext()) {
 			JSONObject json = (JSONObject) it.next();
 			String name = json.getString("name");
 			int at = json.getInt("attended");
 			int att = json.getInt("attendedTotal");
 			int sem = json.getInt("sem");
-			if(sem % 2 ==1){
-				atsem1.setTooltip(new Tooltip("Semester: "+Integer.toString(sem)));
-				atsem1.getItems().add(new Attendance(name,at,att));
-			}else{
-				atsem2.setTooltip(new Tooltip("Semester: "+Integer.toString(sem)));
-				atsem2.getItems().add(new Attendance(name,at,att));
+			if (sem % 2 == 1) {
+				atsem1.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
+				atsem1.getItems().add(new Attendance(name, at, att));
+			} else {
+				atsem2.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
+				atsem2.getItems().add(new Attendance(name, at, att));
 
 			}
 		}
@@ -1306,13 +1340,14 @@ public class TchrUI implements Runnable {
 	private void loadAcademicData(String n) {
 		JSONArray jsona = null;
 		try {
-			String data = Engine.db.getCollection("Students").find(eq("sid",tsid.getText())).first().toJson();
+			String data = Engine.db.getCollection("Students").find(eq("sid", tsid.getText())).first().toJson();
 			jsona = new JSONObject(data).getJSONArray(n.toLowerCase());
-		} catch (JSONException e) {}
+		} catch (JSONException e) {
+		}
 		Iterator<?> it = jsona.iterator();
 		tsem1.getItems().clear();
 		tsem2.getItems().clear();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			JSONObject json = (JSONObject) it.next();
 			String name = json.getString("name");
 			int ths = json.getInt("thScored");
@@ -1326,121 +1361,131 @@ public class TchrUI implements Runnable {
 			boolean back = json.getBoolean("back");
 			int sem = json.getInt("sem");
 
-			if(sem % 2 == 1){
-				tsem1.setTooltip(new Tooltip("Semester: "+Integer.toString(sem)));
-				tsem1.getItems().add(new Marks(name,ths,tht, ors,ort ,prs ,prt,tws , twt, back));
-			}else{
-				tsem2.setTooltip(new Tooltip("Semester: "+Integer.toString(sem)));
-				tsem2.getItems().add(new Marks(name,ths,tht, ors,ort ,prs ,prt,tws , twt, back));
+			if (sem % 2 == 1) {
+				tsem1.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
+				tsem1.getItems().add(new Marks(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
+			} else {
+				tsem2.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
+				tsem2.getItems().add(new Marks(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
 			}
 		}
-		
+
 	}
 
-	private void loadProjectData(String n) {
-		Engine.gfs.find().forEach(new Block<GridFSFile>(){
-			public void apply(final GridFSFile file){
+	private void loadProjectData(String y) {
+		prList.getItems().clear();
+		Engine.gfs.find().forEach(new Block<GridFSFile>() {
+			public void apply(final GridFSFile file) {
 				String name = file.getFilename().split(":")[1];
-				int gfsid = Integer.parseInt(file.getFilename().split(":")[0]);
-				prList.getItems().add(file.getFilename());
+				String gfsid = file.getFilename().split(":")[0];
+				int year = Integer.parseInt(gfsid.substring(2, 4));
+				if (year == sMatchesY(0, y))
+					prList.getItems().add(name);
 			}
 		});
 	}
-	
+
 	private void loadData() {
 		pname.setText(BasicUI.user);
-		pdprt.setText((String) Engine.db.getCollection("Users").find(eq("user",BasicUI.user)).first().get("department"));
-		
+		pdprt.setText(
+				(String) Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first().get("department"));
+
 		MongoCursor<Document> cursor = Engine.db.getCollection("Students").find().iterator();
-		while(cursor.hasNext()){
+		while (cursor.hasNext()) {
 			JSONObject json = new JSONObject(cursor.next().toJson());
-			studList.add("["+json.getString("class")+"]"+": "+json.getString("name"));
+			studList.add("[" + json.getString("class") + "]" + ": " + json.getString("name"));
 		}
-		 
+
 		cursor = Engine.db.getCollection("Departments").find().iterator();
-		while(cursor.hasNext()){
+		while (cursor.hasNext()) {
 			JSONObject json = new JSONObject(cursor.next().toJson());
-			dprtList.add(json.getString("department"));
+			dprtList.put(json.getString("dprtID"), json.getString("department"));
 		}
-		Engine.db.getCollection("Users").updateOne(eq("user",BasicUI.user), new Document("$set",new Document("lastLogin",LocalDateTime.now().getDayOfMonth()+"-"+LocalDateTime.now().getMonthValue()+"-"+LocalDateTime.now().getYear()+"\t"+LocalDateTime.now().getHour()+":"+LocalDateTime.now().getMinute()+":"+LocalDateTime.now().getSecond())));
 
-		//		load a default data
-		
-		slist.getSelectionModel().selectFirst();
-		yrlst.getSelectionModel().selectFirst();
+		classIncharge = (String) Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first()
+				.get("classIncharge");
+		Engine.db.getCollection("Users").updateOne(eq("user", BasicUI.user), new Document("$set", new Document(
+				"lastLogin",
+				LocalDateTime.now().getDayOfMonth() + "-" + LocalDateTime.now().getMonthValue() + "-"
+						+ LocalDateTime.now().getYear() + "\t" + String.format("%02d", LocalDateTime.now().getHour())
+						+ "h:" + String.format("%02d", LocalDateTime.now().getMinute()) + "m:"
+						+ String.format("%02d", LocalDateTime.now().getSecond()) + "s")));
+
+		tsdprt.getItems().addAll(dprtList.values());
+		for (int i = 1; i <= 200; i++) {
+			tsrno.getItems().add(String.format("%03d", i));
+		}
+		for (int i = 1; i < 100; i++) {
+			tsclass.getItems().add(String.format("%02d", i));
+			tsbatch.getItems().add(String.format("%02d", i));
+		}
+		for (int i = 0; i < 26; i++) {
+			tsbatch.getItems().add(Character.toString((char) ('A' + i)));
+			tsbatch.getItems().add(Character.toString((char) ('a' + i)));
+		}
+
 	}
-	
-	public boolean sMatchesY(int sem,String year){
+
+	public int sMatchesY(int sem, String year) {
 		int y = 0;
-		if(year.equals("FE"))
-			y=1;
-		else if(year.equals("SE"))
-			y=2;
-		else if(year.equals("TE"))
-			y=3;		
-		else if(year.equals("BE"))
-			y=4;	
-		if(((sem == 1 || sem == 2) && (y == 1)) ||
-				   ((sem == 3 || sem == 4) && (y == 2)) ||
-				   ((sem == 5 || sem == 6) && (y == 3)) ||
-				   ((sem == 7 || sem == 8) && (y == 4)) )
-		return true;
+		if (year.equals("FE"))
+			y = 1;
+		else if (year.equals("SE"))
+			y = 2;
+		else if (year.equals("TE"))
+			y = 3;
+		else if (year.equals("BE"))
+			y = 4;
+		if (sem == 0)
+			return y;
+		if (((sem == 1 || sem == 2) && (y == 1)) || ((sem == 3 || sem == 4) && (y == 2))
+				|| ((sem == 5 || sem == 6) && (y == 3)) || ((sem == 7 || sem == 8) && (y == 4)))
+			return 1;
 		else
-			return false;
-		
+			return 0;
+
 	}
 
-	private void edAllFields(boolean flag) {
-
-		update.setDisable(!flag);
-		report.setDisable(!flag);
+	private void disableAll(boolean flag) {
+		update.setDisable(flag);
+		report.setDisable(flag);
 		// Personal Pane
 
-		dpImgView.setDisable(!flag);
-		tsname.setEditable(flag);
-		tsname.setFocusTraversable(flag);
-		tsid.setEditable(flag);
-		tsid.setFocusTraversable(flag);
-		tsrno.setEditable(flag);
-		tsrno.setFocusTraversable(flag);
-		tsdprt.setDisable(!flag);
-		tsdprt.setFocusTraversable(flag);
-		tsclass.setEditable(flag);
-		tsclass.setFocusTraversable(flag);
-		tsbatch.setEditable(flag);
-		tsbatch.setFocusTraversable(flag);
-		tsmail.setEditable(flag);
-		tsmail.setFocusTraversable(flag);
-		tsaddr.setEditable(flag);
-		tsaddr.setFocusTraversable(flag);
-		tsphone.setEditable(flag);
-		tsphone.setFocusTraversable(flag);
-		tpphone.setEditable(flag);
-		tpphone.setFocusTraversable(flag);
+		dpImgView.setDisable(flag);
+		tsname.setEditable(!flag);
+		tsid.setEditable(!flag);
+		tsrno.setDisable(flag);
+		tsdprt.setDisable(flag);
+		tsclass.setDisable(flag);
+		tsbatch.setDisable(flag);
+		tsmail.setEditable(!flag);
+		tsaddr.setEditable(!flag);
+		tsphone.setEditable(!flag);
+		tpphone.setEditable(!flag);
 
 		// Academic Pane
 
-		tsem1.setEditable(flag);
-		tsem2.setEditable(flag);
-		addEntry.setDisable(!flag);
-
+		tsem1.setEditable(!flag);
+		tsem2.setEditable(!flag);
+		addEntry.setDisable(flag);
+		rbsem1.setDisable(flag);
+		rbsem2.setDisable(flag);
 		// Attendance Pane
 
-		atsem1.setEditable(flag);
-		atsem2.setEditable(flag);
-		addat.setDisable(!flag);
+		atsem1.setEditable(!flag);
+		atsem2.setEditable(!flag);
+		addat.setDisable(flag);
 
 		// Projects Pane
-		prList.setEditable(flag);
+		prList.setEditable(!flag);
 
 		// Assignments Pane
 
-		asList.setEditable(flag);
-		addAssignment.setDisable(!flag);
-		removeAssignment.setDisable(!flag);
+		asList.setEditable(!flag);
+		addAssignment.setDisable(flag);
+		removeAssignment.setDisable(flag);
 
 	}
-
 
 	@Override
 	public void run() {

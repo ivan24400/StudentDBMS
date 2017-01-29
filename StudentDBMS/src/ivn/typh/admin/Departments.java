@@ -1,15 +1,16 @@
 package ivn.typh.admin;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
+
 import com.mongodb.client.MongoCollection;
 import ivn.typh.main.Engine;
 import ivn.typh.main.Notification;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert.AlertType;
@@ -17,6 +18,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
@@ -29,29 +31,37 @@ import javafx.stage.Stage;
 
 public class Departments extends Dialog<String> implements EventHandler<ActionEvent> {
 
-	static ObservableList<String> dprtList;
+	public static ObservableMap<String,String> dprtList;
 	static int x, y;
 
+	private boolean isFirst;
+	private int saveAdded;
 	private Stage parent;
 	private GridPane home;
 	private Button addDprt;
 	private TextField dname;
 	private TextField dhead;
-	private TextField tlabs;
-	private TextField tcrooms;
-	private TextField tsrooms;
+	private ChoiceBox<String> tlabs;
+	private ChoiceBox<String> tcrooms;
+	private ChoiceBox<String> tsrooms;
+	private ChoiceBox<String> did;
+	private String slab;
+	private String scroom;
+	private String ssroom,d;
 	private CheckBox library;
 	private ToggleButton edit;
 
-	public Departments(Stage arg, GridPane pane, String name, String head, String labs, String crooms) {
+	public Departments(Stage arg, GridPane pane, String name, String head, String labs, String crooms, String srooms,
+			String id,boolean lib) {
 		this(arg);
 		home = pane;
-		
-
+		library.setSelected(lib);
 		dname.setText(name);
 		dhead.setText(head);
-		tlabs.setText(labs);
-		tcrooms.setText(crooms);
+		slab=labs;
+		scroom=crooms;
+		ssroom=srooms;
+		d=id;
 	}
 
 	public Departments(Stage arg) {
@@ -59,9 +69,10 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 		initOwner(parent);
 		dname = new TextField();
 		dhead = new TextField();
-		tlabs = new TextField();
-		tcrooms = new TextField();
-		tsrooms = new TextField();
+		tlabs = new ChoiceBox<>();
+		tcrooms = new ChoiceBox<>();
+		tsrooms = new ChoiceBox<>();
+		did = new ChoiceBox<>();
 		library = new CheckBox();
 	}
 
@@ -71,38 +82,26 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 		addDprt = b;
 	}
 
-	public void createUI(boolean first) {
-
+	public void createUI() {
 		setTitle("Department - Typh™");
-		setHeaderText("Fill in required fields to add a Department");
 
 		GridPane dPane = new GridPane();
+		Label lib = new Label("Library");
+		HBox lbox = new HBox(lib);
 
+		lib.setGraphic(library);
+		lib.setContentDisplay(ContentDisplay.RIGHT);
+		lbox.setAlignment(Pos.BASELINE_CENTER);
+		
 		dPane.setPadding(new Insets(40));
 		dPane.setHgap(20);
 		dPane.setVgap(20);
 
 		dname.setPromptText("Department Name");
 		dhead.setPromptText("Department Head");
-		tlabs.setPromptText("Number of Labs");
-		tcrooms.setPromptText("Number of Class Rooms");
-		tsrooms.setPromptText("Number of Staff Rooms");
 
-		Label ldname = new Label("Department Name");
-		Label ldhead = new Label("Head of the Deapartment");
-		Label ltlabs = new Label("Total number of labs");
-		Label ltcrooms = new Label("Total number of class rooms");
-		Label ltsrooms = new Label("Total number of staff rooms");
-		Label lib = new Label("Library");
-		lib.setGraphic(library);
-		lib.setContentDisplay(ContentDisplay.RIGHT);
-		
-		HBox lbox =new HBox(lib);
-		lbox.setAlignment(Pos.BASELINE_CENTER);
 		Tooltip tool = new Tooltip();
 
-		if (!first)
-			addEdit(dPane);
 
 		dhead.textProperty().addListener((obs, o, n) -> {
 			if (!n.matches("\\D*")) {
@@ -117,171 +116,160 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 			}
 		});
 
-		tlabs.textProperty().addListener((obs, o, n) -> {
 
-			if (!n.matches("\\d*")) {
-				tlabs.setText(tlabs.getText().replaceAll("[^\\d]", ""));
-				tool.setText("Enter numbers only !");
-				Bounds p = tlabs.getBoundsInLocal();
-				Bounds screen = tlabs.localToScreen(p);
-				tool.show(tlabs, screen.getMinX() + tlabs.getCaretPosition(),
-						screen.getMinY() + tlabs.getScene().getY());
-			} else if (tlabs.getText().length() > 5) {
-				tool.setText("Cannot add more rooms !");
-				Bounds screen = tlabs.localToScreen(tlabs.getBoundsInLocal());
-				tool.show(tlabs, screen.getMinX() + tlabs.getCaretPosition(),
-						screen.getMinY() + tlabs.getScene().getY());
-				Platform.runLater(() -> {
-					tlabs.setText(tlabs.getText().substring(0, 5));
-					tlabs.positionCaret(tlabs.getText().length());
-				});
-			}
-		});
-
-		tcrooms.textProperty().addListener((obs, o, n) -> {
-			if (!n.matches("\\d*")) {
-				tool.setText("Enter numbers only !");
-				Bounds screen = tcrooms.localToScreen(tcrooms.getBoundsInLocal());
-				tool.show(tcrooms, screen.getMinX() + tcrooms.getCaretPosition(),
-						screen.getMinY() + tcrooms.getScene().getY());
-				tcrooms.setText(tcrooms.getText().replaceAll("[^\\d]", ""));
-			} else if (tcrooms.getText().length() > 5) {
-				tool.setText("Cannot add more rooms !");
-				Bounds screen = tcrooms.localToScreen(tcrooms.getBoundsInLocal());
-				tool.show(tcrooms, screen.getMinX() + tcrooms.getCaretPosition(),
-						screen.getMinY() + tcrooms.getScene().getY());
-				Platform.runLater(() -> {
-					tcrooms.setText(tcrooms.getText().substring(0, 5));
-					tcrooms.positionCaret(tcrooms.getText().length());
-				});
-			}
-		});
-		
-		tsrooms.textProperty().addListener((obs, o, n) -> {
-			if (!n.matches("\\d*")) {
-				tool.setText("Enter numbers only !");
-				Bounds screen = tsrooms.localToScreen(tsrooms.getBoundsInLocal());
-				tool.show(tsrooms, screen.getMinX() + tsrooms.getCaretPosition(),
-						screen.getMinY() + tsrooms.getScene().getY());
-				tsrooms.setText(tsrooms.getText().replaceAll("[^\\d]", ""));
-			} else if (tsrooms.getText().length() > 5) {
-				tool.setText("Cannot add more rooms !");
-				Bounds screen = tsrooms.localToScreen(tsrooms.getBoundsInLocal());
-				tool.show(tsrooms, screen.getMinX() + tsrooms.getCaretPosition(),
-						screen.getMinY() + tsrooms.getScene().getY());
-				Platform.runLater(() -> {
-					tsrooms.setText(tsrooms.getText().substring(0, 5));
-					tsrooms.positionCaret(tsrooms.getText().length());
-				});
-			}
-		});
-		
 
 		dhead.setOnMouseMoved(value -> tool.hide());
 		tlabs.setOnMouseMoved(value -> tool.hide());
 		tcrooms.setOnMouseMoved(value -> tool.hide());
 		tsrooms.setOnMouseMoved(value -> tool.hide());
+		addEdit(dPane);
 
-		dPane.add(ldname, 0, 0);
+		dPane.add(new Label("Department Name"), 0, 0);
 		dPane.add(dname, 1, 0);
-		dPane.add(ldhead, 0, 1);
-		dPane.add(dhead, 1, 1);
-		dPane.add(ltlabs, 0, 2);
-		dPane.add(tlabs, 1, 2);
-		dPane.add(ltcrooms, 0, 3);
-		dPane.add(tcrooms, 1, 3);
-		dPane.add(ltsrooms, 0, 4);
-		dPane.add(tsrooms, 1, 4);
-		dPane.add(lbox, 0, 5,2,1);
-		
+		dPane.add(new Label("Department ID"), 0, 1);
+		dPane.add(did, 1,1);
+		dPane.add(new Label("Head of the Deapartment"), 0, 2);
+		dPane.add(dhead, 1, 2);
+		dPane.add(new Label("Total number of labs"), 0, 3);
+		dPane.add(tlabs, 1, 3);
+		dPane.add(new Label("Total number of class rooms"), 0, 4);
+		dPane.add(tcrooms, 1, 4);
+		dPane.add( new Label("Total number of staff rooms"), 0, 5);
+		dPane.add(tsrooms, 1, 5);
+		dPane.add(lbox, 0, 6, 2, 1);
+
 		lib.setAlignment(Pos.BASELINE_CENTER);
-		ButtonType save = new ButtonType("Save", ButtonData.OK_DONE);
 		getDialogPane().setContent(dPane);
-		getDialogPane().getButtonTypes().addAll(save, ButtonType.CANCEL);
+
+
+		if (!isFirst) {
+			if(saveAdded==0){
+				ButtonType save = new ButtonType("Save", ButtonData.OK_DONE);
+				getDialogPane().getButtonTypes().clear();
+				getDialogPane().getButtonTypes().addAll(save, ButtonType.CANCEL);
+				initRoom();
+			}
+			saveAdded++;
+			setHeaderText(dname.getText().substring(0, 1).toUpperCase() + dname.getText().substring(1) + " Department");
+			tlabs.getSelectionModel().select(slab);
+			tcrooms.getSelectionModel().select(scroom);
+			tsrooms.getSelectionModel().select(ssroom);
+			did.getSelectionModel().select(d);
+			disableAll(true);
+		} else if (isFirst) {
+			setHeaderText("Fill in required fields to add a Department");
+			initRoom();
+			tlabs.getSelectionModel().selectFirst();
+			tsrooms.getSelectionModel().selectFirst();
+			tcrooms.getSelectionModel().selectFirst();
+			did.getSelectionModel().selectFirst();
+			getDialogPane().getButtonTypes().clear();
+			getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+			
+		}
+
 		setResultConverter((arg) -> {
-			if (arg.equals(save) && (!areFieldsEmpty())) {
-				dprtList.add(dname.getText());
-				addButton();
-			} else if (arg.equals(save) && (areFieldsEmpty()))
+			if ((arg.equals(ButtonType.OK) || arg.getButtonData().equals(ButtonData.OK_DONE)) && (!areFieldsEmpty())) {
+				dprtList.put(did.getValue(), dname.getText());
+				addDepartment();
+			} else if ((arg.equals(ButtonType.OK) || arg.getButtonData().equals(ButtonData.OK_DONE)) && (areFieldsEmpty()))
 				Notification.message(parent, AlertType.ERROR, "Error - Department - Typh™",
 						"All Fields are Mandatory.");
-			hide();
 			return null;
 
 		});
-		showAndWait();
+		
+		show();
+	}
+
+	private void initRoom() {
+		for (int i = 1; i <= 99; i++) {
+			tlabs.getItems().add(String.format("%02d",i));
+			tsrooms.getItems().add(String.format("%02d",i));
+			tcrooms.getItems().add(String.format("%02d",i));
+			did.getItems().add(String.format("%02d",i));
+		}
 	}
 
 	private boolean areFieldsEmpty() {
-		if (dname.getText().trim().isEmpty() || dhead.getText().trim().isEmpty() || tlabs.getText().trim().isEmpty()
-				|| tcrooms.getText().trim().isEmpty())
+		if (dname.getText().trim().isEmpty() || dhead.getText().trim().isEmpty())
 			return true;
 		else
 			return false;
 	}
 
-	public void addButton() {
+	public void addDepartment() {
 
 		Button tmp = new Button(dname.getText());
-		Document document = new Document("department", dname.getText()).append("hod", dhead.getText())
-				.append("classrooms", tcrooms.getText()).append("laboratory", tlabs.getText());
+		Document document = new Document("hod", dhead.getText())
+				.append("classrooms", tcrooms.getSelectionModel().getSelectedItem())
+				.append("laboratory", tlabs.getSelectionModel().getSelectedItem())
+				.append("library", library.isSelected());
 		MongoCollection<Document> collection = Engine.db.getCollection("Departments");
-		collection.insertOne(document);
-		tmp.setOnAction(new Departments(parent));
-		if (x < 6) {
-			x++;
-			home.add(tmp, x - 1, y);
-			GridPane.setColumnIndex(addDprt, x);
-			GridPane.setRowIndex(addDprt, y);
+		if (isFirst) {
+			document.append("department", dname.getText());
+			collection.insertOne(document);
+			tmp.setOnAction(new Departments(parent));
+			if (x < 6) {
+				x++;
+				home.add(tmp, x - 1, y);
+				GridPane.setColumnIndex(addDprt, x);
+				GridPane.setRowIndex(addDprt, y);
 
+			} else {
+				x = 1;
+				y++;
+				home.add(tmp, x - 1, y);
+				GridPane.setColumnIndex(addDprt, x);
+				GridPane.setRowIndex(addDprt, y);
+
+			}
 		} else {
-			x = 1;
-			y++;
-			home.add(tmp, x - 1, y);
-			GridPane.setColumnIndex(addDprt, x);
-			GridPane.setRowIndex(addDprt, y);
-
+			Bson filter = new Document("department", dname.getText());
+			Bson query = new Document("$set", document);
+			collection.updateOne(filter, query);
 		}
+		
 
 	}
 
-	public void edAllFields(boolean flag) {
-		dname.setEditable(flag);
-		dname.setFocusTraversable(flag);
+	public void disableAll(boolean flag) {
+		dname.setEditable(!flag);
 
-		dhead.setEditable(flag);
-		dhead.setFocusTraversable(flag);
+		dhead.setEditable(!flag);
 
-		tlabs.setEditable(flag);
-		tlabs.setFocusTraversable(flag);
+		tlabs.setDisable(flag);
 
-		tcrooms.setEditable(flag);
-		tcrooms.setFocusTraversable(flag);
+		tcrooms.setDisable(flag);
 
+		tsrooms.setDisable(flag);
+ 
+	 did.setDisable(flag);      
+       library.setDisable(flag);;           
 	}
 
 	public void addEdit(GridPane pane) {
-		HBox seBox = new HBox();
-		seBox.setPadding(new Insets(20));
-		seBox.setSpacing(20);
-		seBox.setAlignment(Pos.CENTER);
-
-		edAllFields(true);
-		edit = new ToggleButton("Edit");
-		edit.selectedProperty().addListener((arg, o, n) -> {
-			edAllFields(arg.getValue());
-		});
-		seBox.getChildren().add(edit);
-		pane.add(seBox, 0, 6, 2, 1);
-
+		if (!isFirst) {
+			HBox seBox = new HBox();
+			seBox.setPadding(new Insets(50));
+			seBox.setAlignment(Pos.CENTER);
+			edit = new ToggleButton("Edit");
+			edit.selectedProperty().addListener((arg, o, n) -> {
+				disableAll(!n);
+			});
+			seBox.getChildren().add(edit);
+			pane.add(seBox, 0,7, 2, 1);
+		}
 	}
 
 	@Override
 	public void handle(ActionEvent arg) {
-		createUI(false);
+		isFirst=false;
+		createUI();
 	}
 
 	public void begin() {
-		createUI(true);
+		isFirst=true;
+		createUI();
 	}
 }

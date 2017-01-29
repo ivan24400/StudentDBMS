@@ -5,6 +5,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
 import org.bson.Document;
+import org.json.JSONObject;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
@@ -23,9 +24,9 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToolBar;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -37,10 +38,10 @@ public class LogIn implements Runnable {
 	private GridPane gpane;
 	private BorderPane pane;
 	private Scene scene;
-	private MenuBar mb;
+	private ToolBar mb;
 	
-	public LogIn(Stage arg,BorderPane p,Scene s,MenuBar m) {
-		mb = m;
+	public LogIn(Stage arg,BorderPane p,Scene s,ToolBar menu) {
+		mb = menu;
 		scene=s;
 		stage = arg;
 		pane=p;
@@ -114,7 +115,6 @@ public class LogIn implements Runnable {
 
 		result.ifPresent(arg ->{
 			try {
-				Engine.mongo = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
 				BasicUI.user=arg.getUser();
 				BasicUI.password=arg.getPassword();
 				loadBar.setTask(loginTask);
@@ -151,9 +151,11 @@ public class LogIn implements Runnable {
 	private int verifyCredential() {
 		String pass, dbPass = null, dbUser = null;
 		pass = encryptedPassword(BasicUI.password);
+		Engine.mongo = new MongoClient(new MongoClientURI("mongodb://localhost:24000"));
 		Engine.db = Engine.mongo.getDatabase("Students");
 		if (Engine.db == null)
 			return 3;
+
 		MongoCollection<Document> coll = Engine.db.getCollection("Users");
 		Document doc = coll.find(eq("user", BasicUI.user)).first();
 		dbPass = doc.getString("passwd");
@@ -168,8 +170,14 @@ public class LogIn implements Runnable {
 			Thread at = new Thread(new AdminUI(stage,pane,mb));
 			at.start();
 		} else {
+			String freeze = Engine.db.getCollection("Users").find(eq("user",BasicUI.user)).first().toJson();
+			JSONObject json = new JSONObject(freeze);
+			
+			if(!json.getBoolean("status")){
 			Thread tt = new Thread(new TchrUI(stage,pane,scene,mb));
 			tt.start();
+			}else
+				Notification.message(stage, AlertType.ERROR, "User Accounts - Typh™", "Your account has been marked inactive !\nContact system administrators");
 		}
 
 	}

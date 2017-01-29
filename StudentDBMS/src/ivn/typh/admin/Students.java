@@ -6,12 +6,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
-
 import javax.imageio.ImageIO;
 
 import org.bson.Document;
-
-import com.mongodb.client.MongoCollection;
+import org.bson.conversions.Bson;
 
 import ivn.typh.main.Engine;
 import javafx.application.Platform;
@@ -21,13 +19,16 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
@@ -47,16 +48,19 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 
 	static ObservableList<String> studentList;
 	static int x, y;
-
+	private String sc,sb,dp,yr,srno;
+	private int saveAdded;
+	private boolean isFirst;
 	private String dpImg;
 	private GridPane home;
 	private Button addS;
 	private Stage parent;
 	private TextField tsname;
 	private TextField tsid;
-	private TextField tsrno;
-	private TextField tsclass;
-	private TextField tsbatch;
+	private ChoiceBox<String> tsrno;
+	private ChoiceBox<String> tsclass;
+	private ChoiceBox<String>  tsbatch;
+	private ChoiceBox<String> tsyear;
 	private TextField tsmail;
 	private TextField tsaddr;
 	private TextField tsphone;
@@ -64,89 +68,85 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 	private ImageView dpImgView;
 	private ToggleButton edit;
 	private Button upload;
-	private ComboBox<String> tsdprt;
+	private ChoiceBox<String> tsdprt;
 
-	
-	public Students(Stage s,GridPane gp,String n,String i,String srno,String clas,String batch,String mail,String addr,String sp,String pp,String dprt,String img){
+	public Students(Stage s, GridPane gp, String n, String i, String rolln, String clas, String batch, String mail,
+			String addr, String sp, String pp, String dprt, String img,String y) {
 		this(s);
 		home = gp;
-		tsname = new TextField();
-		tsid = new TextField();
-		tsrno = new TextField();
-		tsdprt = new ComboBox<>();
-		tsclass = new TextField();
-		tsbatch = new TextField();
-		tsmail = new TextField();
-		tsaddr = new TextField();
-		tsphone = new TextField();
-		tpphone = new TextField();
-		tsdprt = new ComboBox<>();
-		upload = new Button("Upload");
+
 		tsname.setText(n);
 		tsid.setText(i);
-		tsrno.setText(srno);
-		tsbatch.setText(batch);
 		tsmail.setText(mail);
 		tsaddr.setText(addr);
 		tsphone.setText(sp);
 		tpphone.setText(pp);
 		tsdprt.setValue(dprt);
-		dpImg=img;
-		
+		dpImg = img;
+		srno =rolln;
+		sc=clas;
+		sb=batch;
+		dp=dprt;
+		yr=y;
 	}
 
-	public Students(Stage arg){
+	public Students(Stage arg) {
 		parent = arg;
 		initOwner(parent);
-
-	}
-	
-	public Students(Stage arg, GridPane gp, Button b) {
-		this(arg);
-		home = gp;
-		addS = b;
 		tsname = new TextField();
 		tsid = new TextField();
-		tsrno = new TextField();
-		tsdprt = new ComboBox<>();
-		tsclass = new TextField();
-		tsbatch = new TextField();
+		tsrno = new ChoiceBox<>();
+		tsdprt = new ChoiceBox<>();
+		tsclass = new ChoiceBox<>();
+		tsbatch = new ChoiceBox<>();
 		tsmail = new TextField();
 		tsaddr = new TextField();
 		tsphone = new TextField();
 		tpphone = new TextField();
-		tsdprt = new ComboBox<>();
+		tsyear = new ChoiceBox<>();
 		upload = new Button("Upload");
-
-		dpImg=new String();
+		dpImg = new String();
 	}
 
-	public void createUI(boolean first) {
+	public Students(Stage arg, GridPane gp, Button b) {
+		this(arg);
+		home = gp;
+		addS = b;
+	}
+
+	public void createUI() {
 		setTitle("Student - Typh™");
-		setHeaderText("Fill in required fields to add a Student");
 
 		GridPane dPane = new GridPane();
-		
+
 		dPane.setAlignment(Pos.CENTER);
 		dPane.setPadding(new Insets(30));
-		dPane.setHgap(15);
+		dPane.setHgap(20);
 		dPane.setVgap(20);
-	
-		Label sname = new Label("Name");
-		Label sid = new Label("ID");
-		Label srno = new Label("Roll No");
-		Label sdprt = new Label("Department");
-		Label sclass = new Label("Class");
-		Label sbatch = new Label("Batch");
-		Label smail = new Label("Email");
-		Label saddr = new Label("Address");
-		Label sphone = new Label("Phone");
-		Label pphone = new Label("Parent Phone");
-		System.out.println(new File(".").getAbsolutePath());
-		if(dpImg.isEmpty())
+
+		tsyear.getItems().setAll(FXCollections.observableArrayList("FE","SE","TE","BE"));
+		tsname.setPromptText("Name");
+		tsid.setPromptText("ID");
+		tsmail.setPromptText("Email");
+		tsaddr.setPromptText("Address");
+		tsphone.setPromptText("Phone");
+		tpphone.setPromptText("Parent Phone");
+
+		ContextMenu cm = new ContextMenu();
+		MenuItem autog = new MenuItem("Auto Generate");
+		autog.setOnAction(arg->{
+			Departments.dprtList.forEach((key,val)->{
+					if(val==tsdprt.getValue()){
+						tsid.setText(key+tsyear.getValue()+tsclass.getValue()+tsrno.getValue());
+						
+					}
+			});
+		});
+		tsid.setContextMenu(cm);
+		if (dpImg.isEmpty())
 			dpImgView = new ImageView(new Image(getClass().getResourceAsStream("raw/pic.jpg")));
-		else{
-		try {
+		else {
+			try {
 				byte[] imgd = Base64.getDecoder().decode(dpImg);
 				BufferedImage bf = ImageIO.read(new ByteArrayInputStream(imgd));
 				dpImgView = new ImageView(SwingFXUtils.toFXImage(bf, null));
@@ -154,20 +154,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 				e.printStackTrace();
 			}
 		}
-
-		tsname.setPromptText("Name");
-		tsid.setPromptText("ID");
-		tsrno.setPromptText("Roll No");
-		tsdprt.setPromptText("Department");
-		tsclass.setPromptText("Class");
-		tsbatch.setPromptText("Batch");
-		tsmail.setPromptText("Email");
-		tsaddr.setPromptText("Address");
-		tsphone.setPromptText("Phone");
-		tpphone.setPromptText("Parent Phone");
-
 		dpImgView.setEffect(new DropShadow());
-
 
 		Tooltip tool = new Tooltip();
 		tsname.textProperty().addListener((obs, o, n) -> {
@@ -209,13 +196,12 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 			}
 		});
 
-		tsname.setOnMouseMoved(arg->tool.hide());
-		tsphone.setOnMouseMoved(arg->tool.hide());
-		tpphone.setOnMouseMoved(arg->tool.hide());
-		
-		tsdprt.getItems().addAll(Departments.dprtList);
+		tsname.setOnMouseMoved(arg -> tool.hide());
+		tsphone.setOnMouseMoved(arg -> tool.hide());
+		tpphone.setOnMouseMoved(arg -> tool.hide());
+
+		tsdprt.getItems().addAll(Departments.dprtList.values());
 		tsname.requestFocus();
-		
 
 		dpImgView.setFitHeight(128);
 		dpImgView.setFitWidth(128);
@@ -249,102 +235,141 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 			}
 
 		});
-		
-		upload.setOnAction(event->{
+
+		upload.setOnAction(event -> {
 			FileChooser file = new FileChooser();
 			file.setTitle("Upload a picture - Typh™");
 			file.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PNG", "*.png"),
-												new FileChooser.ExtensionFilter("JPG", "*.jpg"));
+					new FileChooser.ExtensionFilter("JPG", "*.jpg"));
 			File tmp = file.showOpenDialog(parent);
 			dpImgView.setImage(new Image(tmp.getAbsolutePath()));
 		});
-		dPane.add(sname, 0, 0);
+		
+		Label year = new Label("Current Year");
+		GridPane.setHalignment(year, HPos.RIGHT);
+		dPane.add(new Label("Name"), 0, 0);
 		dPane.add(tsname, 1, 0);
-		dPane.add(sid, 0, 1);
+		dPane.add(new Label("ID"), 0, 1);
 		dPane.add(tsid, 1, 1);
-		dPane.add(srno, 0, 2);
+		dPane.add(new Label("Roll No"), 0, 2);
 		dPane.add(tsrno, 1, 2);
-		dPane.add(sdprt, 0, 3);
+		dPane.add(new Label("Department"), 0, 3);
+
 		dPane.add(tsdprt, 1, 3);
-		dPane.add(sclass, 2, 1);
+	
+		dPane.add(new Label("Class"), 2, 1);
 		dPane.add(tsclass, 3, 1);
-		dPane.add(sbatch, 2, 0);
+		dPane.add(new Label("Batch"), 2, 0);
 		dPane.add(tsbatch, 3, 0);
-		dPane.add(smail, 0, 4);
+		dPane.add(new Label("Email"), 0, 4);
 		dPane.add(tsmail, 1, 4);
-		dPane.add(saddr, 2, 2);
+		dPane.add(new Label("Address"), 2, 2);
 		dPane.add(tsaddr, 3, 2);
-		dPane.add(sphone, 2, 3);
+		dPane.add(new Label("Phone"), 2, 3);
 		dPane.add(tsphone, 3, 3);
-		dPane.add(pphone, 2, 4);
+		dPane.add(new Label("Parent Phone"), 2, 4);
 		dPane.add(tpphone, 3, 4);
-		dPane.add(upload, 4, 0);
-		upload.setPrefWidth(dpImgView.getFitWidth());
-		GridPane.setFillWidth(upload, true);
 		dPane.add(dpImgView, 4, 1, 1, 5);
 		
+		dPane.add(year, 1,5);
+		dPane.add(tsyear, 2, 5);
+		addEdit(dPane);
+
+		upload.setPrefWidth(dpImgView.getFitWidth());
+		GridPane.setFillWidth(upload, true);
+		dPane.add(upload, 4, 0);
+
 		getDialogPane().setContent(dPane);
-//		if(!first){
-//			addEdit(dPane);
-//			ButtonType save = new ButtonType("Save", ButtonData.OK_DONE);
-//			getDialogPane().getButtonTypes().addAll(save, ButtonType.CANCEL);
-//
-//		setResultConverter(arg -> {
-//			if (arg.equals(save)){
-//				addButton();
-//			}
-//			return null;
-//		});
-//		show();
-//		}else{
-		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-			setResultConverter(arg -> {
+		if (!isFirst) {
+			if (saveAdded == 0) {
+				ButtonType save = new ButtonType("Save", ButtonData.OK_DONE);
+				getDialogPane().getButtonTypes().clear();
+				getDialogPane().getButtonTypes().addAll(save, ButtonType.CANCEL);
+				initRooms();
+			}
+			saveAdded++;
+			setHeaderText("Student:\t" + tsname.getText());
+			tsclass.getSelectionModel().select(sc);
+			tsbatch.getSelectionModel().select(sb);
+			tsdprt.getSelectionModel().select(dp);
+			tsyear.getSelectionModel().select(yr);
+			tsrno.getSelectionModel().select(srno);
+			disableAll(true);
 
-				if (arg.equals(ButtonType.OK))
-					addButton();
-				
-				hide();
-				return null;
-			});
+		} else {
+			getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+			setHeaderText("Fill in required fields to add a Student");
+			initRooms();
+			tsclass.getSelectionModel().selectFirst();
+			tsbatch.getSelectionModel().selectFirst();
+			tsdprt.getSelectionModel().selectFirst();
+			tsyear.getSelectionModel().selectFirst();
+			tsrno.getSelectionModel().selectFirst();
+		}
 
-			show();
-//		}
+		setResultConverter(arg -> {
+			if (arg.equals(ButtonType.OK) || arg.getButtonData().equals(ButtonData.OK_DONE)) {
+				addButton();
+			}
+			return null;
+		});
+		show();
+		tsrno.setPrefWidth(tsname.getWidth());
+		tsdprt.setPrefWidth(tsname.getWidth());
+		tsclass.setPrefWidth(tsname.getWidth());
+		tsbatch.setPrefWidth(tsname.getWidth());
 	}
 
+	private void initRooms() {
+		for(int i=1;i<100;i++){
+			tsclass.getItems().add(String.format("%02d", i));
+			tsbatch.getItems().add(String.format("%02d", i));
+		}
+		for(int i=0;i<26;i++){
+			tsbatch.getItems().add(Character.toString((char)('A'+i)));
+			tsbatch.getItems().add(Character.toString((char)('a'+i)));
+		}
+		for(int i=1;i<200;i++){
+			tsrno.getItems().add(String.format("%03d", i));
+		}
+	}
 
 	private void addEdit(GridPane pane) {
-		HBox seBox = new HBox();
-		seBox.setPadding(new Insets(20));
-		seBox.setSpacing(20);
-		seBox.setAlignment(Pos.CENTER);
 
+		if (!isFirst) {
+			HBox seBox = new HBox();
+			seBox.setPadding(new Insets(50));
+			seBox.setAlignment(Pos.CENTER);
 
-		 edit = new ToggleButton("Edit");
-		 edit.selectedProperty().addListener((obs, o, n) -> {
-				disableAll(obs.getValue());
+			edit = new ToggleButton("Edit");
+			edit.selectedProperty().addListener((obs, o, n) -> {
+				disableAll(!n);
 			});
-		 seBox.getChildren().add(edit);
-			pane.add(seBox, 0, 5, 5, 1);
-
+			seBox.getChildren().add(edit);
+			pane.add(seBox, 0, 6, 5, 1);
+		}
 	}
 
 	private void disableAll(Boolean flag) {
 
-		tsname.setDisable(flag);
-		tsid.setDisable(flag);
+		tsname.setEditable(!flag);
+		tsid.setEditable(!flag);
 		tsrno.setDisable(flag);
 		tsdprt.setDisable(flag);
 		tsclass.setDisable(flag);
 		tsbatch.setDisable(flag);
-		tsmail.setDisable(flag);
-		tsaddr.setDisable(flag);
-		tsphone.setDisable(flag);
-		tpphone.setDisable(flag);
+		tsmail.setEditable(!flag);
+		tsaddr.setEditable(!flag);
+		tsphone.setEditable(!flag);
+		tpphone.setEditable(!flag);
+		tsyear.setDisable(flag);        
+		dpImgView.setDisable(flag);        
+		upload.setDisable(flag);              
 	}
 
 	private void addButton() {
-		
-		BufferedImage bf = SwingFXUtils.fromFXImage(dpImgView.getImage(),null);
+
+		BufferedImage bf = SwingFXUtils.fromFXImage(dpImgView.getImage(), null);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		byte[] tmpb;
 		String tmpString = null;
@@ -355,41 +380,47 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		Document doc = new Document("name",tsname.getText()).append("sid",tsid.getText()).append("rno",tsrno.getText()).append("department",tsdprt.getSelectionModel().getSelectedItem()).append("batch", tsbatch.getText()).
-				append("class",tsclass.getText()).append("email",tsmail.getText()).append("address",tsaddr.getText()).append("studentPhone",tsphone.getText()).append("parentPhone",tpphone.getText()).append("img",tmpString);
-		MongoCollection<Document> coll = Engine.db.getCollection("Students");
-		coll.insertOne(doc);
-		Button tmp = new Button(getStudent());
-		tmp.setOnAction(new Students(parent));
-		if (x < 6) {
-			x++;
-			home.add(tmp, x - 1, y);
-			GridPane.setColumnIndex(addS, x);
-			GridPane.setRowIndex(addS, y);
 
+		Document doc = new Document("sid", tsid.getText()).append("rno", tsrno.getValue())
+				.append("department", tsdprt.getValue()).append("batch", tsbatch.getValue())
+				.append("class", tsclass.getValue()).append("email", tsmail.getText())
+				.append("address", tsaddr.getText()).append("studentPhone", tsphone.getText())
+				.append("parentPhone", tpphone.getText()).append("img", tmpString).append("year", tsyear.getValue());
+		if (isFirst) {
+			doc.append("name", tsname.getText());
+			Engine.db.getCollection("Students").insertOne(doc);
+			Button tmp = new Button(tsname.getText());
+			tmp.setOnAction(new Students(parent));
+			if (x < 6) {
+				x++;
+				home.add(tmp, x - 1, y);
+				GridPane.setColumnIndex(addS, x);
+				GridPane.setRowIndex(addS, y);
+
+			} else {
+				x = 1;
+				y++;
+				home.add(tmp, x - 1, y);
+				GridPane.setColumnIndex(addS, x);
+				GridPane.setRowIndex(addS, y);
+
+			}
 		} else {
-			x = 1;
-			y++;
-			home.add(tmp, x - 1, y);
-			GridPane.setColumnIndex(addS, x);
-			GridPane.setRowIndex(addS, y);
-
+			Bson filter = new Document("sid", tsid.getText());
+			Bson query = new Document("$set", doc);
+			Engine.db.getCollection("Students").updateOne(filter, query);
 		}
 	}
 
-	private String getStudent() {
-		return tsname.getText();
+	public void begin() {
+		isFirst = true;
+		createUI();
 	}
 
-	
-	public void begin() {
-		createUI(true);
-	}
 	@Override
 	public void handle(ActionEvent arg) {
-		createUI(false);
+		isFirst = false;
+		createUI();
 	}
-
 
 }

@@ -19,12 +19,12 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
@@ -45,16 +45,16 @@ public class AdminUI implements Runnable {
 	private static Button addAcc;
 	private static Button addDepartment;
 	private static Button addStudent;
-private MenuBar mb;
-	private Label rts; 
-	private Label rtu ;
-	private Label rll ;
+	private ToolBar mb;
+	private Label rts;
+	private Label rtu;
+	private Label rll;
 	private BorderPane pane;
-	
-	public AdminUI(Stage s,BorderPane p,MenuBar m) {
-		mb=m;
+
+	public AdminUI(Stage s, BorderPane p, ToolBar mb2) {
+		mb = mb2;
 		stage = s;
-		pane=p;
+		pane = p;
 		rts = new Label();
 		rtu = new Label();
 		rll = new Label();
@@ -76,7 +76,7 @@ private MenuBar mb;
 		Label ll = new Label("Last Login");
 		Label search = new Label("Search");
 		TextField srch = new TextField();
-		Label au = new Label("Active Users");
+		Label au = new Label("Online Users");
 
 		ObservableList<String> onlineUser = FXCollections.observableArrayList();
 		ListView<String> actusr = new ListView<>(onlineUser);
@@ -143,10 +143,8 @@ private MenuBar mb;
 		addAcc.setTooltip(tabtipu);
 		addStudent.setTooltip(tabtips);
 
-		
 		loadProfiles();
 
-		
 		addAcc.setOnAction((arg0) -> {
 			if (Departments.dprtList != null) {
 				UserAccounts dialog = new UserAccounts(stage, userGrid, addAcc);
@@ -211,126 +209,142 @@ private MenuBar mb;
 		gpane.setMaxWidth(1360);
 
 		sgpane.setContent(gpane);
+		sgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		sgpane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		pane.setCenter(sgpane);
 
 	}
 
 	private void loadProfiles() {
-		Document tmpdoc = Engine.db.getCollection("Users").find(eq("user","admin")).first();
+		Document tmpdoc = Engine.db.getCollection("Users").find(eq("user", "admin")).first();
 		rll.setText(tmpdoc.getString("lastLogin"));
-		
-		rtu.setText(Long.toString(Engine.db.getCollection("Users").count()-1));
-		Engine.db.getCollection("Users").updateOne(eq("user","admin"), new Document("$set",new Document("lastLogin",LocalDateTime.now().getDayOfMonth()+"-"+LocalDateTime.now().getMonthValue()+"-"+LocalDateTime.now().getYear()+"\t"+LocalDateTime.now().getHour()+":"+LocalDateTime.now().getMinute()+":"+LocalDateTime.now().getSecond())));
+
+		rtu.setText(Long.toString(Engine.db.getCollection("Users").count() - 1));
+		Engine.db.getCollection("Users").updateOne(eq("user", "admin"),
+				new Document("$set",
+						new Document("lastLogin",
+								LocalDateTime.now().getDayOfMonth() + "-" + LocalDateTime.now().getMonthValue() + "-"
+										+ LocalDateTime.now().getYear() + "\t" + LocalDateTime.now().getHour() + "h:"
+										+ LocalDateTime.now().getMinute() + "m:" + LocalDateTime.now().getSecond()+"s")));
 		MongoCursor<Document> cursor;
 		// Department
 		cursor = Engine.db.getCollection("Departments").find().iterator();
-		Departments.dprtList = FXCollections.observableArrayList();
+		Departments.dprtList = FXCollections.observableHashMap();
+		try {
+			while (cursor.hasNext()) {
 
-		while (cursor.hasNext()) {
+				JSONObject json = new JSONObject(cursor.next().toJson());
+				String name = json.getString("department");
+				String head = json.getString("hod");
+				String crooms = Integer.toString(json.getInt("classrooms"));
+				String labs = Integer.toString(json.getInt("laboratory"));
+				String srooms = Integer.toString(json.getInt("staffrooms"));
+				boolean lib = json.getBoolean("library");
+				String id = json.getString("dprtID");
+				Departments.dprtList.put(id, name);
 
-			JSONObject json = new JSONObject(cursor.next().toJson());
-			String name = json.getString("department");
-			String head = json.getString("hod");
-			String rooms = Integer.toString(json.getInt("classrooms"));
-			String labs = Integer.toString(json.getInt("laboratory"));
-
-			Departments.dprtList.add(name);
-
-			Button tmp = new Button(name);
-			tmp.setOnAction(new Departments(stage, dprtGrid, name, head, rooms, labs));
-			if (Departments.x < 6) {
-				Departments.x++;
-				dprtGrid.add(tmp, Departments.x - 1, Departments.y);
-				GridPane.setColumnIndex(addDepartment, Departments.x);
-				GridPane.setRowIndex(addDepartment, Departments.y);
-
-			} else {
-				Departments.x = 1;
-				Departments.y++;
-				dprtGrid.add(tmp, Departments.x - 1, Departments.y);
-				GridPane.setColumnIndex(addDepartment, Departments.x);
-				GridPane.setRowIndex(addDepartment, Departments.y);
-
-			}
-		}
-		// Students
-		cursor = Engine.db.getCollection("Students").find().iterator();
-		 Students.studentList  = FXCollections.observableArrayList();
-
-		while (cursor.hasNext()) {
-
-			JSONObject json = new JSONObject(cursor.next().toJson());
-		
-			String tsname= json.getString("name");   
-			String tsid= Integer.toString(json.getInt("sid"));     
-			String tsrno= Integer.toString(json.getInt("rno"));    
-			String tsclass= json.getString("class");  
-			String tsbatch= json.getString("batch");  
-			String tsmail= json.getString("email");   
-			String tsaddr= json.getString("address");   
-			String tsphone= Integer.toString(json.getInt("studentPhone"));  
-			String tpphone= Integer.toString(json.getInt("parentPhone"));  
-			String tsdprt= json.getString("department");
-			String img = json.getString("img");
-			
-			Students.studentList.add(tsdprt);
-
-			Button tmp = new Button(tsname);
-			tmp.setOnAction(new Students(stage, studGrid, tsname, tsid, tsrno, tsclass,tsbatch,tsmail,tsaddr,tsphone,tpphone,tsdprt,img));
-			if (Students.x < 6) {
-				Students.x++;
-				studGrid.add(tmp, Students.x - 1, Students.y);
-				GridPane.setColumnIndex(addStudent, Students.x);
-				GridPane.setRowIndex(addStudent, Students.y);
-
-			} else {
-				Students.x = 1;
-				Students.y++;
-				studGrid.add(tmp, Students.x - 1, Students.y);
-				GridPane.setColumnIndex(addStudent, Students.x);
-				GridPane.setRowIndex(addStudent, Students.y);
-
-			}
-		}
-		
-		rts.setText(Integer.toString(Students.studentList.size()));
-		// UserAccounts
-		cursor = Engine.db.getCollection("Users").find().iterator();
-		UserAccounts.userList = FXCollections.observableArrayList();
-
-		while (cursor.hasNext()) {
-
-			JSONObject json = new JSONObject(cursor.next().toJson());
-			String username = json.getString("user");      
-			if (!username.equals("admin")) {
-				String password = null, email = null, dprt = null,full= null;
-				            
-				try{
-				password = json.getString("passwd");
-				email = json.getString("email");
-				dprt = json.getString("department");
-				full = json.getString("fullname");
-				}catch(JSONException e){}
-				UserAccounts.userList.add(json.getString("user"));
-				Button tmp = new Button(username);
-				tmp.setOnAction(new UserAccounts(stage, userGrid, username,full, password, email,dprt));
-				if (UserAccounts.x < 6) {
-					UserAccounts.x++;
-					userGrid.add(tmp, UserAccounts.x - 1, UserAccounts.y);
-					GridPane.setColumnIndex(addAcc, UserAccounts.x);
-					GridPane.setRowIndex(addAcc, UserAccounts.y);
+				Button tmp = new Button(name);
+				tmp.setOnAction(new Departments(stage, dprtGrid, name, head, crooms, labs, srooms, id,lib));
+				if (Departments.x < 6) {
+					Departments.x++;
+					dprtGrid.add(tmp, Departments.x - 1, Departments.y);
+					GridPane.setColumnIndex(addDepartment, Departments.x);
+					GridPane.setRowIndex(addDepartment, Departments.y);
 
 				} else {
-					UserAccounts.x = 1;
-					UserAccounts.y++;
-					userGrid.add(tmp, UserAccounts.x - 1, UserAccounts.y);
-					GridPane.setColumnIndex(addAcc, UserAccounts.x);
-					GridPane.setRowIndex(addAcc, UserAccounts.y);
+					Departments.x = 1;
+					Departments.y++;
+					dprtGrid.add(tmp, Departments.x - 1, Departments.y);
+					GridPane.setColumnIndex(addDepartment, Departments.x);
+					GridPane.setRowIndex(addDepartment, Departments.y);
 
-				} 
+				}
 			}
-		}
+			// Students
+			cursor = Engine.db.getCollection("Students").find().iterator();
+			Students.studentList = FXCollections.observableArrayList();
 
+			while (cursor.hasNext()) {
+
+				JSONObject json = new JSONObject(cursor.next().toJson());
+
+				String tsname = json.getString("name");
+				String tsid = json.getString("sid");
+				String tsrno = json.getString("rno");
+				String tsclass = json.getString("class");
+				String tsbatch = json.getString("batch");
+				String tsmail = json.getString("email");
+				String tsaddr = json.getString("address");
+				String tsphone = Integer.toString(json.getInt("studentPhone"));
+				String tpphone = Integer.toString(json.getInt("parentPhone"));
+				String tsdprt = json.getString("department");
+				String img = json.getString("img");
+				String y = json.getString("year");
+				Students.studentList.add(tsdprt);
+
+				Button tmp = new Button(tsname);
+				tmp.setOnAction(new Students(stage, studGrid, tsname, tsid, tsrno, tsclass, tsbatch, tsmail, tsaddr,
+						tsphone, tpphone, tsdprt, img,y));
+				if (Students.x < 6) {
+					Students.x++;
+					studGrid.add(tmp, Students.x - 1, Students.y);
+					GridPane.setColumnIndex(addStudent, Students.x);
+					GridPane.setRowIndex(addStudent, Students.y);
+
+				} else {
+					Students.x = 1;
+					Students.y++;
+					studGrid.add(tmp, Students.x - 1, Students.y);
+					GridPane.setColumnIndex(addStudent, Students.x);
+					GridPane.setRowIndex(addStudent, Students.y);
+
+				}
+			}
+
+			rts.setText(Integer.toString(Students.studentList.size()));
+			// UserAccounts
+			cursor = Engine.db.getCollection("Users").find().iterator();
+			UserAccounts.userList = FXCollections.observableArrayList();
+
+			while (cursor.hasNext()) {
+
+				JSONObject json = new JSONObject(cursor.next().toJson());
+				String username = json.getString("user");
+				if (!username.equals("admin")) {
+					String password = null, email = null, dprt = null, full = null, cli = null, yin = null,ll=null;
+					boolean stat = false;
+					try {
+						password = json.getString("passwd");
+						email = json.getString("email");
+						dprt = json.getString("department");
+						full = json.getString("fullname");
+						cli = json.getString("classIncharge");
+						yin = json.getString("yearIncharge");
+						ll= json.getString("lastLogin");
+						stat = json.getBoolean("status");
+					} catch (JSONException e) {
+					}
+					UserAccounts.userList.add(json.getString("user"));
+					Button tmp = new Button(username);
+					tmp.setOnAction(new UserAccounts(stage, userGrid, username, full, password, email, dprt, cli, yin,ll,stat));
+					if (UserAccounts.x < 6) {
+						UserAccounts.x++;
+						userGrid.add(tmp, UserAccounts.x - 1, UserAccounts.y);
+						GridPane.setColumnIndex(addAcc, UserAccounts.x);
+						GridPane.setRowIndex(addAcc, UserAccounts.y);
+
+					} else {
+						UserAccounts.x = 1;
+						UserAccounts.y++;
+						userGrid.add(tmp, UserAccounts.x - 1, UserAccounts.y);
+						GridPane.setColumnIndex(addAcc, UserAccounts.x);
+						GridPane.setRowIndex(addAcc, UserAccounts.y);
+
+					}
+				}
+			}
+		} catch (JSONException e) {
+		}
 	}
 
 	@Override

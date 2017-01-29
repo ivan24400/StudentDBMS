@@ -4,6 +4,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.json.JSONObject;
 
 import com.mongodb.client.MongoCursor;
@@ -19,7 +20,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -35,11 +36,13 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 	static ObservableList<String> userList;
 	static int x, y;
 
-	
+	private boolean isFirst;
+	private boolean freez;
+	private int saveAdded;
 	private Stage parent;
 	private GridPane home;
 	private Button addAcc;
-
+	private String lastLogin;
 	private TextField username;
 	private TextField fullname;
 	private ObservableList<String> classList;
@@ -47,30 +50,37 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 	private TextField email;
 	private ToggleButton freeze;
 	private ToggleButton edit;
-	private ComboBox<String> dprtMember;
-	private ComboBox<String> classIncharge;
-	private ComboBox<String> year;
+	private ChoiceBox<String> dprtMember;
+	private ChoiceBox<String> classIncharge;
+	private ChoiceBox<String> yearIncharge;
+	private String dm;
+	private String ci;
+	private String yi;
 
-	public UserAccounts(Stage s,GridPane pane,String u,String f,String p,String e,String dprt){
+	public UserAccounts(Stage s, GridPane pane, String u, String f, String p, String e, String dprt, String clin,
+			String yin,String ll,boolean fr) {
 		this(s);
-		home=pane;	
-		
+		home = pane;
+		lastLogin=ll;
 		fullname.setText(f);
 		username.setText(u);
 		password.setText(p);
 		email.setText(e);
-		dprtMember.setValue(dprt);
+		dm = dprt;
+		ci = clin;
+		yi = yin;
+		freez=fr;
 	}
-	
+
 	public UserAccounts(Stage arg) {
 		parent = arg;
 		initOwner(parent);
 		username = new TextField();
 		password = new PasswordField();
 		email = new TextField();
-		dprtMember = new ComboBox<>();
-		classIncharge = new ComboBox<>();
-		year = new ComboBox<>();
+		dprtMember = new ChoiceBox<>();
+		classIncharge = new ChoiceBox<>();
+		yearIncharge = new ChoiceBox<>();
 		fullname = new TextField();
 		classList = FXCollections.observableArrayList();
 
@@ -80,152 +90,193 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		this(arg);
 		home = gp;
 		addAcc = addB;
-		freeze = new ToggleButton("Freeze");
 
 	}
 
-	public void createUI(boolean first) {
+	public void createUI() {
 
 		setTitle("User Account - Typh™");
-		setHeaderText("Fill in required fields to add a user account");
 
 		GridPane dPane = new GridPane();
 
-		dPane.setPadding(new Insets(20));
+		dPane.setPadding(new Insets(40));
 		dPane.setHgap(20);
 		dPane.setVgap(20);
 
-		dprtMember.getItems().addAll(Departments.dprtList);
-		year.getItems().addAll("FE","SE","TE","BE");
-		MongoCursor<Document> cursor = Engine.db.getCollection("Students").find().iterator();
-		
-		while(cursor.hasNext()){
-			JSONObject json = new JSONObject(cursor.next().toJson());
-			boolean exists=false;
-
-			for(String s:classList){
-				if(s.equals(json.getString("class")))
-					exists=true;
-			}
-			if(!exists)
-				classList.add(json.getString("class"));
-		}
-		
-		Label lusername = new Label("User Name");
-		Label lfullname = new Label("Full Name");
-		Label lpassword = new Label("Password");
-		Label lemail = new Label("E-mail");
-		Label ldprt = new Label("Department");
-
+		addEdit(dPane);
 		fullname.setPromptText("Enter full name");
 		username.setPromptText("Enter username");
 		password.setPromptText("Enter password");
 		email.setPromptText("Enter email");
 
-		dPane.add(lusername, 0, 0);
+		dPane.add(new Label("User Name"), 0, 0);
 		dPane.add(username, 1, 0);
-		dPane.add(lfullname, 0, 1);
+		dPane.add(new Label("Full Name"), 0, 1);
 		dPane.add(fullname, 1, 1);
-		dPane.add(lpassword, 0, 2);
+		dPane.add(new Label("Password"), 0, 2);
 		dPane.add(password, 1, 2);
-		dPane.add(lemail, 0, 3);
+		dPane.add(new Label("E-mail"), 0, 3);
 		dPane.add(email, 1, 3);
-		dPane.add(ldprt, 0, 4);
+		dPane.add(new Label("Department"), 0, 4);
 		dPane.add(dprtMember, 1, 4);
-		
-//		if (!first) {
-//			addEdit(dPane);
-//			ButtonType save = new ButtonType("Save", ButtonData.OK_DONE);
-//			getDialogPane().setContent(dPane);
-//			getDialogPane().getButtonTypes().addAll(save, ButtonType.CANCEL);
-//			setResultConverter((button) -> {
-//				if (button.equals(save) && (!isAvailable()) && (!areFieldsEmpty())) {
-//						reloadData();
-//				} else if (button.equals(save) && (isAvailable()) && (!areFieldsEmpty())) {
-//					Notification.message(parent, AlertType.ERROR, "Error - User Accounts - Typh™",
-//							"Username already taken !");
-//				} else if ((button.equals(save) && (areFieldsEmpty())))
-//					Notification.message(parent, AlertType.ERROR, "Error - User Accounts - Typh™",
-//							"All Fields are mandatory !");
-//				return null;
-//			});
-//			show();
-//		}else{
-			getDialogPane().setContent(dPane);
-			getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+		dPane.add(new Label("Course Year"), 0, 5);
+		dPane.add(yearIncharge, 1, 5);
+		dPane.add(new Label("Class Incharge"), 0, 6);
+		dPane.add(classIncharge, 1, 6);
+		dPane.add(new Label("[ Last Login: "+lastLogin+"]"), 0, 7,2,1);
+		getDialogPane().setContent(dPane);
+
+		if (!isFirst) {
+			if (saveAdded == 0) {
+				ButtonType save = new ButtonType("Save", ButtonData.OK_DONE);
+				getDialogPane().getButtonTypes().clear();
+				getDialogPane().getButtonTypes().addAll(save, ButtonType.CANCEL);
+				initRoom();
+			}
+			saveAdded++;
+			setHeaderText("User:-\t" + username.getText());
+			dprtMember.getSelectionModel().select(dm);
+			classIncharge.getSelectionModel().select(ci);
+			yearIncharge.getSelectionModel().select(yi);
+			freeze.setSelected(freez);
+			disableAll(true);
 			setResultConverter((button) -> {
-				if (button.equals(ButtonType.OK) && (!isAvailable()) && (!areFieldsEmpty())) {
-					userList.add(username.getText());
+				if ((button.equals(ButtonType.OK) || button.getButtonData().equals(ButtonData.OK_DONE))
+						&& (!areFieldsEmpty())) {
 					addButton();
-				} else if (button.equals(ButtonType.OK) && (isAvailable()) && (!areFieldsEmpty())) {
-					Notification.message(parent, AlertType.ERROR, "Error - User Accounts - Typh™",
-							"Username already taken !");
-				} else if ((button.equals(ButtonType.OK) && (areFieldsEmpty())))
+				}else if ((button.equals(ButtonType.OK) || button.getButtonData().equals(ButtonData.OK_DONE))
+						&& (areFieldsEmpty()))
 					Notification.message(parent, AlertType.ERROR, "Error - User Accounts - Typh™",
 							"All Fields are mandatory !");
 				return null;
 			});
-			show();
-//		}
+			
+		} else if (isFirst) {
+			setHeaderText("Fill in required fields to add a user account");
+			initRoom();
+			dprtMember.getSelectionModel().selectFirst();
+			classIncharge.getSelectionModel().selectFirst();
+			yearIncharge.getSelectionModel().selectFirst();
+			getDialogPane().getButtonTypes().clear();
+			getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+			setResultConverter((button) -> {
+				if ((button.equals(ButtonType.OK) || button.getButtonData().equals(ButtonData.OK_DONE)) && (!isAvailable())
+						&& (!areFieldsEmpty())) {
+					userList.add(username.getText());
+					addButton();
+				} else if ((button.equals(ButtonType.OK) || button.getButtonData().equals(ButtonData.OK_DONE))
+						&& (isAvailable()) && (!areFieldsEmpty())) {
+					Notification.message(parent, AlertType.ERROR, "Error - User Accounts - Typh™",
+							"Username already taken !");
+				} else if ((button.equals(ButtonType.OK) || button.getButtonData().equals(ButtonData.OK_DONE))
+						&& (areFieldsEmpty()))
+					Notification.message(parent, AlertType.ERROR, "Error - User Accounts - Typh™",
+							"All Fields are mandatory !");
+				return null;
+			});
+			
+		}
+
+	
+		dprtMember.setItems(FXCollections.observableArrayList(Departments.dprtList.values()));
+		yearIncharge.setItems(FXCollections.observableArrayList("FE", "SE", "TE", "BE"));
+		
+		show();
 	}
 
+	private void initRoom() {
+		
+		MongoCursor<Document> cursor = Engine.db.getCollection("Students").find().iterator();
 
+		while (cursor.hasNext()) {
+			JSONObject json = new JSONObject(cursor.next().toJson());
+			boolean exists = false;
+
+			for (String s : classList) {
+				if (s.equals(json.getString("class")))
+					exists = true;
+			}
+			if (!exists)
+				classList.add(json.getString("class"));
+		}
+		classIncharge.setItems(classList);
+
+	}
 
 	private void addEdit(GridPane dPane) {
-		HBox seBox = new HBox();
-		seBox.setPadding(new Insets(20));
-		seBox.setSpacing(20);
-		seBox.setAlignment(Pos.CENTER);
-
-		edit = new ToggleButton("Edit");
-		edit.selectedProperty().addListener((arg, o, n) -> {
-			disableAll(arg.getValue());
-		});
-		seBox.getChildren().addAll(edit);
-		dPane.add(seBox, 0, 4, 2, 1);
-
+		if (!isFirst) {
+			HBox seBox = new HBox();
+			seBox.setPadding(new Insets(50));
+			seBox.setSpacing(20);
+			seBox.setAlignment(Pos.CENTER);
+			
+			freeze = new ToggleButton("Freeze");
+			edit = new ToggleButton("Edit");
+			edit.selectedProperty().addListener((arg, o, n) -> {
+				disableAll(!n);
+			});
+			freeze.selectedProperty().addListener((arg, o, n) -> {
+				Bson filter = new Document("user",username.getText());
+				Bson query = new Document("$set",new Document("status",n));
+				Engine.db.getCollection("Users").updateOne(filter, query);
+				});
+			seBox.getChildren().addAll(edit,freeze);
+			dPane.add(seBox, 0, 8, 2, 1);
+		}
 	}
 
 	private boolean isAvailable() {
 		if (userList.contains(username.getText())) {
-			System.out.println("yes");
 			return true;
 		} else {
-			System.out.println("no");
 			return false;
 		}
 	}
 
-	public GridPane getHomeGrid() {
-		return home;
-	}
+	private void disableAll(boolean flag) {
+		username.setEditable(!flag);
+		password.setEditable(!flag);
+		email.setEditable(!flag);
+		yearIncharge.setDisable(flag);
+		classIncharge.setDisable(flag);
+		dprtMember.setDisable(flag);
+		fullname.setEditable(!flag);
+		if(!isFirst)
+			freeze.setDisable(flag);
 
-	private void disableAll(Boolean flag) {
-		username.setDisable(flag);
-		password.setDisable(flag);
-		email.setDisable(flag);
-		freeze.setDisable(flag);
 	}
 
 	public void addButton() {
 		Button tmp = new Button(username.getText());
-		Document doc = new Document("user",username.getText()).append("password",encryptedPassword(password.getText())).append("fullname",fullname.getText()).append("email",email.getText()).append("department",dprtMember.getValue());
-		Engine.db.getCollection("Users").insertOne(doc);
-		tmp.setOnAction(new UserAccounts(parent));
-		if (x < 6) {
-			x++;
-			getHomeGrid().add(tmp, x - 1, y);
-			GridPane.setColumnIndex(addAcc, x);
-			GridPane.setRowIndex(addAcc, y);
+		Document doc = new Document("password", encryptedPassword(password.getText()))
+				.append("fullname", fullname.getText()).append("email", email.getText())
+				.append("department", dprtMember.getValue()).append("classIncharge", classIncharge.getValue())
+				.append("yearIncharge", yearIncharge.getValue());
 
+		if (isFirst) {
+			doc.append("user", username.getText());
+			Engine.db.getCollection("Users").insertOne(doc);
+			tmp.setOnAction(new UserAccounts(parent));
+			if (x < 6) {
+				x++;
+				home.add(tmp, x - 1, y);
+				GridPane.setColumnIndex(addAcc, x);
+				GridPane.setRowIndex(addAcc, y);
+
+			} else {
+				x = 1;
+				y++;
+				home.add(tmp, x - 1, y);
+				GridPane.setColumnIndex(addAcc, x);
+				GridPane.setRowIndex(addAcc, y);
+
+			}
 		} else {
-			x = 1;
-			y++;
-			getHomeGrid().add(tmp, x - 1, y);
-			GridPane.setColumnIndex(addAcc, x);
-			GridPane.setRowIndex(addAcc, y);
-
+			Bson filter = new Document("user", username.getText());
+			Bson query = new Document("$set", doc);
+			Engine.db.getCollection("Users").updateOne(filter, query);
 		}
+
 	}
 
 	private String encryptedPassword(String text) {
@@ -243,6 +294,7 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		}
 		return hash.toString();
 	}
+
 	private boolean areFieldsEmpty() {
 		if (username.getText().trim().isEmpty() || password.getText().trim().isEmpty()
 				|| email.getText().trim().isEmpty())
@@ -252,16 +304,14 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 	}
 
 	public void begin() {
-		createUI(true);
+		isFirst = true;
+		createUI();
 	}
 
-	private void reloadData() {
-		Notification.message(parent, "User Accounts updated to server");
-
-	}
 	@Override
 	public void handle(ActionEvent arg) {
-		createUI(false);
+		isFirst = false;
+		createUI();
 
 	}
 

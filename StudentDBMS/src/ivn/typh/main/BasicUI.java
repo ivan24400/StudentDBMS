@@ -9,23 +9,30 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.Separator;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 
-public class BasicUI extends Application implements Runnable{
+public class BasicUI extends Application implements Runnable {
 
 	public static String user;
-	public static  String password;
+	public static String password;
 	public Scene basic;
+	private Button exit;
+	private Button tlm;
+	private Button tictac;
+	private Button about;
+	private Button howto;
+	private Button login;
+	private ToggleButton fulls;
 
-	
-	public static void createStage(Stage stage,Scene scene,String title){
-		Platform.runLater(()->{
+	public static void createStage(Stage stage, Scene scene, String title) {
+		Platform.runLater(() -> {
 			stage.setTitle(title);
 			stage.setScene(scene);
 			stage.setFullScreen(true);
@@ -33,52 +40,44 @@ public class BasicUI extends Application implements Runnable{
 			stage.show();
 		});
 	}
-	
-	public void startUI(Stage stage) throws InterruptedException, ExecutionException{
-		BorderPane pane = new BorderPane();
-		MenuBar mb  = new MenuBar();
-		Menu file = new Menu("File");
-		Menu tools = new Menu("Tools");
-		Menu help = new Menu("Help");
-		
-		
 
-		MenuItem exit = new MenuItem("Exit");
-		MenuItem tlm = new MenuItem("TyphLM");
-		MenuItem tictac = new MenuItem("TicTacToe");
-		MenuItem about = new MenuItem("About");
-		MenuItem howto = new MenuItem("How To Use ?");
-		HBox mbox = new HBox();
-		Button login = new Button("Log In");
-		
+	public void startUI(Stage stage) throws InterruptedException, ExecutionException {
+		BorderPane pane = new BorderPane();
+
+		ToolBar tool = new ToolBar();
+
+		Pane dummy = new Pane();
+		HBox.setHgrow(dummy, Priority.ALWAYS);
+		exit = new Button("Exit");
+		tlm = new Button("TyphLM");
+		tictac = new Button("TicTacToe");
+		about = new Button("About");
+		howto = new Button("How To Use ?");
+		login = new Button("Log In");
+		fulls = new ToggleButton("X");
 		exit.setOnAction(event -> Platform.exit());
 		tictac.setOnAction(event -> loadGame());
-		
-		file.getItems().addAll(new SeparatorMenuItem(),exit);
-		tools.getItems().addAll(tictac,tlm);
-		help.getItems().addAll(howto,new SeparatorMenuItem(),about);
-		mb.getMenus().addAll(file,tools,help);
-		pane.setCenter(login);
-		login.setOnAction(arg ->
-		{
-			ExecutorService execsrv = Executors.newSingleThreadExecutor();
-			execsrv.execute(new LogIn(stage,pane,basic,mb));
-			execsrv.shutdown();
-			
+		fulls.setOnAction(value -> {
+			stage.setFullScreen(fulls.isSelected());
 		});
-			
-		
-		pane.setTop(mb);	
-		pane.setRight(mbox);
-		
-		
-		basic = new Scene(pane,1360,768);
-		createStage(stage,basic,"Typh™ - Student Database");
+		fulls.setSelected(true);
+		tool.getItems().addAll( exit,new Separator(),tictac, tlm,new Separator(),howto,  about,new Separator(),fulls);
+
+		pane.setTop(tool);
+		pane.setCenter(login);
+		login.setOnAction(arg -> {
+			ExecutorService execsrv = Executors.newSingleThreadExecutor();
+			execsrv.execute(new LogIn(stage, pane, basic, tool));
+			execsrv.shutdown();
+
+		});
+		basic = new Scene(pane, 1360, 768);
+		createStage(stage, basic, "Typh™ - Student Database");
 	}
-	
-	public void loadGame(){
+
+	public void loadGame() {
 		try {
-			Runtime.getRuntime().exec("java -jar "+System.getProperty("user.dir")+File.separator+"game.jar");
+			Runtime.getRuntime().exec("java -jar " + System.getProperty("user.dir") + File.separator + "game.jar");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -98,6 +97,5 @@ public class BasicUI extends Application implements Runnable{
 	public void run() {
 		launch();
 	}
-	
 
 }

@@ -50,15 +50,15 @@ public class Project extends ListCell<String>{
 			DirectoryChooser dir = new DirectoryChooser();
 			dir.setTitle("Select a download path - Typh™");
 			dir.setInitialDirectory(new File(System.getProperty("user.home")));
-			File sel = dir.showDialog(w);
-			if(sel !=null){
+			File dPath = dir.showDialog(w);
+			if(dPath !=null){
 				Engine.gfs.find().forEach(new Block<GridFSFile>(){
 					public void apply(final GridFSFile file){
 						
 						if((label.getText()).equals(getItemName(file.getFilename().split(":")[1]))){
 							OutputStream out = null;
 							try {
-								out = new FileOutputStream(sel+File.separator+file.getFilename().split(":")[1]);
+								out = new FileOutputStream(dPath+File.separator+file.getFilename().split(":")[1]);
 							} catch (FileNotFoundException e) {
 								e.printStackTrace();
 							}
