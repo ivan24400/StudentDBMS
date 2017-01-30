@@ -11,6 +11,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.mongodb.client.MongoCursor;
+
+import ivn.typh.main.BasicUI;
 import ivn.typh.main.Engine;
 import ivn.typh.main.Notification;
 import javafx.application.Platform;
@@ -40,7 +42,7 @@ public class AdminUI implements Runnable {
 
 	private Stage stage;
 	private GridPane userGrid;
-	private GridPane studGrid;
+	static GridPane studGrid;
 	private GridPane dprtGrid;
 	private static Button addAcc;
 	private static Button addDepartment;
@@ -49,10 +51,11 @@ public class AdminUI implements Runnable {
 	private Label rts;
 	private Label rtu;
 	private Label rll;
+	private Search srch ;
 	private BorderPane pane;
 
-	public AdminUI(Stage s, BorderPane p, ToolBar mb2) {
-		mb = mb2;
+	public AdminUI(Stage s, BorderPane p, ToolBar tb) {
+		mb = tb;
 		stage = s;
 		pane = p;
 		rts = new Label();
@@ -75,8 +78,9 @@ public class AdminUI implements Runnable {
 		Label tu = new Label("Total Users");
 		Label ll = new Label("Last Login");
 		Label search = new Label("Search");
-		TextField srch = new TextField();
+		 srch = new Search();
 		Label au = new Label("Online Users");
+		Button logout = new Button("Log Out");
 
 		ObservableList<String> onlineUser = FXCollections.observableArrayList();
 		ListView<String> actusr = new ListView<>(onlineUser);
@@ -103,6 +107,11 @@ public class AdminUI implements Runnable {
 		stud.setClosable(false);
 		dprt.setClosable(false);
 
+
+		logout.setOnAction(arg -> {
+			pane.setCenter(BasicUI.center);
+		});
+		
 		userGrid = new GridPane();
 		studGrid = new GridPane();
 		dprtGrid = new GridPane();
@@ -176,6 +185,8 @@ public class AdminUI implements Runnable {
 		userGrid.add(addAcc, UserAccounts.x, UserAccounts.y);
 		studGrid.add(addStudent, Students.x, Students.y);
 		dprtGrid.add(addDepartment, Departments.x, Departments.y);
+		
+		mb.getItems().add(0, logout);
 
 		user.setContent(userGrid);
 		stud.setContent(scrollStud);
@@ -216,6 +227,7 @@ public class AdminUI implements Runnable {
 	}
 
 	private void loadProfiles() {
+		
 		Document tmpdoc = Engine.db.getCollection("Users").find(eq("user", "admin")).first();
 		rll.setText(tmpdoc.getString("lastLogin"));
 
@@ -280,7 +292,7 @@ public class AdminUI implements Runnable {
 				String tsdprt = json.getString("department");
 				String img = json.getString("img");
 				String y = json.getString("year");
-				Students.studentList.add(tsdprt);
+				Students.studentList.add(tsname);
 
 				Button tmp = new Button(tsname);
 				tmp.setOnAction(new Students(stage, studGrid, tsname, tsid, tsrno, tsclass, tsbatch, tsmail, tsaddr,
@@ -345,6 +357,7 @@ public class AdminUI implements Runnable {
 			}
 		} catch (JSONException e) {
 		}
+		srch.setItems(Students.studentList);
 	}
 
 	@Override

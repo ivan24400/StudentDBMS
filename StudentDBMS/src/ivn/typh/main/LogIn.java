@@ -151,7 +151,7 @@ public class LogIn implements Runnable {
 	private int verifyCredential() {
 		String pass, dbPass = null, dbUser = null;
 		pass = encryptedPassword(BasicUI.password);
-		Engine.mongo = new MongoClient(new MongoClientURI("mongodb://localhost:24000"));
+		Engine.mongo = new MongoClient(new MongoClientURI("mongodb://"+BasicUI.ipAddr+":24000"));
 		Engine.db = Engine.mongo.getDatabase("Students");
 		if (Engine.db == null)
 			return 3;

@@ -84,11 +84,13 @@ public class Marks {
 	}
 
 
-	public BooleanProperty getBacklog() {
-		return backlog;
+	public boolean getBacklog() {
+		return backlog.get();
 	}
 
-
+	public BooleanProperty backlogProperty(){
+		return backlog;
+	}
 	public void setBacklog(boolean backlog) {
 		this.backlog.set(backlog);
 	}

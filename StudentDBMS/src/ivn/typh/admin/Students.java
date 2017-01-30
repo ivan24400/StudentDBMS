@@ -412,6 +412,9 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		}
 	}
 
+	public String getStudentName(){
+		return tsname.getText();
+	}
 	public void begin() {
 		isFirst = true;
 		createUI();
@@ -420,6 +423,11 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 	@Override
 	public void handle(ActionEvent arg) {
 		isFirst = false;
+		createUI();
+	}
+	
+	public void initWindow(){
+		isFirst=false;
 		createUI();
 	}
 
