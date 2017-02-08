@@ -425,10 +425,6 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		isFirst = false;
 		createUI();
 	}
-	
-	public void initWindow(){
-		isFirst=false;
-		createUI();
-	}
+
 
 }

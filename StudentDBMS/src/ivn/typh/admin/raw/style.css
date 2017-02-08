@@ -1,0 +1,84 @@
+@font-face {
+    src: url("Comfortaa-Regular.ttf"),
+}
+.root {
+	-fx-font-size: 9pt;
+    -fx-font-family: "Comfortaa";
+	-fx-background: #ccffff;
+}
+
+/*
+ * 	Grids inside tabpane
+ */
+
+#Grid {
+	-fx-padding: 40;
+	-fx-hgap: 30;
+	-fx-vgap: 30;
+}
+
+/*
+ * 	 Grids inside the scene
+ */
+		
+#center{
+	-fx-padding: 30;
+	-fx-spacing: 20;
+}
+
+#topL{
+	-fx-alignment: center;
+	-fx-padding: 30;
+}
+
+#top{
+	-fx-padding: 30;
+	-fx-spacing: 20;
+	-fx-alignment: center;
+}
+
+#left{
+	-fx-spacing: 30;
+	-fx-padding: 30;
+}
+
+#right{
+	-fx-padding: 30;
+	-fx-spacing: 20;
+	-fx-alignment: center;
+}
+
+/*
+ * 	Tab Panes 
+ */
+ 
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-opacity: 0;
+}
+
+
+.tab-pane {
+  -fx-tab-min-width:150px;
+  -fx-tab-max-width:150px;
+}
+
+.tab:selected .tab-pane {
+	
+}	
+
+.tab-pane .tab:selected {
+    -fx-background-color: #3c3c3c;
+    -fx-effect: dropshadow( gaussian , black , 5.0, 3.0 , 0 , 0 ); 
+}
+
+.tab .tab-label { 
+    -fx-alignment: CENTER;
+    -fx-text-fill: #000000;
+}
+
+.tab:selected .tab-label { 
+    -fx-alignment: CENTER;
+    -fx-text-fill: #00ff80;
+    -fx-font-size: 15px;
+    
+}

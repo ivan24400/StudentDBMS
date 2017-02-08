@@ -3,12 +3,12 @@ package ivn.typh.main;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.bson.Document;
 import org.json.JSONObject;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import ivn.typh.admin.AdminUI;
 import ivn.typh.tchr.TchrUI;
@@ -39,12 +39,12 @@ public class LogIn implements Runnable {
 	private BorderPane pane;
 	private Scene scene;
 	private ToolBar mb;
-	
-	public LogIn(Stage arg,BorderPane p,Scene s,ToolBar menu) {
+
+	public LogIn(Stage arg, BorderPane p, Scene s, ToolBar menu) {
 		mb = menu;
-		scene=s;
+		scene = s;
 		stage = arg;
-		pane=p;
+		pane = p;
 	}
 
 	public void startUI() {
@@ -76,61 +76,63 @@ public class LogIn implements Runnable {
 		logined.setDisable(true);
 
 		userText.textProperty().addListener((observable, oldv, newv) -> {
-				logined.setDisable(newv.trim().isEmpty());
-			
+			logined.setDisable(newv.trim().isEmpty());
+
 		});
 
 		Platform.runLater(() -> userText.requestFocus());
-		
-		Task<Void> loginTask = new Task<Void>() {
-			@Override
-			public Void call() {
-				int flag = verifyCredential();
-					if (flag == 1) {
-						Platform.runLater(() -> {
-							updateProgress(5, 10);
-							loadUI();
-							updateProgress(9,10);
-						});
-					} else if (flag == 2) {
-						Platform.runLater(()->Notification.message(stage, AlertType.ERROR, "Invalid credentials - Typh™",
-							"Either username or password is incorrect !!!"));
-					} else {
-						Platform.runLater(()->Notification.message(stage, AlertType.ERROR, "Database - Typh™",
-								"Unable to connect Database"));
-					}
-				return null;
-			}
-		};
 		dialog.setResultConverter((button) -> {
 			if (button == login) {
-				return new LoginData(userText.getText(),passText.getText());
-			}	
+				return new LoginData(userText.getText(), passText.getText());
+			}
 			return null;
 		});
 
 		dialog.initOwner(stage);
+
 		Optional<LoginData> result = dialog.showAndWait();
+		Task<Boolean> loginTask = checkCredTask();
+
 		Loading loadBar = new Loading(stage);
 
-		result.ifPresent(arg ->{
+		result.ifPresent(arg -> {
 			try {
-				BasicUI.user=arg.getUser();
-				BasicUI.password=arg.getPassword();
-				loadBar.setTask(loginTask);
+				BasicUI.user = arg.getUser();
+				BasicUI.password = arg.getPassword();
+				loadBar.startTask(loginTask);
 				(new Thread(loginTask)).start();
-			
 			} catch (Exception e) {
 				System.out.println("No db running");
 			}
 		});
+
 		loginTask.setOnSucceeded(value -> {
-			Platform.runLater(() -> {
-				loadBar.hideProgress();
-			});
+
+			loadBar.hideProgress();
+			if (!loginTask.getValue())
+				Notification.message(stage, AlertType.ERROR, "Invalid credentials - Typh™",
+						"Either username or password is incorrect !!!");
 		});
+
 	}
 
+	private Task<Boolean> checkCredTask() {
+		Task<Boolean> loginTask = new Task<Boolean>() {
+			@Override
+			public Boolean call() {
+				Boolean result = false;
+				int flag = verifyCredential();
+				if (flag == 1) {
+					loadUI();
+					result = true;
+				} else if (flag == 2) {
+					result = false;
+				}
+				return result;
+			}
+		};
+		return loginTask;
+	}
 
 	private String encryptedPassword(String text) {
 
@@ -151,7 +153,6 @@ public class LogIn implements Runnable {
 	private int verifyCredential() {
 		String pass, dbPass = null, dbUser = null;
 		pass = encryptedPassword(BasicUI.password);
-		Engine.mongo = new MongoClient(new MongoClientURI("mongodb://"+BasicUI.ipAddr+":24000"));
 		Engine.db = Engine.mongo.getDatabase("Students");
 		if (Engine.db == null)
 			return 3;
@@ -165,23 +166,29 @@ public class LogIn implements Runnable {
 		else
 			return 2;
 	}
+
 	private void loadUI() {
 		if (BasicUI.user.equals(new String("admin"))) {
-			Thread at = new Thread(new AdminUI(stage,pane,mb));
-			at.start();
+			 ExecutorService execsrv = Executors.newSingleThreadExecutor();
+			 execsrv.execute(new AdminUI(stage,pane,mb));
+			 execsrv.shutdown();
+
 		} else {
-			String freeze = Engine.db.getCollection("Users").find(eq("user",BasicUI.user)).first().toJson();
+			String freeze = Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first().toJson();
 			JSONObject json = new JSONObject(freeze);
-			
-			if(!json.getBoolean("status")){
-			Thread tt = new Thread(new TchrUI(stage,pane,scene,mb));
-			tt.start();
-			}else
-				Notification.message(stage, AlertType.ERROR, "User Accounts - Typh™", "Your account has been marked inactive !\nContact system administrators");
+
+			if (!json.getBoolean("status")) {
+				 ExecutorService execsrv =
+				 Executors.newSingleThreadExecutor();
+				 execsrv.execute(new TchrUI(stage,pane,scene,mb));
+				 execsrv.shutdown();
+
+			} else
+				Notification.message(stage, AlertType.ERROR, "User Accounts - Typh™",
+						"Your account has been marked inactive !\nContact system administrators");
 		}
 
 	}
-
 
 	@Override
 	public void run() {

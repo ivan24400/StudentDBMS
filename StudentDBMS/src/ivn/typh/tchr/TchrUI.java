@@ -122,7 +122,6 @@ public class TchrUI implements Runnable {
 	private Label reports;
 	private Label student;
 
-	private Label prof;
 	private Label pname;
 	private Label dprt;
 	private Label pdprt;
@@ -207,13 +206,12 @@ public class TchrUI implements Runnable {
 		ColumnConstraints cc0 = new ColumnConstraints();
 		ColumnConstraints cc1 = new ColumnConstraints();
 
-		prof = new Label("Professor");
 		pname = new Label();
-		dprt = new Label("Department");
+		dprt = new Label("Department:");
 		pdprt = new Label();
-		cls = new Label("Class");
+		cls = new Label("Class:");
 		pcls = new Label();
-		tstuds = new Label("Total Students");
+		tstuds = new Label("Total Students:");
 		nstuds = new Label();
 		reps = new ListView<>();
 		slist = new ComboBox<>();
@@ -240,13 +238,15 @@ public class TchrUI implements Runnable {
 
 		aboveAcc.getChildren().addAll(student, slist, new Label("Select Year"), yrlst, editable, update, report);
 		aboveAcc.setSpacing(30);
+		aboveAcc.setPadding(new Insets(30));
 		aboveAcc.setAlignment(Pos.CENTER);
 
 		cc0.setPercentWidth(20);
 		cc1.setPercentWidth(80);
 
 		logout.setOnAction(arg -> {
-			pane.setCenter(BasicUI.center);
+			Engine.mongo.close();
+			pane.setCenter(BasicUI.login);
 		});
 
 		update.setOnAction(arg -> {
@@ -322,16 +322,16 @@ public class TchrUI implements Runnable {
 
 		scroll[cat.length - (scrollCount)] = new ScrollPane();
 		GridPane personal = new GridPane();
-		Label sname = new Label("Name");
-		Label sid = new Label("ID");
-		Label srno = new Label("Roll No");
-		Label sdprt = new Label("Department");
-		Label sclass = new Label("Class");
-		Label sbatch = new Label("Batch");
-		Label smail = new Label("Email");
-		Label saddr = new Label("Address");
-		Label sphone = new Label("Phone");
-		Label pphone = new Label("Parent Phone");
+		Label sname = new Label("Name:");
+		Label sid = new Label("ID:");
+		Label srno = new Label("Roll No:");
+		Label sdprt = new Label("Department:");
+		Label sclass = new Label("Class:");
+		Label sbatch = new Label("Batch:");
+		Label smail = new Label("Email:");
+		Label saddr = new Label("Address:");
+		Label sphone = new Label("Phone:");
+		Label pphone = new Label("Parent Phone:");
 
 		personal.setAlignment(Pos.CENTER);
 		personal.setPadding(new Insets(50));
@@ -1030,6 +1030,7 @@ public class TchrUI implements Runnable {
 		mb.getItems().add(0, logout);
 		accord.getPanes().addAll(tp);
 		accord.setExpandedPane(tp[0]);
+		
 
 		slist.setPrefWidth(150);
 		topL.setAlignment(Pos.CENTER);
@@ -1042,19 +1043,22 @@ public class TchrUI implements Runnable {
 		top.getChildren().addAll(srch, searchBox);
 		top.setAlignment(Pos.CENTER);
 		top.setSpacing(20);
-		topL.getChildren().add(prof);
+		topL.getChildren().add(pname);
 
-		left.getChildren().addAll(pname, dprt, pdprt, cls, pcls, tstuds, nstuds);
+		left.getChildren().addAll(dprt, pdprt, cls, pcls, tstuds, nstuds);
 		left.setCenterShape(true);
+		left.setSpacing(10);
+		left.setPadding(new Insets(30));
 
-		center.add(aboveAcc, 0, 0);
-		center.add(accord, 0, 1, 3, 1);
+		center.add(accord, 0, 0);
+		center.setPadding(new Insets(30));
 
 		tgpane.add(topL, 0, 0, 1, 2);
-		tgpane.add(left, 0, 2, 1, 1);
+		tgpane.add(left, 0, 2);
 		tgpane.add(top, 1, 0);
-		tgpane.add(center, 1, 1, 1, 2);
-
+		tgpane.add(aboveAcc, 1, 1);
+		tgpane.add(accord, 1, 2);
+		
 		tgpane.setMaxSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
 				Toolkit.getDefaultToolkit().getScreenSize().getHeight());
 		sctgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);

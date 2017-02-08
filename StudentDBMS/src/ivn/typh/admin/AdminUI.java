@@ -3,6 +3,7 @@ package ivn.typh.admin;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 
 import java.time.LocalDateTime;
 
@@ -25,10 +26,12 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -74,21 +77,21 @@ public class AdminUI implements Runnable {
 		RowConstraints rc1 = new RowConstraints();
 
 		Label admin = new Label("Administrator");
-		Label ts = new Label("Total Students");
-		Label tu = new Label("Total Users");
-		Label ll = new Label("Last Login");
+		Label ts = new Label("Total Students:");
+		Label tu = new Label("Total Users:");
+		Label ll = new Label("Last Login:");
 		Label search = new Label("Search");
-		 srch = new Search();
 		Label au = new Label("Online Users");
 		Button logout = new Button("Log Out");
+		srch = new Search();
 
 		ObservableList<String> onlineUser = FXCollections.observableArrayList();
 		ListView<String> actusr = new ListView<>(onlineUser);
-		VBox pane11 = new VBox();
-		VBox pane12 = new VBox();
-		VBox pane3 = new VBox();
-		HBox pane22 = new HBox();
-		HBox pane21 = new HBox();
+		VBox topL = new VBox();
+		VBox left = new VBox();
+		VBox right = new VBox();
+		HBox center = new HBox();
+		HBox top = new HBox();
 
 		cc0.setPercentWidth(20);
 		cc1.setPercentWidth(60);
@@ -107,33 +110,39 @@ public class AdminUI implements Runnable {
 		stud.setClosable(false);
 		dprt.setClosable(false);
 
-
+		tabPane.setEffect(new DropShadow());
+		
 		logout.setOnAction(arg -> {
-			pane.setCenter(BasicUI.center);
+			Engine.mongo.close();
+			mb.getItems().remove(0);
+			stage.getScene().getStylesheets().remove(0);
+			stage.getScene().getStylesheets().add(getClass().getResource("/ivn/typh/main/raw/style.css").toExternalForm());
+			pane.setCenter(BasicUI.login);
 		});
 		
 		userGrid = new GridPane();
 		studGrid = new GridPane();
 		dprtGrid = new GridPane();
+		
+		userGrid.setId("Grid");
+		studGrid.setId("Grid");
+		dprtGrid.setId("Grid");
+		
 		ScrollPane scrollStud = new ScrollPane();
+		ScrollPane scrollUser = new ScrollPane();
+		ScrollPane scrollDprt = new ScrollPane();
+		
+		
 		scrollStud.setContent(studGrid);
 		scrollStud.setHbarPolicy(ScrollBarPolicy.NEVER);
-
-		tabPane.setStyle(
-				"-fx-border-style: solid inside;-fx-border-width: 2;-fx-border-insets: 5;-fx-background-color: #30234f");
+		
+		scrollUser.setContent(userGrid);
+		scrollUser.setHbarPolicy(ScrollBarPolicy.NEVER);
+		
+		scrollDprt.setContent(dprtGrid);
+		scrollDprt.setHbarPolicy(ScrollBarPolicy.NEVER);
 		tabPane.setMinWidth(700);
 
-		userGrid.setPadding(new Insets(40));
-		userGrid.setHgap(30);
-		userGrid.setVgap(30);
-
-		studGrid.setPadding(new Insets(40));
-		studGrid.setHgap(30);
-		studGrid.setVgap(30);
-
-		dprtGrid.setPadding(new Insets(40));
-		dprtGrid.setHgap(30);
-		dprtGrid.setVgap(30);
 
 		addAcc = new Button("+");
 		addDepartment = new Button("+");
@@ -188,40 +197,40 @@ public class AdminUI implements Runnable {
 		
 		mb.getItems().add(0, logout);
 
-		user.setContent(userGrid);
+		user.setContent(scrollUser);
 		stud.setContent(scrollStud);
-		dprt.setContent(dprtGrid);
+		dprt.setContent(scrollDprt);
+		
 		tabPane.getTabs().addAll(user, stud, dprt);
 
-		pane22.getChildren().addAll(tabPane);
-		pane22.setPadding(new Insets(30));
-		pane22.setSpacing(20);
-		pane11.getChildren().add(admin);
-		pane12.getChildren().addAll(ts, rts, tu, rtu, ll, rll);
-		pane3.getChildren().addAll(au, actusr);
-		pane21.getChildren().addAll(search, srch);
-		pane21.setPadding(new Insets(30));
-		pane21.setSpacing(20);
+		center.setId("center");
+		topL.setId("topL");
+		left.setId("left");
+		right.setId("right");
+		top.setId("top");
+		
+		center.getChildren().addAll(tabPane);
+		topL.getChildren().add(admin);
+    	left.getChildren().addAll(ts, rts, tu, rtu, ll, rll);
+		right.getChildren().addAll(au, actusr);
+		top.getChildren().addAll(search, srch);
 
-		pane11.setPadding(new Insets(30));
-		pane12.setPadding(new Insets(30));
-		pane3.setPadding(new Insets(30));
-		pane12.setSpacing(30);
-		pane3.setSpacing(40);
-
+		
 		gpane.getColumnConstraints().addAll(cc0, cc1, cc2);
 		gpane.getRowConstraints().addAll(rc0, rc1);
-		gpane.add(pane11, 0, 0);
-		gpane.add(pane12, 0, 1, 1, 2);
-		gpane.add(pane22, 1, 1);
-		gpane.add(pane3, 2, 0, 1, 2);
-		gpane.add(pane21, 1, 0);
+		gpane.add(topL, 0, 0);
+		gpane.add(left, 0, 1, 1, 2);
+		gpane.add(center, 1, 1);
+		gpane.add(right, 2, 0, 1, 2);
+		gpane.add(top, 1, 0);
 		gpane.setMaxHeight(768);
 		gpane.setMaxWidth(1360);
 
 		sgpane.setContent(gpane);
 		sgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		sgpane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		stage.getScene().getStylesheets().remove(0);
+		stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
 		pane.setCenter(sgpane);
 
 	}
@@ -239,7 +248,9 @@ public class AdminUI implements Runnable {
 										+ LocalDateTime.now().getYear() + "\t" + LocalDateTime.now().getHour() + "h:"
 										+ LocalDateTime.now().getMinute() + "m:" + LocalDateTime.now().getSecond()+"s")));
 		MongoCursor<Document> cursor;
+		
 		// Department
+		
 		cursor = Engine.db.getCollection("Departments").find().iterator();
 		Departments.dprtList = FXCollections.observableHashMap();
 		try {
