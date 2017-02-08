@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 import com.mongodb.Block;
-import com.mongodb.client.gridfs.GridFSBuckets;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
 import ivn.typh.main.Engine;
@@ -22,7 +21,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 public class Project extends ListCell<String>{
@@ -31,7 +29,6 @@ public class Project extends ListCell<String>{
 	private Pane dummy;
 	private Button download;
 	private Label label;
-	private String id;
 	private Window w;
 	
 	public Project(Scene s){

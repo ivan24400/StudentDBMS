@@ -18,7 +18,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Separator;
@@ -26,8 +25,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
-import javafx.scene.effect.Bloom;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
@@ -37,7 +34,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 
@@ -45,21 +41,22 @@ public class BasicUI extends Application implements Runnable {
 
 	public static String user;
 	public static String password;
-	private Stage stage;
-	public Scene basic;
-
+	public static BorderPane pane ;
 	public static String ipAddr;
+	public static Button login;
+
+	public Scene basic;
+	private Stage stage;
 	private Button exit;
 	private Button tictac;
 	private Button about;
 	private Button howto;
-	public static Button login;
 	private Button cnct;
 	private ToggleButton fulls;
 
 
 	public void startUI() throws InterruptedException, ExecutionException {
-		BorderPane pane = new BorderPane();
+		pane = new BorderPane();
 		ToolBar tool = new ToolBar();
 
 		Pane dummy = new Pane();
@@ -203,7 +200,10 @@ public class BasicUI extends Application implements Runnable {
 
 			result.ifPresent(ip -> {
 				ipAddr = ip;
+				pane.setDisable(true);
 				(new Thread(cm)).start();
+				
+				pane.setDisable(false);
 
 			});
 
@@ -243,7 +243,7 @@ public class BasicUI extends Application implements Runnable {
 
 		basic = new Scene(pane, 1360, 768);
 
-		basic.getStylesheets().add(getClass().getResource("data/style.css").toExternalForm());
+		basic.getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
 		
 	}
 
@@ -256,8 +256,11 @@ public class BasicUI extends Application implements Runnable {
 
 		Optional<ButtonType> result = ex.showAndWait();
 		result.ifPresent(arg->{
-			if(arg.equals(ButtonType.OK))
+			if(arg.equals(ButtonType.OK)){
+			if(!(Engine.mongo== null))
+					Engine.mongo.close();
 				Platform.exit();
+			}
 		});
 	}
 

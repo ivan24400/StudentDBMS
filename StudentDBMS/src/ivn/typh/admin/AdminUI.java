@@ -2,9 +2,6 @@ package ivn.typh.admin;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-
 import java.time.LocalDateTime;
 
 import org.bson.Document;
@@ -29,9 +26,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -227,7 +222,7 @@ public class AdminUI implements Runnable {
 		gpane.setMaxWidth(1360);
 
 		sgpane.setContent(gpane);
-		sgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		sgpane.setHbarPolicy(ScrollBarPolicy.NEVER);
 		sgpane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		stage.getScene().getStylesheets().remove(0);
 		stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());

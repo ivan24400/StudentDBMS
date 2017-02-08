@@ -1,14 +1,16 @@
 @font-face {
-    src: url("Comfortaa-Regular.ttf"),
+    src: url("Comfortaa.ttf");
 }
+
 .root {
 	-fx-font-size: 9pt;
     -fx-font-family: "Comfortaa";
 	-fx-background: #ccffff;
 }
 
+
 /*
- * 	Grids inside tabpane
+ * 	Grids inside tab pane
  */
 
 #Grid {
@@ -52,32 +54,32 @@
  * 	Tab Panes 
  */
  
-.tab-pane .tab-header-area .tab-header-background {
-    -fx-opacity: 0;
+.tab-pane > .tab-header-area > .headers-region > .tab {
+	 -fx-focus-color: transparent;
+    -fx-background-radius: 10 10 0 0, 9 9 0 0, 8 8 0 0;
+	}
+.tab-pane > .tab-header-area > .tab-header-background {
+    -fx-background-color: transparent;
 }
-
 
 .tab-pane {
   -fx-tab-min-width:150px;
   -fx-tab-max-width:150px;
+
 }
 
-.tab:selected .tab-pane {
+.tab:selected {	
+	-fx-background-color: #3c3c3c; 
 	
-}	
-
-.tab-pane .tab:selected {
-    -fx-background-color: #3c3c3c;
-    -fx-effect: dropshadow( gaussian , black , 5.0, 3.0 , 0 , 0 ); 
 }
 
 .tab .tab-label { 
-    -fx-alignment: CENTER;
+    -fx-alignment: center;
     -fx-text-fill: #000000;
 }
 
 .tab:selected .tab-label { 
-    -fx-alignment: CENTER;
+    -fx-alignment: center;
     -fx-text-fill: #00ff80;
     -fx-font-size: 15px;
     

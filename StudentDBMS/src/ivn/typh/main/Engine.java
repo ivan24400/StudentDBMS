@@ -33,8 +33,6 @@ public class Engine {
 //		}
 		Thread tliui = new Thread(new BasicUI());
 		tliui.start();
-		System.out.println();
-
 	}
 
 }

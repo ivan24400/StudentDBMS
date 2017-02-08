@@ -1,10 +1,13 @@
 @font-face {
-    src: url("Comfortaa-Regular.ttf"),
+	font-family: Comfortaa;
+	 src: url("Comfortaa.ttf");
 }
+
+
 .root{
     -fx-font-size: 9pt;
     -fx-font-family: "Comfortaa";
-    -fx-background: rgb(225, 228, 203);
+    -fx-background: #e6ffff;
     
 }
 
