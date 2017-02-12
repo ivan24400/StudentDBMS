@@ -74,6 +74,7 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 
 	public UserAccounts(Stage arg) {
 		parent = arg;
+		lastLogin = "Account not been created";
 		initOwner(parent);
 		username = new TextField();
 		password = new PasswordField();
@@ -248,10 +249,10 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 
 	public void addButton() {
 		Button tmp = new Button(username.getText());
-		Document doc = new Document("password", encryptedPassword(password.getText()))
+		Document doc = new Document("passwd", encryptedPassword(password.getText()))
 				.append("fullname", fullname.getText()).append("email", email.getText())
 				.append("department", dprtMember.getValue()).append("classIncharge", classIncharge.getValue())
-				.append("yearIncharge", yearIncharge.getValue());
+				.append("yearIncharge", yearIncharge.getValue()).append("status",false);
 
 		if (isFirst) {
 			doc.append("user", username.getText());

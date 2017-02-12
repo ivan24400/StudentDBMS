@@ -108,6 +108,7 @@ public class Search extends TextField {
 		for (int i = 0; i < count; i++) {
 			result = searchResult.get(i);
 			Label entryLabel = new Label(result);
+			entryLabel.setPrefWidth(this.getWidth());
 			CustomMenuItem item = new CustomMenuItem(entryLabel, true);
 			item.setOnAction(action->{
 					resultList.hide();

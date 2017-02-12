@@ -1,23 +1,30 @@
+/*
+ * StyleSheet for admin UI
+ */
+
 @font-face {
-    src: url("Comfortaa.ttf");
+    src: url("/ivn/typh/main/raw/Comfortaa.ttf");
 }
 
 .root {
 	-fx-font-size: 9pt;
     -fx-font-family: "Comfortaa";
-	-fx-background: #ccffff;
+	-fx-background: #e6ffff;
+    -fx-base: #00cccc;
+    -fx-control-inner-background: white;
+    -fx-accent: #4d4dff;
+}
+
+.button {
+	-fx-background-radius: 5;
+	-fx-faint-focus-color: transparent;
+}
+
+.progress-indicator {
+    -fx-progress-color: #008080;
 }
 
 
-/*
- * 	Grids inside tab pane
- */
-
-#Grid {
-	-fx-padding: 40;
-	-fx-hgap: 30;
-	-fx-vgap: 30;
-}
 
 /*
  * 	 Grids inside the scene
@@ -70,9 +77,11 @@
 
 .tab:selected {	
 	-fx-background-color: #3c3c3c; 
-	
 }
 
+.tab-pane.floating > .tab-content-area {
+		-fx-color: yellow;
+}
 .tab .tab-label { 
     -fx-alignment: center;
     -fx-text-fill: #000000;
@@ -83,4 +92,18 @@
     -fx-text-fill: #00ff80;
     -fx-font-size: 15px;
     
+}
+
+/*
+ * 	Grids inside tab pane
+ */
+
+#uGrid,#sGrid,#dGrid {
+	-fx-effect: dropshadow(gaussian,black,10,0,0,0);
+	-fx-border-radius: 10;
+	-fx-background-insets: 10;
+    -fx-background-radius: 10;
+	-fx-padding: 40;
+	-fx-hgap: 30;
+	-fx-vgap: 30;
 }

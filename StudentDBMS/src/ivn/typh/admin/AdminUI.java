@@ -39,6 +39,8 @@ import static com.mongodb.client.model.Filters.*;
 public class AdminUI implements Runnable {
 
 	private Stage stage;
+	static ObservableList<String> onlineUser;
+	
 	private GridPane userGrid;
 	static GridPane studGrid;
 	private GridPane dprtGrid;
@@ -65,6 +67,9 @@ public class AdminUI implements Runnable {
 		GridPane gpane = new GridPane();
 		ScrollPane sgpane = new ScrollPane();
 
+		Thread pulse = new Thread(new HeartBeat());
+		pulse.start();
+		
 		ColumnConstraints cc0 = new ColumnConstraints();
 		ColumnConstraints cc1 = new ColumnConstraints();
 		ColumnConstraints cc2 = new ColumnConstraints();
@@ -80,7 +85,7 @@ public class AdminUI implements Runnable {
 		Button logout = new Button("Log Out");
 		srch = new Search();
 
-		ObservableList<String> onlineUser = FXCollections.observableArrayList();
+		onlineUser = FXCollections.observableArrayList();
 		ListView<String> actusr = new ListView<>(onlineUser);
 		VBox topL = new VBox();
 		VBox left = new VBox();
@@ -97,10 +102,15 @@ public class AdminUI implements Runnable {
 		rc1.setPercentHeight(70);
 
 		TabPane tabPane = new TabPane();
+		tabPane.getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
 		Tab user = new Tab("User Accounts");
 		Tab stud = new Tab("Student Profiles");
 		Tab dprt = new Tab("Departments");
 
+		user.setId("tabU");
+		stud.setId("tabS");
+		dprt.setId("tabD");
+		
 		user.setClosable(false);
 		stud.setClosable(false);
 		dprt.setClosable(false);
@@ -109,7 +119,7 @@ public class AdminUI implements Runnable {
 		
 		logout.setOnAction(arg -> {
 			Engine.mongo.close();
-			mb.getItems().remove(0);
+			mb.getItems().remove(8);
 			stage.getScene().getStylesheets().remove(0);
 			stage.getScene().getStylesheets().add(getClass().getResource("/ivn/typh/main/raw/style.css").toExternalForm());
 			pane.setCenter(BasicUI.login);
@@ -119,9 +129,9 @@ public class AdminUI implements Runnable {
 		studGrid = new GridPane();
 		dprtGrid = new GridPane();
 		
-		userGrid.setId("Grid");
-		studGrid.setId("Grid");
-		dprtGrid.setId("Grid");
+		userGrid.setId("uGrid");
+		studGrid.setId("sGrid");
+		dprtGrid.setId("dGrid");
 		
 		ScrollPane scrollStud = new ScrollPane();
 		ScrollPane scrollUser = new ScrollPane();
@@ -190,7 +200,7 @@ public class AdminUI implements Runnable {
 		studGrid.add(addStudent, Students.x, Students.y);
 		dprtGrid.add(addDepartment, Departments.x, Departments.y);
 		
-		mb.getItems().add(0, logout);
+		mb.getItems().add(8,logout);
 
 		user.setContent(scrollUser);
 		stud.setContent(scrollStud);
@@ -227,7 +237,6 @@ public class AdminUI implements Runnable {
 		stage.getScene().getStylesheets().remove(0);
 		stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
 		pane.setCenter(sgpane);
-
 	}
 
 	private void loadProfiles() {

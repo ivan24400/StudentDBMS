@@ -3,13 +3,21 @@ package ivn.typh.main;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.net.ssl.SSLSocketFactory;
+
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoClientURI;
+import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+
+import javafx.animation.ScaleTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -25,6 +33,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
@@ -33,7 +42,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 
@@ -81,6 +92,7 @@ public class BasicUI extends Application implements Runnable {
 			dialog.setTitle("Connection - Typh™");
 			dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
 			dialog.initOwner(stage);
+			dialog.setHeaderText("Enter Server IP address");
 			VBox vb = new VBox();
 			HBox hb = new HBox();
 			vb.setPadding(new Insets(20));
@@ -178,7 +190,6 @@ public class BasicUI extends Application implements Runnable {
 			tf3.setPrefWidth(50);
 			tf4.setPrefWidth(50);
 
-			vb.getChildren().add(new Label("Enter Server IP address"));
 			hb.getChildren().addAll(tf1, new Label(" . "), tf2, new Label(" . "), tf3, new Label(" . "), tf4);
 			vb.getChildren().add(hb);
 
@@ -218,6 +229,20 @@ public class BasicUI extends Application implements Runnable {
 
 		});
 		
+		login.setOnMouseEntered(event->{
+			ScaleTransition scale = new ScaleTransition();
+			scale.setDuration(Duration.millis(1000));
+			scale.setByX(0.5);
+			scale.setByY(0.5);
+			scale.setNode(login);
+			scale.play();
+		});
+		
+		login.setOnMouseExited(event->{
+			login.getTransforms().clear();
+			login.setEffect(null);
+		});		
+		
 		login.setOnAction(arg -> {
 			if (ipAddr != null) {
 				ExecutorService execsrv = Executors.newSingleThreadExecutor();
@@ -228,15 +253,10 @@ public class BasicUI extends Application implements Runnable {
 			}
 		});
 
-		login.setOnMouseEntered(event->{
-			login.setEffect(new Glow());
-		});
-		login.setOnMouseExited(event->{
-			login.setEffect(null);
-		});
+	
 		login.setId("login");
 
-		tool.getItems().addAll(new Separator(), tictac, cnct, new Separator(), howto, about, new Separator(),
+		tool.getItems().addAll(tictac, cnct, new Separator(), howto, about, new Separator(),
 				fulls,dummy,exit);
 		pane.setTop(tool);
 		pane.setCenter(login);
@@ -278,8 +298,9 @@ public class BasicUI extends Application implements Runnable {
 					addr = InetAddress.getByName(ipAddr);
 					if(!addr.isReachable(4000))
 						return false;
-					
-					Engine.mongo = new MongoClient(new ServerAddress(BasicUI.ipAddr,24000));
+					MongoClientOptions.Builder options = MongoClientOptions.builder().sslEnabled(true).sslInvalidHostNameAllowed(true);
+					MongoClientURI connectionString =  new MongoClientURI("mongodb://typh:typhpass@"+ipAddr+":24000/?authSource=Students",options);
+					Engine.mongo = new MongoClient(connectionString);
 					result = true;
 
 				} catch (Exception e){
