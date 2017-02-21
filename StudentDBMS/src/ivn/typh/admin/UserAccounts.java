@@ -2,6 +2,7 @@ package ivn.typh.admin;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -26,6 +27,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -38,10 +40,11 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 
 	private boolean isFirst;
 	private boolean freez;
-	private int saveAdded;
-	private Stage parent;
+	private boolean saveAdded;
+	private Stage stage;
 	private GridPane home;
 	private Button addAcc;
+	private Button del;
 	private String lastLogin;
 	private TextField username;
 	private TextField fullname;
@@ -73,9 +76,9 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 	}
 
 	public UserAccounts(Stage arg) {
-		parent = arg;
+		stage = arg;
 		lastLogin = "Account not been created";
-		initOwner(parent);
+		initOwner(stage);
 		username = new TextField();
 		password = new PasswordField();
 		email = new TextField();
@@ -84,7 +87,7 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		yearIncharge = new ChoiceBox<>();
 		fullname = new TextField();
 		classList = FXCollections.observableArrayList();
-
+		saveAdded = false;
 	}
 
 	public UserAccounts(Stage arg, GridPane gp, Button addB) {
@@ -128,13 +131,16 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		getDialogPane().setContent(dPane);
 
 		if (!isFirst) {
-			if (saveAdded == 0) {
+			if (!saveAdded) {
+				dprtMember.getSelectionModel().selectFirst();
+				classIncharge.getSelectionModel().selectFirst();
+				yearIncharge.getSelectionModel().selectFirst();
 				ButtonType save = new ButtonType("Save", ButtonData.OK_DONE);
 				getDialogPane().getButtonTypes().clear();
 				getDialogPane().getButtonTypes().addAll(save, ButtonType.CANCEL);
 				initRoom();
 			}
-			saveAdded++;
+			saveAdded = true;
 			setHeaderText("User:-\t" + username.getText());
 			dprtMember.getSelectionModel().select(dm);
 			classIncharge.getSelectionModel().select(ci);
@@ -147,7 +153,7 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 					addButton();
 				}else if ((button.equals(ButtonType.OK) || button.getButtonData().equals(ButtonData.OK_DONE))
 						&& (areFieldsEmpty()))
-					Notification.message(parent, AlertType.ERROR, "Error - User Accounts - Typh™",
+					Notification.message(stage, AlertType.ERROR, "Error - User Accounts - Typh™",
 							"All Fields are mandatory !");
 				return null;
 			});
@@ -167,11 +173,11 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 					addButton();
 				} else if ((button.equals(ButtonType.OK) || button.getButtonData().equals(ButtonData.OK_DONE))
 						&& (isAvailable()) && (!areFieldsEmpty())) {
-					Notification.message(parent, AlertType.ERROR, "Error - User Accounts - Typh™",
+					Notification.message(stage, AlertType.ERROR, "Error - User Accounts - Typh™",
 							"Username already taken !");
 				} else if ((button.equals(ButtonType.OK) || button.getButtonData().equals(ButtonData.OK_DONE))
 						&& (areFieldsEmpty()))
-					Notification.message(parent, AlertType.ERROR, "Error - User Accounts - Typh™",
+					Notification.message(stage, AlertType.ERROR, "Error - User Accounts - Typh™",
 							"All Fields are mandatory !");
 				return null;
 			});
@@ -213,15 +219,33 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 			
 			freeze = new ToggleButton("Freeze");
 			edit = new ToggleButton("Edit");
+			del = new Button("Delete Account");
+			
 			edit.selectedProperty().addListener((arg, o, n) -> {
 				disableAll(!n);
 			});
+			
 			freeze.selectedProperty().addListener((arg, o, n) -> {
 				Bson filter = new Document("user",username.getText());
 				Bson query = new Document("$set",new Document("status",n));
 				Engine.db.getCollection("Users").updateOne(filter, query);
 				});
-			seBox.getChildren().addAll(edit,freeze);
+			
+			del.setOnAction(val->{
+				Alert dalert = new Alert(AlertType.CONFIRMATION);
+				dalert.setTitle("Delete User Account - Typh™");
+				dalert.setHeaderText("Are you sure to delete user: "+username+"?");
+				dalert.initOwner(stage);
+				dalert.setResultConverter(value->{
+					if(value.equals(ButtonType.OK))
+						Engine.db.getCollection("Users").deleteOne(new Document("user",username));
+					return null;
+				});
+				dalert.show();
+
+			});
+			
+			seBox.getChildren().addAll(edit,freeze,del);
 			dPane.add(seBox, 0, 8, 2, 1);
 		}
 	}
@@ -242,8 +266,10 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		classIncharge.setDisable(flag);
 		dprtMember.setDisable(flag);
 		fullname.setEditable(!flag);
-		if(!isFirst)
+		if(!isFirst){
 			freeze.setDisable(flag);
+			del.setDisable(flag);
+		}
 
 	}
 
@@ -257,7 +283,7 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		if (isFirst) {
 			doc.append("user", username.getText());
 			Engine.db.getCollection("Users").insertOne(doc);
-			tmp.setOnAction(new UserAccounts(parent));
+			tmp.setOnAction(new UserAccounts(stage));
 			if (x < 6) {
 				x++;
 				home.add(tmp, x - 1, y);

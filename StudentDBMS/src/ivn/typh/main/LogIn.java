@@ -97,10 +97,12 @@ public class LogIn implements Runnable {
 
 		result.ifPresent(arg -> {
 			try {
+				if(!(arg == null)){
 				BasicUI.user = arg.getUser();
 				BasicUI.password = arg.getPassword();
 				loadBar.startTask(loginTask);
 				(new Thread(loginTask)).start();
+				}
 			} catch (Exception e) {
 				System.out.println("No db running");
 			}
@@ -124,6 +126,11 @@ public class LogIn implements Runnable {
 				int flag = verifyCredential();
 				if (flag == 1) {
 					loadUI();
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 					result = true;
 				} else if (flag == 2) {
 					result = false;

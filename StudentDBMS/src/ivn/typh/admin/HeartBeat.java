@@ -1,11 +1,8 @@
 package ivn.typh.admin;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
-import java.io.PrintWriter;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -13,36 +10,61 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import ivn.typh.main.BasicUI;
+import javafx.application.Platform;
 
 public class HeartBeat implements Runnable {
 
+	private Socket socket;
+	static boolean heartAttack;
+	static String message;
+
 	@Override
 	public void run() {
+		heartAttack = false;
+		message = "__NO__TEXT__";
 		try {
-			Socket socket = new Socket(BasicUI.ipAddr,61000);
+			socket = new Socket(BasicUI.ipAddr, 61001);
 			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-			PrintWriter out = new PrintWriter(socket.getOutputStream());
-			out.println("heartAttack");
-			
-			Runnable users = new Runnable(){
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+
+			Runnable users = new Runnable() {
 				@Override
-				public void run(){
-					try {
-						@SuppressWarnings("unchecked")
-						List<String> u = (List<String>) in.readObject();
-						AdminUI.onlineUser.clear();
-						System.out.println(u.toString());
-						AdminUI.onlineUser.addAll(u);
-					} catch (ClassNotFoundException | IOException e) {
-						e.printStackTrace();
+				public void run() {
+					if (!heartAttack) {
+						try {
+							@SuppressWarnings("unchecked")
+							List<String> u = (List<String>) in.readObject();
+							Platform.runLater(() -> {
+								AdminUI.onlineUser.getItems().clear();
+								u.forEach(item -> {
+									AdminUI.onlineUser.getItems().add((String) item);
+
+								});
+								if (AdminUI.onlineUser.getItems().isEmpty())
+									AdminUI.onlineUser.getItems().add("No User is online !");
+							});
+							out.reset();
+							out.writeObject(message);
+							out.flush();
+
+						} catch (ClassNotFoundException | IOException e) {
+							e.printStackTrace();
+						}
+						message = "__NO__TEXT__";
+					} else {
+						service.shutdown();
+						try {
+							socket.close();
+						} catch (IOException e) {
+						}
 					}
 				}
 			};
-			
-			ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+
 			service.scheduleAtFixedRate(users, 0, 5, TimeUnit.SECONDS);
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Server not found");
 		}
 	}
 

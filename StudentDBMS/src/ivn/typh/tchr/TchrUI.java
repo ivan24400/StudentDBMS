@@ -38,6 +38,7 @@ import com.mongodb.client.gridfs.model.GridFSFile;
 import ivn.typh.main.BasicUI;
 import ivn.typh.main.Engine;
 import ivn.typh.main.Notification;
+import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -58,6 +59,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
@@ -69,6 +71,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
@@ -97,9 +100,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
@@ -116,7 +119,6 @@ public class TchrUI implements Runnable {
 	private Button update;
 	private Button report;
 	private ToolBar mb;
-	private ListView<Report> reps;
 	private ComboBox<String> slist;
 	static ComboBox<String> yrlst;
 	private TitledPane[] tp;
@@ -139,6 +141,7 @@ public class TchrUI implements Runnable {
 	private ImageView dpImgView;
 	private TextField tsname;
 	private TextField tsid;
+	private ListView<Report> reps;
 	private ChoiceBox<String> tsrno;
 	private ChoiceBox<String> tsdprt;
 	private ChoiceBox<String> tsclass;
@@ -251,12 +254,12 @@ public class TchrUI implements Runnable {
 		
 		cc0.setPercentWidth(20);
 		cc1.setPercentWidth(80);
-
+		
+		Thread pulse = new Thread(new HeartBeat());
+		pulse.start();
+		
 		logout.setOnAction(arg -> {
-			mb.getItems().remove(8);
-			Thread.currentThread().interrupt();
-			Engine.mongo.close();
-			pane.setCenter(BasicUI.login);
+			logoutApplication();
 		});
 
 		update.setOnAction(arg -> {
@@ -276,8 +279,7 @@ public class TchrUI implements Runnable {
 			loadStudentProfile(n.split(":")[1]);
 		});
 
-		Thread pulse = new Thread(new HeartBeat());
-		pulse.start();
+	
 		
 		//
 		// Personal
@@ -1067,21 +1069,22 @@ public class TchrUI implements Runnable {
 		// Adding all titled panes to the accordion
 		//
 
-
-		makeFloat(editable);
-		makeFloat(update);
-		makeFloat(report);
 		
 		for (int i = 0; i < cat.length; i++) {
 			tp[i] = new TitledPane(cat[i], scroll[i]);
 		}
+		
+		mb.getItems().remove(8);
 		mb.getItems().add(8, logout);
+		mb.getItems().remove(1);
+
 		accord.getPanes().addAll(tp);
 		accord.setExpandedPane(tp[0]);
 		
-
 		slist.setPrefWidth(150);
+		
 		tgpane.getColumnConstraints().addAll(cc0, cc1);
+		GridPane.setHgrow(accord, Priority.ALWAYS);
 
 		top.getChildren().addAll(srch, searchBox);
 			
@@ -1098,10 +1101,10 @@ public class TchrUI implements Runnable {
 		tgpane.add(aboveAcc, 1, 1);
 		tgpane.add(accord, 1, 2);
 		
-		tgpane.setMaxSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
+		tgpane.setMinSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
 				Toolkit.getDefaultToolkit().getScreenSize().getHeight());
 		sctgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
-		sctgpane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		sctgpane.setVbarPolicy(ScrollBarPolicy.NEVER);
 		sctgpane.setContent(tgpane);
 		stage.getScene().getStylesheets().remove(0);
 		stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
@@ -1111,21 +1114,6 @@ public class TchrUI implements Runnable {
 		slist.getSelectionModel().selectFirst();
 		yrlst.getSelectionModel().selectFirst();
 	
-	}
-
-	private void makeFloat(Node button) {
-		button.setOnMouseEntered(event->{
-			Scale scale = new Scale();
-			scale.setX(1.2);
-			scale.setY(1.2);
-			button.setEffect(new DropShadow());
-			button.getTransforms().add(scale);
-		});
-		
-		button.setOnMouseExited(event->{
-			button.getTransforms().clear();
-			button.setEffect(null);
-		});		
 	}
 
 	private void uploadData(String sid) {
@@ -1577,6 +1565,7 @@ public class TchrUI implements Runnable {
 		searchBox.setItems(name);
 	}
 
+	
 	private void disableAll(boolean flag) {
 		update.setDisable(flag);
 		report.setDisable(flag);
@@ -1620,7 +1609,23 @@ public class TchrUI implements Runnable {
 		removeAssignment.setDisable(flag);
 
 	}
+	private void logoutApplication() {
+		Alert ex = new Alert(AlertType.CONFIRMATION);
+		ex.setHeaderText("LogOut "+BasicUI.user+" - Typh™ ? ");
+		ex.setTitle("Exit - Typh™");
+		ex.initOwner(stage);
+		ex.getButtonTypes().setAll(ButtonType.OK,ButtonType.CANCEL);
 
+		Optional<ButtonType> result = ex.showAndWait();
+		result.ifPresent(arg->{
+			if(arg.equals(ButtonType.OK)){
+			if(!(Engine.mongo== null))
+					Engine.mongo.close();
+			HeartBeat.heartAttack=true;
+				Platform.exit();
+			}
+		});
+	}
 	@Override
 	public void run() {
 		Platform.runLater(() -> {

@@ -3,20 +3,14 @@ package ivn.typh.main;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.net.ssl.SSLSocketFactory;
-
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
-
 import javafx.animation.ScaleTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -33,16 +27,21 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
+import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Glow;
+import javafx.scene.effect.Light;
+import javafx.scene.effect.Lighting;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.transform.Scale;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.control.Dialog;
@@ -76,7 +75,7 @@ public class BasicUI extends Application implements Runnable {
 		tictac = new Button("TicTacToe");
 		about = new Button("About");
 		howto = new Button("How To Use ?");
-		login = new Button("Log In");
+		//login = new Button("Log In");
 		cnct = new Button("Connect");
 		fulls = new ToggleButton("X");
 		exit.setOnAction(event -> {
@@ -228,22 +227,33 @@ public class BasicUI extends Application implements Runnable {
 
 
 		});
+
+		StackPane sp = new StackPane();
 		
+		Circle login = new Circle();
+		login.setFill(Color.AQUA);
+		login.setRadius(59);
 		login.setOnMouseEntered(event->{
-			ScaleTransition scale = new ScaleTransition();
-			scale.setDuration(Duration.millis(1000));
-			scale.setByX(0.5);
-			scale.setByY(0.5);
-			scale.setNode(login);
-			scale.play();
+			 DropShadow dropShadow = new DropShadow();
+
+		    dropShadow.setOffsetX(5);
+
+		    dropShadow.setOffsetY(5);
+
+		    dropShadow.setRadius(5);
+
+		    dropShadow.setBlurType(BlurType.GAUSSIAN);
+
+		    dropShadow.setColor(Color.color(0, 0, 0, 0.45));
+			login.setEffect(dropShadow);
 		});
 		
 		login.setOnMouseExited(event->{
-			login.getTransforms().clear();
 			login.setEffect(null);
 		});		
 		
-		login.setOnAction(arg -> {
+
+		login.setOnMouseClicked(arg -> {
 			if (ipAddr != null) {
 				ExecutorService execsrv = Executors.newSingleThreadExecutor();
 				execsrv.execute(new LogIn(stage, pane, basic, tool));
@@ -255,11 +265,11 @@ public class BasicUI extends Application implements Runnable {
 
 	
 		login.setId("login");
-
+		sp.getChildren().addAll(login,new Label("Login"));
 		tool.getItems().addAll(tictac, cnct, new Separator(), howto, about, new Separator(),
 				fulls,dummy,exit);
 		pane.setTop(tool);
-		pane.setCenter(login);
+		pane.setCenter(sp);
 
 		basic = new Scene(pane, 1360, 768);
 

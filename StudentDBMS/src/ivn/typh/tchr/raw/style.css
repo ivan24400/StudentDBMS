@@ -11,17 +11,16 @@
 .root{
     -fx-font-size: 9pt;
     -fx-font-family: "Comfortaa";
-    -fx-background: #ffffff;
+    -fx-control-inner-background: derive(-fx-base,80%);
     -fx-base: #ff9900;
     -fx-accent: #cc7a00
 }
 .button {
 	-fx-background-radius: 5;
 	-fx-faint-focus-color: transparent;
+	-fx-background: derive(-fx-base,-10%)
 }
-.scroll-pane {
-    -fx-fit-to-width: true;
-}
+
 .combo-box{
 	-fx-background-color: derive(-fx-base,50%);
 }
@@ -36,6 +35,9 @@
   -fx-opacity: 0;
 }
 
+.scroll-pane {
+    -fx-fit-to-width: true;
+}
 .default-color0.chart-line-symbol { -fx-background-color: #4d9900, white; }
 .default-color0.chart-series-line { -fx-stroke: linear-gradient(#a6ff4d,#4d9900); }
 
@@ -43,6 +45,11 @@
 .chart-bar {
 	-fx-background-color: linear-gradient(#a6ff4d,#4d9900);
 }
+
+.chart{
+	-fx-background: white;
+}
+
 .titled-pane {
 	-fx-background-radius: 5;
 }
@@ -51,27 +58,24 @@
     -fx-background-color: linear-gradient(#a6ff4d, #66cc00);
     -fx-text-fill: #000000;
 }
+
+
 #acP {
 	-fx-spacing: 30;
 	-fx-padding: 30;
-	-fx-alignment: center;
-}
-
-#personalP {
-	-fx-alignment: center;
-	-fx-padding: 50;
-	-fx-hgap:	20;
-	-fx-vgap: 20;
 }
 
 #dpImgView {
 	-fx-effect: dropshadow(gaussian,black,10.0,0.0,0,0);
 }
 
-#academicP, #attendanceP, #projectsP, #assignmentP, #center{
-	-fx-padding: 30;
+#personalP,#academicP, #attendanceP, #projectsP, #assignmentP, #center{
+		-fx-alignment: center;
+		-fx-padding: 30;
 	-fx-hgap: 20;
 	-fx-vgap: 20;
+	
+	-fx-background-color: derive(-fx-base,80%)
 }
 
 #topP {
@@ -89,7 +93,8 @@
 	-fx-alignment: center;
 }
 #home{
-	-fx-padding: 30;
+		-fx-background-color: linear-gradient(to bottom right,white,derive(-fx-base,70%));
+		-fx-padding: 30;
 }
 #reportDialog{
 	-fx-spacing: 20;

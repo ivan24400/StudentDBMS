@@ -1,8 +1,11 @@
 package ivn.typh.admin;
 
-import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+
+import java.awt.Toolkit;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.bson.Document;
 import org.json.JSONException;
@@ -10,19 +13,26 @@ import org.json.JSONObject;
 
 import com.mongodb.client.MongoCursor;
 
-import ivn.typh.main.BasicUI;
 import ivn.typh.main.Engine;
 import ivn.typh.main.Notification;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
@@ -39,14 +49,16 @@ import static com.mongodb.client.model.Filters.*;
 public class AdminUI implements Runnable {
 
 	private Stage stage;
-	static ObservableList<String> onlineUser;
 	
 	private GridPane userGrid;
 	static GridPane studGrid;
 	private GridPane dprtGrid;
+	
 	private static Button addAcc;
 	private static Button addDepartment;
 	private static Button addStudent;
+	
+	static ListView<String> onlineUser;
 	private ToolBar mb;
 	private Label rts;
 	private Label rtu;
@@ -67,6 +79,7 @@ public class AdminUI implements Runnable {
 		GridPane gpane = new GridPane();
 		ScrollPane sgpane = new ScrollPane();
 
+		gpane.setId("TheGrid");
 		Thread pulse = new Thread(new HeartBeat());
 		pulse.start();
 		
@@ -85,8 +98,18 @@ public class AdminUI implements Runnable {
 		Button logout = new Button("Log Out");
 		srch = new Search();
 
-		onlineUser = FXCollections.observableArrayList();
-		ListView<String> actusr = new ListView<>(onlineUser);
+		onlineUser = new ListView<>();
+		onlineUser.getItems().add("No User is online !");
+		ContextMenu oucm = new ContextMenu();
+		MenuItem sText = new MenuItem("Send a message");
+		oucm.getItems().add(sText);
+		sText.setOnAction(event->{
+			sendData();
+		});
+	
+		
+		onlineUser.setContextMenu(oucm);
+		
 		VBox topL = new VBox();
 		VBox left = new VBox();
 		VBox right = new VBox();
@@ -118,11 +141,7 @@ public class AdminUI implements Runnable {
 		tabPane.setEffect(new DropShadow());
 		
 		logout.setOnAction(arg -> {
-			Engine.mongo.close();
-			mb.getItems().remove(8);
-			stage.getScene().getStylesheets().remove(0);
-			stage.getScene().getStylesheets().add(getClass().getResource("/ivn/typh/main/raw/style.css").toExternalForm());
-			pane.setCenter(BasicUI.login);
+			logoutApplication();
 		});
 		
 		userGrid = new GridPane();
@@ -146,7 +165,6 @@ public class AdminUI implements Runnable {
 		
 		scrollDprt.setContent(dprtGrid);
 		scrollDprt.setHbarPolicy(ScrollBarPolicy.NEVER);
-		tabPane.setMinWidth(700);
 
 
 		addAcc = new Button("+");
@@ -200,8 +218,9 @@ public class AdminUI implements Runnable {
 		studGrid.add(addStudent, Students.x, Students.y);
 		dprtGrid.add(addDepartment, Departments.x, Departments.y);
 		
+		mb.getItems().remove(8);
 		mb.getItems().add(8,logout);
-
+		mb.getItems().remove(1);
 		user.setContent(scrollUser);
 		stud.setContent(scrollStud);
 		dprt.setContent(scrollDprt);
@@ -217,7 +236,7 @@ public class AdminUI implements Runnable {
 		center.getChildren().addAll(tabPane);
 		topL.getChildren().add(admin);
     	left.getChildren().addAll(ts, rts, tu, rtu, ll, rll);
-		right.getChildren().addAll(au, actusr);
+		right.getChildren().addAll(au, onlineUser);
 		top.getChildren().addAll(search, srch);
 
 		
@@ -228,15 +247,47 @@ public class AdminUI implements Runnable {
 		gpane.add(center, 1, 1);
 		gpane.add(right, 2, 0, 1, 2);
 		gpane.add(top, 1, 0);
-		gpane.setMaxHeight(768);
-		gpane.setMaxWidth(1360);
-
+		gpane.setMinSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
+				Toolkit.getDefaultToolkit().getScreenSize().getHeight());
 		sgpane.setContent(gpane);
-		sgpane.setHbarPolicy(ScrollBarPolicy.NEVER);
-		sgpane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		sgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		sgpane.setVbarPolicy(ScrollBarPolicy.NEVER);
 		stage.getScene().getStylesheets().remove(0);
 		stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
 		pane.setCenter(sgpane);
+	}
+
+	private void sendData() {
+		String item = onlineUser.getSelectionModel().getSelectedItem();
+		if(item==null || item.equals("No User is online !")){
+		Platform.runLater(()->{
+				Notification.message(stage, AlertType.ERROR, "Invalid User - Typh™", "First select a valid user.");
+			});
+			return;
+		}
+			Dialog<String> dialog = new Dialog<>();
+			dialog.setHeaderText("Enter message for "+item);
+			dialog.setTitle("Messenger - Typh™");
+			dialog.getDialogPane().setPadding(new Insets(50));
+			dialog.initOwner(stage);
+			TextField text = new TextField();
+			text.setPromptText("Enter message ...");
+			ButtonType send = new ButtonType("Send",ButtonData.OK_DONE);
+			dialog.getDialogPane().setContent(text);
+			dialog.getDialogPane().getButtonTypes().addAll(send,ButtonType.CANCEL);
+			dialog.setResultConverter(value->{
+				if(value.getButtonData().equals(ButtonData.OK_DONE))
+					return text.getText().trim();
+				return null;
+			});
+			Node snode = dialog.getDialogPane().lookupButton(send);
+			text.textProperty().addListener((observable, oldv, newv)->{
+				snode.setDisable(newv.trim().isEmpty());
+			});
+			
+			Optional<String> result = dialog.showAndWait();
+			result.ifPresent(msg->HeartBeat.message=msg);
+				
 	}
 
 	private void loadProfiles() {
@@ -374,7 +425,23 @@ public class AdminUI implements Runnable {
 		}
 		srch.setItems(Students.studentList);
 	}
+	private void logoutApplication() {
+		Alert ex = new Alert(AlertType.CONFIRMATION);
+		ex.setHeaderText("LogOut Typh™ ? ");
+		ex.setTitle("Exit - Typh™");
+		ex.initOwner(stage);
+		ex.getButtonTypes().setAll(ButtonType.OK,ButtonType.CANCEL);
 
+		Optional<ButtonType> result = ex.showAndWait();
+		result.ifPresent(arg->{
+			if(arg.equals(ButtonType.OK)){
+			if(!(Engine.mongo== null))
+					Engine.mongo.close();
+			HeartBeat.heartAttack=true;
+			Platform.exit();
+			}
+		});
+	}
 	@Override
 	public void run() {
 		Platform.runLater(() -> {

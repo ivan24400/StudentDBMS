@@ -9,14 +9,18 @@
 .root {
 	-fx-font-size: 9pt;
     -fx-font-family: "Comfortaa";
-	-fx-background: #e6ffff;
     -fx-base: #00cccc;
-    -fx-control-inner-background: white;
+    -fx-control-inner-background: #e6ffff;
     -fx-accent: #4d4dff;
 }
 
+#TheGrid{
+	    -fx-background-color: linear-gradient(to bottom right ,white,#e6ffff);
+}
+
 .button {
-	-fx-background-radius: 5;
+	-fx-background-insets: 0;
+	-fx-background-radius: 0;
 	-fx-faint-focus-color: transparent;
 }
 
@@ -24,31 +28,29 @@
     -fx-progress-color: #008080;
 }
 
-
-
 /*
  * 	 Grids inside the scene
  */
 		
 #center{
-	-fx-padding: 30;
+	-fx-padding: 20;
 	-fx-spacing: 20;
 }
 
 #topL{
 	-fx-alignment: center;
-	-fx-padding: 30;
+	-fx-padding: 20;
 }
 
 #top{
-	-fx-padding: 30;
+	-fx-padding: 20;
 	-fx-spacing: 20;
 	-fx-alignment: center;
 }
 
 #left{
 	-fx-spacing: 30;
-	-fx-padding: 30;
+	-fx-padding: 20;
 }
 
 #right{
@@ -72,7 +74,7 @@
 .tab-pane {
   -fx-tab-min-width:150px;
   -fx-tab-max-width:150px;
-
+  -fx-min-width: 700px
 }
 
 .tab:selected {	
@@ -80,8 +82,9 @@
 }
 
 .tab-pane.floating > .tab-content-area {
-		-fx-color: yellow;
+		-fx-color: white;
 }
+
 .tab .tab-label { 
     -fx-alignment: center;
     -fx-text-fill: #000000;
@@ -92,6 +95,11 @@
     -fx-text-fill: #00ff80;
     -fx-font-size: 15px;
     
+}
+
+.scroll-pane {
+    -fx-fit-to-width: true;
+    -fx-fit-to-height:true
 }
 
 /*

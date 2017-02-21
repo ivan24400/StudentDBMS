@@ -11,8 +11,8 @@
 .root{
     -fx-font-size: 9pt;
     -fx-font-family: "Comfortaa";
-    -fx-background : #f2f2f2;
-    -fx-base: #a6a6a6;
+    -fx-background-color : white;
+    -fx-base:  #666666;
     -fx-control-inner-background: white;
     -fx-focus-color: transparent;
     }
@@ -26,7 +26,7 @@
     -fx-progress-color: #262626;
 }
 
-#login {
+#login1 {
     -fx-background-color: 
         #c3c4c4,
         linear-gradient(#d6d6d6 50%, white 100%),
