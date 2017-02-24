@@ -35,10 +35,10 @@ import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
+import ivn.typh.admin.SideBar;
 import ivn.typh.main.BasicUI;
 import ivn.typh.main.Engine;
 import ivn.typh.main.Notification;
-import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -71,7 +71,9 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
@@ -102,7 +104,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
@@ -128,6 +129,7 @@ public class TchrUI implements Runnable {
 	private Label reports;
 	private Label student;
 
+	private Button menu;
 	private Label pname;
 	private Label dprt;
 	private Label pdprt;
@@ -188,6 +190,7 @@ public class TchrUI implements Runnable {
 		pane = p;
 		stage = s;
 		scene = scen;
+		menu = new Button("Menu");
 		repList = FXCollections.observableArrayList();
 		studList = FXCollections.observableArrayList();
 		dprtList = FXCollections.observableHashMap();
@@ -198,8 +201,8 @@ public class TchrUI implements Runnable {
 	public void startUI() {
 
 		GridPane tgpane = new GridPane();
-		tgpane.setId("home");
 		ScrollPane sctgpane = new ScrollPane();
+		StackPane spMain = new StackPane();
 
 		GridPane center = new GridPane();
 		VBox left = new VBox();
@@ -207,6 +210,7 @@ public class TchrUI implements Runnable {
 		HBox topL = new HBox();
 		HBox aboveAcc = new HBox();
 		
+		tgpane.setId("home");
 		center.setId("center");
 		left.setId("leftP");
 		top.setId("topP");
@@ -217,9 +221,13 @@ public class TchrUI implements Runnable {
 		Button logout = new Button("Log Out");
 		ToggleButton editable = new ToggleButton("Edit");
 
-		ColumnConstraints cc0 = new ColumnConstraints();
-		ColumnConstraints cc1 = new ColumnConstraints();
+	
+		Pane dummy = new Pane();
 
+		SideBar side = new SideBar(dummy,menu);
+		side.setMenuWidth(300);
+		side.getStyleClass().add(".sideBarButton");
+		
 		pname = new Label();
 		dprt = new Label("Department:");
 		pdprt = new Label();
@@ -227,6 +235,11 @@ public class TchrUI implements Runnable {
 		pcls = new Label();
 		tstuds = new Label("Total Students:");
 		nstuds = new Label();
+		
+		pdprt.setId("logInfo");
+		pcls.setId("logInfo");
+		nstuds.setId("logInfo");
+		
 		reps = new ListView<>();
 		slist = new ComboBox<>();
 		srch = new Label("Search");
@@ -251,9 +264,7 @@ public class TchrUI implements Runnable {
 		});
 
 		aboveAcc.getChildren().addAll(student, slist, new Label("Select Year"), yrlst, editable, update, report);
-		
-		cc0.setPercentWidth(20);
-		cc1.setPercentWidth(80);
+
 		
 		Thread pulse = new Thread(new HeartBeat());
 		pulse.start();
@@ -279,7 +290,8 @@ public class TchrUI implements Runnable {
 			loadStudentProfile(n.split(":")[1]);
 		});
 
-	
+		srch.setId("search");
+		searchBox.setId("searchBox");
 		
 		//
 		// Personal
@@ -1071,13 +1083,11 @@ public class TchrUI implements Runnable {
 
 		
 		for (int i = 0; i < cat.length; i++) {
+			scroll[i].setId("homeScrollPane");
 			tp[i] = new TitledPane(cat[i], scroll[i]);
 		}
 		
-		mb.getItems().remove(7);
-		mb.getItems().add(7, logout);
-		mb.getItems().remove(0);
-
+		
 		accord.getPanes().addAll(tp);
 		accord.setExpandedPane(tp[0]);
 		accord.expandedPaneProperty().addListener((obs,o,n)->{
@@ -1088,7 +1098,6 @@ public class TchrUI implements Runnable {
 		
 		slist.setPrefWidth(150);
 		
-		tgpane.getColumnConstraints().addAll(cc0, cc1);
 		GridPane.setHgrow(accord, Priority.ALWAYS);
 
 		top.getChildren().addAll(srch, searchBox);
@@ -1096,24 +1105,32 @@ public class TchrUI implements Runnable {
 		topL.getChildren().add(pname);
 
 		left.getChildren().addAll(dprt, pdprt, cls, pcls, tstuds, nstuds);
-		GridPane.setValignment(left, VPos.CENTER);
+		side.addNodes(topL,left,mb.getItems().get(2),mb.getItems().get(3),mb.getItems().get(5));
 		
-		center.add(accord, 0, 0);
+		mb.getItems().remove(7);
+		mb.getItems().add(7, logout);
+		mb.getItems().remove(0, 5);
+		mb.getItems().add(0,menu);
 
-		tgpane.add(topL, 0, 0, 1, 2);
-		tgpane.add(left, 0, 2);
-		tgpane.add(top, 1, 0);
-		tgpane.add(aboveAcc, 1, 1);
-		tgpane.add(accord, 1, 2);
+		GridPane.setValignment(left, VPos.CENTER);
+		StackPane.setAlignment(side, Pos.CENTER_LEFT);
+
+		tgpane.add(top, 0, 0);
+		tgpane.add(aboveAcc, 0, 1);
+		tgpane.add(accord, 0, 2);
 		
 		tgpane.setMaxSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
+				Toolkit.getDefaultToolkit().getScreenSize().getHeight());
+		tgpane.setMinSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
 				Toolkit.getDefaultToolkit().getScreenSize().getHeight());
 		sctgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		sctgpane.setVbarPolicy(ScrollBarPolicy.NEVER);
 		sctgpane.setContent(tgpane);
 		stage.getScene().getStylesheets().remove(0);
 		stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
-		pane.setCenter(sctgpane);
+		
+		spMain.getChildren().addAll(sctgpane,dummy,side);
+		pane.setCenter(spMain);
 
 		disableAll(true);
 		slist.getSelectionModel().selectFirst();

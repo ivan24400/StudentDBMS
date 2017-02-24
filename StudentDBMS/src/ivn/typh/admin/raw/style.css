@@ -7,7 +7,7 @@
 }
 
 .root {
-	-fx-font-size: 9pt;
+	-fx-font-size: 9.0pt;
     -fx-font-family: "Comfortaa";
     -fx-base: #00cccc;
     -fx-control-inner-background: #e6ffff;
@@ -19,45 +19,18 @@
 }
 
 .button {
-	-fx-background-insets: 0;
-	-fx-background-radius: 0;
+	-fx-background-insets: 0.0;
+	-fx-background-radius: 0.0;
 	-fx-faint-focus-color: transparent;
 }
-
+.button:hover{
+	-fx-background: derive(-fx-base,-10.0%)
+}
 .progress-indicator {
     -fx-progress-color: #008080;
 }
 
-/*
- * 	 Grids inside the scene
- */
-		
-#center{
-	-fx-padding: 20;
-	-fx-spacing: 20;
-}
 
-#topL{
-	-fx-alignment: center;
-	-fx-padding: 20;
-}
-
-#top{
-	-fx-padding: 20;
-	-fx-spacing: 20;
-	-fx-alignment: center;
-}
-
-#left{
-	-fx-spacing: 30;
-	-fx-padding: 20;
-}
-
-#right{
-	-fx-padding: 30;
-	-fx-spacing: 20;
-	-fx-alignment: center;
-}
 
 /*
  * 	Tab Panes 
@@ -65,20 +38,24 @@
  
 .tab-pane > .tab-header-area > .headers-region > .tab {
 	 -fx-focus-color: transparent;
-    -fx-background-radius: 10 10 0 0, 9 9 0 0, 8 8 0 0;
+    -fx-background-radius: 10.0 10.0 0.0 0.0, 9.0 9.0 0.0 0.0, 8.0 8.0 0.0 0.0;
 	}
 .tab-pane > .tab-header-area > .tab-header-background {
     -fx-background-color: transparent;
 }
 
-.tab-pane {
-  -fx-tab-min-height:150px;
-  -fx-tab-max-height:300px;
-  -fx-min-width: 700px;
-   -fx-tab-min-width: 100px;
-  -fx-tab-max-width: 100px
+.tab-pane:left > .tab-header-area {
+    -fx-padding: 0.0 0.0 2.0 5.0; 
 }
 
+.tab-pane {
+	-fx-tab-min-height:100.0px;
+	-fx-tab-max-height:100.0px;
+}
+
+.tab-pane.floating .tab:selected > .tab-content-area{
+	-fx-background-color: derive(#3c3c3c,50.0%)
+}
 .tab:selected {	
 	-fx-background-color: #3c3c3c; 
 }
@@ -90,16 +67,13 @@
 .tab .tab-label { 
     -fx-alignment: center;
     -fx-text-fill: #000000;
-    -fx-rotate: 90
+    -fx-rotate: 90.0
 }
 
-.tab {
-	-fx-width: 1000px;
-}
 .tab:selected .tab-label { 
     -fx-alignment: center;
     -fx-text-fill: #00ff80;
-    -fx-font-size: 15px;
+    -fx-font-size: 15.0px;
     
 }
 
@@ -108,21 +82,87 @@
     -fx-fit-to-height:true
 }
 
+#logInfo{
+	-fx-text-fill: -fx-base
+}
+
+#search{
+		-fx-graphic: url('/ivn/typh/admin/icons/search.png');
+	
+}
+#logout{
+	-fx-graphic: url('/ivn/typh/main/icons/logout.png')
+}
+
+#fullscreen{
+	-fx-graphic: url('/ivn/typh/main/icons/fullscreen.png')
+}
+
+#fullscreen:selected{
+	-fx-graphic: url('/ivn/typh/main/icons/fullscreen_exit.png')
+}
+#searchBox{
+	-fx-text-box-border: transparent;
+	-fx-background-color: white;
+    -fx-border-width: 2.0px;
+    -fx-border-color:transparent transparent derive(-fx-base,-5.0%) transparent
+}
+
+#searchBox:focused{
+	-fx-background-color:  derive(-fx-base,95.0%);
+}
 /*
  * 	Grids inside tab pane
  */
 
 #uGrid,#sGrid,#dGrid {
-	-fx-effect: dropshadow(gaussian,black,10,0,0,0);
-	-fx-border-radius: 10;
-	-fx-background-insets: 10;
-    -fx-background-radius: 10;
-	-fx-padding: 40;
-	-fx-hgap: 30;
-	-fx-vgap: 30;
+	-fx-effect: dropshadow(gaussian,black,10.0,0.0,0.0,0.0);
+	-fx-border-radius: 10.0;
+	-fx-background-insets: 10.0;
+    -fx-background-radius: 10.0;
+	-fx-padding: 40.0;
+	-fx-hgap: 30.0;
+	-fx-vgap: 30.0;
 }
 
 #sideBar {
-	-fx-padding: 20;
-	-fx-spacing: 10
+	-fx-effect: dropshadow(gaussian,black,20.0,-20.0,5.0,0.0);
+	-fx-alignment: center;
+	-fx-padding: 20.0;
+	-fx-background-color: white;
+	-fx-spacing: 10.0;
+	-fx-fill-width: true
+}
+
+
+/*
+ * 	 Grids inside the scene
+ */
+		
+#center{
+	-fx-padding: 20.0;
+	-fx-spacing: 20.0;
+}
+
+#topL{
+	-fx-alignment: center;
+	-fx-padding: 20.0;
+}
+
+#top{
+	-fx-padding: 20.0;
+	-fx-spacing: 20.0;
+	-fx-alignment: center;
+}
+
+#left{
+		-fx-alignment: center;
+		-fx-spacing: 30.0;
+	-fx-padding: 20.0;
+}
+
+#right{
+	-fx-padding: 30.0;
+	-fx-spacing: 20.0;
+	-fx-alignment: center;
 }

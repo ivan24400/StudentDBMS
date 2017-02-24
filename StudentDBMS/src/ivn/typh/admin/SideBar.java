@@ -1,33 +1,50 @@
 package ivn.typh.admin;
 
+
 import javafx.animation.Animation;
 import javafx.animation.Transition;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 public class SideBar extends VBox {
 
 	private Button menu;
+	private Pane home;
+	private double width;
 	static Label rts, rtu, rll;
 
-	public SideBar(Button m) {
+	public SideBar(Pane gp,Button m) {
+		home = gp;
 		menu = m;
+		home.setVisible(false);
+		setVisible(false);
 	}
 
-	public void addAll(Node... nodes) {
-
-		setId("sideBar");
-		Label user = (Label) nodes[0];
+	public void setMenuWidth(double w){
+		setMinWidth(w);
+		setMaxWidth(w);
+		width = w;
+	}
+	public void addNodes(Node... nodes) {
 		
-		addAll(nodes);
+		home.setBackground(new Background(new BackgroundFill(Color.rgb(0, 0, 0, 0.2),CornerRadii.EMPTY,Insets.EMPTY)));
+		setId("sideBar");
+		getChildren().addAll(nodes);
+		getChildren().forEach(node->VBox.setVgrow(node, Priority.ALWAYS));;
 
 		menu.setOnAction(arg -> {
 
-			final double width = getWidth();
-
+			System.out.println(width);
 			final Animation show = new Transition() {
 				{
 					setCycleDuration(Duration.millis(240));
@@ -41,8 +58,8 @@ public class SideBar extends VBox {
 
 			};
 
-			show.setOnFinished(value -> {
-
+			show.setOnFinished(value->{
+				System.out.println(" show");
 			});
 
 			final Animation hide = new Transition() {
@@ -59,12 +76,17 @@ public class SideBar extends VBox {
 			
 			hide.setOnFinished(value->{
 				setVisible(false);
+				System.out.println(" hide");
+
 			});
 			
 			if(show.statusProperty().get() == Animation.Status.STOPPED && hide.statusProperty().get() == Animation.Status.STOPPED){
-				if(isVisible())
+				if(isVisible()){
+					home.setVisible(false);
 					hide.play();
+				}
 				else{
+					home.setVisible(true);
 					setVisible(true);
 					show.play();
 				}

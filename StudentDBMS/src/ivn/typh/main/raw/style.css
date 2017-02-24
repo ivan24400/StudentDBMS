@@ -36,3 +36,26 @@
     -fx-progress-color: -fx-base;
 }
 
+#fullscreen{
+	-fx-graphic: url('/ivn/typh/main/icons/fullscreen.png')
+}
+
+#fullscreen:selected{
+	-fx-graphic: url('/ivn/typh/main/icons/fullscreen_exit.png')
+}
+
+#about{
+	-fx-graphic: url('/ivn/typh/main/icons/about.png')
+}
+
+#connect{
+	-fx-graphic: url('/ivn/typh/main/icons/connect.png')
+}
+
+#help{
+	-fx-graphic: url('/ivn/typh/main/icons/help.png')
+}
+
+#logout{
+	-fx-graphic: url('/ivn/typh/main/icons/logout.png')
+}

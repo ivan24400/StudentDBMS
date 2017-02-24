@@ -49,19 +49,17 @@ public class BasicUI extends Application implements Runnable {
 
 	public static String user;
 	public static String password;
-	public static BorderPane pane ;
+	public static BorderPane pane;
 	public static String ipAddr;
 	public Circle login;
 
 	public Scene basic;
 	private Stage stage;
 	private Button exit;
-	private Button tictac;
 	private Button about;
-	private Button howto;
+	private Button help;
 	private Button cnct;
 	private ToggleButton fulls;
-
 
 	public void startUI() throws InterruptedException, ExecutionException {
 		pane = new BorderPane();
@@ -70,15 +68,20 @@ public class BasicUI extends Application implements Runnable {
 		Pane dummy = new Pane();
 		HBox.setHgrow(dummy, Priority.ALWAYS);
 		exit = new Button("Exit");
-		tictac = new Button("TicTacToe");
 		about = new Button("About");
-		howto = new Button("How To Use ?");
+		help = new Button("Help");
 		cnct = new Button("Connect");
 		fulls = new ToggleButton("X");
+
+		exit.setId("logout");
+		about.setId("about");
+		help.setId("help");
+		cnct.setId("connect");
+		fulls.setId("fullscreen");
+
 		exit.setOnAction(event -> {
 			exitApplication();
-			});
-		tictac.setOnAction(event -> loadGame());
+		});
 		fulls.setOnAction(value -> {
 			stage.setFullScreen(fulls.isSelected());
 		});
@@ -88,7 +91,7 @@ public class BasicUI extends Application implements Runnable {
 			dialog.setTitle("Connection - Typh™");
 			dialog.initOwner(stage);
 			dialog.setHeaderText("Enter Server IP address");
-			
+
 			HBox hb = new HBox();
 
 			TextField tf1 = new TextField("127");
@@ -179,20 +182,21 @@ public class BasicUI extends Application implements Runnable {
 				tt.hide();
 			});
 
-			tf1.setPrefWidth(50);
-			tf2.setPrefWidth(50);
-			tf3.setPrefWidth(50);
-			tf4.setPrefWidth(50);
-			hb.setPadding(new Insets(30));
+			tf1.setPrefWidth(40);
+			tf2.setPrefWidth(40);
+			tf3.setPrefWidth(40);
+			tf4.setPrefWidth(40);
+			hb.setPadding(new Insets(40));
 			hb.getChildren().addAll(tf1, new Label(" . "), tf2, new Label(" . "), tf3, new Label(" . "), tf4);
 			dialog.getDialogPane().setContent(hb);
 			dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 			dialog.setResultConverter(result -> {
-				if ((tf1.getText() + tf2.getText() + tf3.getText() + tf4.getText()).trim().isEmpty() || result.equals(ButtonType.CANCEL))
+				if ((tf1.getText() + tf2.getText() + tf3.getText() + tf4.getText()).trim().isEmpty()
+						|| result.equals(ButtonType.CANCEL))
 					return null;
 				else
 					return tf1.getText() + "." + tf2.getText() + "." + tf3.getText() + "." + tf4.getText();
-				});
+			});
 
 			Optional<String> result = dialog.showAndWait();
 			Loading load = new Loading(stage);
@@ -216,33 +220,32 @@ public class BasicUI extends Application implements Runnable {
 					Notification.message(stage, AlertType.ERROR, "Connection - Typh™", "Server not found!");
 			});
 
-
 		});
 
 		StackPane sp = new StackPane();
-		
+
 		login = new Circle();
 		login.setFill(Color.TEAL);
 		login.setRadius(59);
 		DropShadow dropShadow = new DropShadow();
-	    dropShadow.setOffsetX(5);
-	    dropShadow.setOffsetY(5);
-	    dropShadow.setRadius(5);
-	    dropShadow.setBlurType(BlurType.GAUSSIAN);
-	    dropShadow.setColor(Color.color(0, 0, 0, 0.5));
-		
-	    FillTransition ft = new FillTransition(Duration.millis(500), login);
-   
-	    login.setEffect(dropShadow);	
-	    login.setOnMouseEntered(value->{
-	    	ft.setFromValue(Color.TEAL);
-	    	ft.setToValue(Color.valueOf("#1affe8"));
-	    	ft.play();
-	    });
-		login.setOnMouseExited(value->{
+		dropShadow.setOffsetX(5);
+		dropShadow.setOffsetY(5);
+		dropShadow.setRadius(5);
+		dropShadow.setBlurType(BlurType.GAUSSIAN);
+		dropShadow.setColor(Color.color(0, 0, 0, 0.5));
+
+		FillTransition ft = new FillTransition(Duration.millis(500), login);
+
+		login.setEffect(dropShadow);
+		login.setOnMouseEntered(value -> {
+			ft.setFromValue(Color.TEAL);
+			ft.setToValue(Color.valueOf("#1affe8"));
+			ft.play();
+		});
+		login.setOnMouseExited(value -> {
 			ft.setToValue(Color.TEAL);
-	    	ft.setFromValue(Color.valueOf("#1affe8"));
-	    	ft.play();
+			ft.setFromValue(Color.valueOf("#1affe8"));
+			ft.play();
 		});
 
 		login.setOnMouseClicked(arg -> {
@@ -255,20 +258,19 @@ public class BasicUI extends Application implements Runnable {
 			}
 		});
 
-	
 		login.setId("login");
 		Label lLabel = new Label("Login");
 		lLabel.setOnMouseClicked(login.getOnMouseClicked());
-		sp.getChildren().addAll(login,lLabel);
-		tool.getItems().addAll(cnct, new Separator(), howto, about, new Separator(),
-				fulls,dummy,exit);
+		sp.getChildren().addAll(login, lLabel);
+		tool.getItems().addAll(cnct, new Separator(), help, about, new Separator(), fulls, dummy, exit);
+
 		pane.setTop(tool);
 		pane.setCenter(sp);
 
 		basic = new Scene(pane, 1360, 768);
 
 		basic.getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
-		
+
 	}
 
 	private void exitApplication() {
@@ -276,12 +278,12 @@ public class BasicUI extends Application implements Runnable {
 		ex.setHeaderText("Exit Typh™ ? ");
 		ex.setTitle("Exit - Typh™");
 		ex.initOwner(stage);
-		ex.getButtonTypes().setAll(ButtonType.OK,ButtonType.CANCEL);
+		ex.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
 
 		Optional<ButtonType> result = ex.showAndWait();
-		result.ifPresent(arg->{
-			if(arg.equals(ButtonType.OK)){
-			if(!(Engine.mongo== null))
+		result.ifPresent(arg -> {
+			if (arg.equals(ButtonType.OK)) {
+				if (!(Engine.mongo == null))
 					Engine.mongo.close();
 				Platform.exit();
 			}
@@ -296,18 +298,20 @@ public class BasicUI extends Application implements Runnable {
 				InetAddress addr;
 				Boolean result = false;
 				try {
-					if(ipAddr == null){
+					if (ipAddr == null) {
 						return false;
 					}
 					addr = InetAddress.getByName(ipAddr);
-					if(!addr.isReachable(4000))
+					if (!addr.isReachable(4000))
 						return false;
-					MongoClientOptions.Builder options = MongoClientOptions.builder().sslEnabled(true).sslInvalidHostNameAllowed(true);
-					MongoClientURI connectionString =  new MongoClientURI("mongodb://typh:typhpass@"+ipAddr+":24000/?authSource=Students",options);
+					MongoClientOptions.Builder options = MongoClientOptions.builder().sslEnabled(true)
+							.sslInvalidHostNameAllowed(true);
+					MongoClientURI connectionString = new MongoClientURI(
+							"mongodb://typh:typhpass@" + ipAddr + ":24000/?authSource=Students", options);
 					Engine.mongo = new MongoClient(connectionString);
 					result = true;
 
-				} catch (Exception e){
+				} catch (Exception e) {
 					Engine.mongo.close();
 				}
 
@@ -332,7 +336,7 @@ public class BasicUI extends Application implements Runnable {
 		stage.setFullScreenExitHint("");
 		stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 		try {
-			this.stage=stage;
+			this.stage = stage;
 			startUI();
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
