@@ -15,6 +15,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
@@ -24,21 +25,24 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 public class Departments extends Dialog<String> implements EventHandler<ActionEvent> {
 
-	public static ObservableMap<String,String> dprtList;
+	public static ObservableMap<String, String> dprtList;
 	static int x, y;
 
 	private boolean isFirst;
 	private int saveAdded;
-	private Stage parent;
+	private Stage stage;
 	private GridPane home;
 	private Button addDprt;
+	private Button del;
 	private TextField dname;
 	private TextField dhead;
 	private ChoiceBox<String> tlabs;
@@ -47,26 +51,26 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 	private ChoiceBox<String> did;
 	private String slab;
 	private String scroom;
-	private String ssroom,d;
+	private String ssroom, d;
 	private CheckBox library;
 	private ToggleButton edit;
 
 	public Departments(Stage arg, GridPane pane, String name, String head, String labs, String crooms, String srooms,
-			String id,boolean lib) {
+			String id, boolean lib) {
 		this(arg);
 		home = pane;
 		library.setSelected(lib);
 		dname.setText(name);
 		dhead.setText(head);
-		slab=labs;
-		scroom=crooms;
-		ssroom=srooms;
-		d=id;
+		slab = labs;
+		scroom = crooms;
+		ssroom = srooms;
+		d = id;
 	}
 
 	public Departments(Stage arg) {
-		parent = arg;
-		initOwner(parent);
+		stage = arg;
+		initOwner(stage);
 		dname = new TextField();
 		dhead = new TextField();
 		tlabs = new ChoiceBox<>();
@@ -92,7 +96,7 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 		lib.setGraphic(library);
 		lib.setContentDisplay(ContentDisplay.RIGHT);
 		lbox.setAlignment(Pos.BASELINE_CENTER);
-		
+
 		dPane.setPadding(new Insets(40));
 		dPane.setHgap(20);
 		dPane.setVgap(20);
@@ -101,7 +105,6 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 		dhead.setPromptText("Department Head");
 
 		Tooltip tool = new Tooltip();
-
 
 		dhead.textProperty().addListener((obs, o, n) -> {
 			if (!n.matches("\\D*")) {
@@ -116,8 +119,6 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 			}
 		});
 
-
-
 		dhead.setOnMouseMoved(value -> tool.hide());
 		tlabs.setOnMouseMoved(value -> tool.hide());
 		tcrooms.setOnMouseMoved(value -> tool.hide());
@@ -127,23 +128,22 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 		dPane.add(new Label("Department Name"), 0, 0);
 		dPane.add(dname, 1, 0);
 		dPane.add(new Label("Department ID"), 0, 1);
-		dPane.add(did, 1,1);
+		dPane.add(did, 1, 1);
 		dPane.add(new Label("Head of the Deapartment"), 0, 2);
 		dPane.add(dhead, 1, 2);
 		dPane.add(new Label("Total number of labs"), 0, 3);
 		dPane.add(tlabs, 1, 3);
 		dPane.add(new Label("Total number of class rooms"), 0, 4);
 		dPane.add(tcrooms, 1, 4);
-		dPane.add( new Label("Total number of staff rooms"), 0, 5);
+		dPane.add(new Label("Total number of staff rooms"), 0, 5);
 		dPane.add(tsrooms, 1, 5);
 		dPane.add(lbox, 0, 6, 2, 1);
 
 		lib.setAlignment(Pos.BASELINE_CENTER);
 		getDialogPane().setContent(dPane);
 
-
 		if (!isFirst) {
-			if(saveAdded==0){
+			if (saveAdded == 0) {
 				ButtonType save = new ButtonType("Save", ButtonData.OK_DONE);
 				getDialogPane().getButtonTypes().clear();
 				getDialogPane().getButtonTypes().addAll(save, ButtonType.CANCEL);
@@ -165,29 +165,30 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 			did.getSelectionModel().selectFirst();
 			getDialogPane().getButtonTypes().clear();
 			getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-			
+
 		}
 
 		setResultConverter((arg) -> {
 			if ((arg.equals(ButtonType.OK) || arg.getButtonData().equals(ButtonData.OK_DONE)) && (!areFieldsEmpty())) {
 				dprtList.put(did.getValue(), dname.getText());
 				addDepartment();
-			} else if ((arg.equals(ButtonType.OK) || arg.getButtonData().equals(ButtonData.OK_DONE)) && (areFieldsEmpty()))
-				Notification.message(parent, AlertType.ERROR, "Error - Department - Typh™",
+			} else if ((arg.equals(ButtonType.OK) || arg.getButtonData().equals(ButtonData.OK_DONE))
+					&& (areFieldsEmpty()))
+				Notification.message(stage, AlertType.ERROR, "Error - Department - Typh™",
 						"All Fields are Mandatory.");
 			return null;
 
 		});
-		
+
 		show();
 	}
 
 	private void initRoom() {
 		for (int i = 1; i <= 99; i++) {
-			tlabs.getItems().add(String.format("%02d",i));
-			tsrooms.getItems().add(String.format("%02d",i));
-			tcrooms.getItems().add(String.format("%02d",i));
-			did.getItems().add(String.format("%02d",i));
+			tlabs.getItems().add(String.format("%02d", i));
+			tsrooms.getItems().add(String.format("%02d", i));
+			tcrooms.getItems().add(String.format("%02d", i));
+			did.getItems().add(String.format("%02d", i));
 		}
 	}
 
@@ -209,7 +210,7 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 		if (isFirst) {
 			document.append("department", dname.getText());
 			collection.insertOne(document);
-			tmp.setOnAction(new Departments(parent));
+			tmp.setOnAction(this);
 			if (x < 6) {
 				x++;
 				home.add(tmp, x - 1, y);
@@ -229,7 +230,6 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 			Bson query = new Document("$set", document);
 			collection.updateOne(filter, query);
 		}
-		
 
 	}
 
@@ -243,33 +243,61 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 		tcrooms.setDisable(flag);
 
 		tsrooms.setDisable(flag);
- 
-	 did.setDisable(flag);      
-       library.setDisable(flag);;           
+
+		did.setDisable(flag);
+		library.setDisable(flag);
+		if(!isFirst)
+			del.setDisable(flag);
 	}
 
 	public void addEdit(GridPane pane) {
 		if (!isFirst) {
 			HBox seBox = new HBox();
 			seBox.setPadding(new Insets(50));
+			seBox.setSpacing(20);
 			seBox.setAlignment(Pos.CENTER);
+			del = new Button("Delete");
 			edit = new ToggleButton("Edit");
 			edit.selectedProperty().addListener((arg, o, n) -> {
 				disableAll(!n);
 			});
-			seBox.getChildren().add(edit);
-			pane.add(seBox, 0,7, 2, 1);
+			del.setOnAction(val -> {
+				Alert dalert = new Alert(AlertType.CONFIRMATION);
+				dalert.setTitle("Delete a Department - Typh™");
+				dalert.setHeaderText("Are you sure to delete Department of : " + dname.getText() + "?");
+				dalert.initOwner(this.getDialogPane().getScene().getWindow());
+				dalert.setResultConverter(value -> {
+					if (value.equals(ButtonType.OK)) {
+						Bson query = new Document("department", dname.getText());
+						Engine.db.getCollection("Departments").deleteOne(query);
+						Stage s_t = stage;
+						BorderPane bp_t = AdminUI.pane;
+						ToolBar b_t=AdminUI.mb;
+						Platform.runLater(()->{
+							//stage.close();
+							(new Thread(new AdminUI(s_t,bp_t,b_t))).start();
+						});
+						
+					}
+					return null;
+				});
+				dalert.show();
+
+			});
+			seBox.getChildren().addAll(edit, del);
+
+			pane.add(seBox, 0, 7, 2, 1);
 		}
 	}
 
 	@Override
 	public void handle(ActionEvent arg) {
-		isFirst=false;
+		isFirst = false;
 		createUI();
 	}
 
 	public void begin() {
-		isFirst=true;
+		isFirst = true;
 		createUI();
 	}
 }

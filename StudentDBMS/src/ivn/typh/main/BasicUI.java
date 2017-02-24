@@ -11,7 +11,8 @@ import java.util.concurrent.Executors;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
-import javafx.animation.ScaleTransition;
+
+import javafx.animation.FillTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -29,8 +30,6 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Light;
-import javafx.scene.effect.Lighting;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -41,7 +40,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.control.Dialog;
@@ -53,7 +51,7 @@ public class BasicUI extends Application implements Runnable {
 	public static String password;
 	public static BorderPane pane ;
 	public static String ipAddr;
-	public static Button login;
+	public Circle login;
 
 	public Scene basic;
 	private Stage stage;
@@ -75,7 +73,6 @@ public class BasicUI extends Application implements Runnable {
 		tictac = new Button("TicTacToe");
 		about = new Button("About");
 		howto = new Button("How To Use ?");
-		//login = new Button("Log In");
 		cnct = new Button("Connect");
 		fulls = new ToggleButton("X");
 		exit.setOnAction(event -> {
@@ -89,13 +86,11 @@ public class BasicUI extends Application implements Runnable {
 		cnct.setOnAction(arg0 -> {
 			Dialog<String> dialog = new Dialog<>();
 			dialog.setTitle("Connection - Typh™");
-			dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
 			dialog.initOwner(stage);
 			dialog.setHeaderText("Enter Server IP address");
-			VBox vb = new VBox();
+			
 			HBox hb = new HBox();
-			vb.setPadding(new Insets(20));
-			vb.setSpacing(10);
+
 			TextField tf1 = new TextField("127");
 			TextField tf2 = new TextField("0");
 			TextField tf3 = new TextField("0");
@@ -188,31 +183,27 @@ public class BasicUI extends Application implements Runnable {
 			tf2.setPrefWidth(50);
 			tf3.setPrefWidth(50);
 			tf4.setPrefWidth(50);
-
+			hb.setPadding(new Insets(30));
 			hb.getChildren().addAll(tf1, new Label(" . "), tf2, new Label(" . "), tf3, new Label(" . "), tf4);
-			vb.getChildren().add(hb);
-
-			dialog.getDialogPane().setContent(vb);
-
+			dialog.getDialogPane().setContent(hb);
+			dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 			dialog.setResultConverter(result -> {
-				if ((tf1.getText() + tf2.getText() + tf3.getText() + tf4.getText()).trim().isEmpty())
+				if ((tf1.getText() + tf2.getText() + tf3.getText() + tf4.getText()).trim().isEmpty() || result.equals(ButtonType.CANCEL))
 					return null;
 				else
 					return tf1.getText() + "." + tf2.getText() + "." + tf3.getText() + "." + tf4.getText();
-	
-			});
+				});
 
 			Optional<String> result = dialog.showAndWait();
 			Loading load = new Loading(stage);
 
 			Task<Boolean> cm = checkMachine(stage);
-			load.startTask(cm);
 
 			result.ifPresent(ip -> {
 				ipAddr = ip;
+				load.startTask(cm);
 				pane.setDisable(true);
 				(new Thread(cm)).start();
-				
 				pane.setDisable(false);
 
 			});
@@ -230,28 +221,29 @@ public class BasicUI extends Application implements Runnable {
 
 		StackPane sp = new StackPane();
 		
-		Circle login = new Circle();
-		login.setFill(Color.AQUA);
+		login = new Circle();
+		login.setFill(Color.TEAL);
 		login.setRadius(59);
-		login.setOnMouseEntered(event->{
-			 DropShadow dropShadow = new DropShadow();
-
-		    dropShadow.setOffsetX(5);
-
-		    dropShadow.setOffsetY(5);
-
-		    dropShadow.setRadius(5);
-
-		    dropShadow.setBlurType(BlurType.GAUSSIAN);
-
-		    dropShadow.setColor(Color.color(0, 0, 0, 0.45));
-			login.setEffect(dropShadow);
+		DropShadow dropShadow = new DropShadow();
+	    dropShadow.setOffsetX(5);
+	    dropShadow.setOffsetY(5);
+	    dropShadow.setRadius(5);
+	    dropShadow.setBlurType(BlurType.GAUSSIAN);
+	    dropShadow.setColor(Color.color(0, 0, 0, 0.5));
+		
+	    FillTransition ft = new FillTransition(Duration.millis(500), login);
+   
+	    login.setEffect(dropShadow);	
+	    login.setOnMouseEntered(value->{
+	    	ft.setFromValue(Color.TEAL);
+	    	ft.setToValue(Color.valueOf("#1affe8"));
+	    	ft.play();
+	    });
+		login.setOnMouseExited(value->{
+			ft.setToValue(Color.TEAL);
+	    	ft.setFromValue(Color.valueOf("#1affe8"));
+	    	ft.play();
 		});
-		
-		login.setOnMouseExited(event->{
-			login.setEffect(null);
-		});		
-		
 
 		login.setOnMouseClicked(arg -> {
 			if (ipAddr != null) {
@@ -265,8 +257,10 @@ public class BasicUI extends Application implements Runnable {
 
 	
 		login.setId("login");
-		sp.getChildren().addAll(login,new Label("Login"));
-		tool.getItems().addAll(tictac, cnct, new Separator(), howto, about, new Separator(),
+		Label lLabel = new Label("Login");
+		lLabel.setOnMouseClicked(login.getOnMouseClicked());
+		sp.getChildren().addAll(login,lLabel);
+		tool.getItems().addAll(cnct, new Separator(), howto, about, new Separator(),
 				fulls,dummy,exit);
 		pane.setTop(tool);
 		pane.setCenter(sp);

@@ -2,6 +2,7 @@ package ivn.typh.admin;
 
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Side;
 
 import java.awt.Toolkit;
 import java.time.LocalDateTime;
@@ -41,6 +42,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -59,23 +61,27 @@ public class AdminUI implements Runnable {
 	private static Button addStudent;
 	
 	static ListView<String> onlineUser;
-	private ToolBar mb;
+	static ToolBar mb;
+	
+	private Button menu;
 	private Label rts;
 	private Label rtu;
 	private Label rll;
 	private Search srch ;
-	private BorderPane pane;
+	static BorderPane pane;
 
 	public AdminUI(Stage s, BorderPane p, ToolBar tb) {
 		mb = tb;
 		stage = s;
 		pane = p;
+		menu = new Button("Menu");
 		rts = new Label();
 		rtu = new Label();
 		rll = new Label();
 	}
 
 	public void startUI() {
+		StackPane spMain = new StackPane();
 		GridPane gpane = new GridPane();
 		ScrollPane sgpane = new ScrollPane();
 
@@ -97,7 +103,19 @@ public class AdminUI implements Runnable {
 		Label au = new Label("Online Users");
 		Button logout = new Button("Log Out");
 		srch = new Search();
-
+		
+		
+		
+		SideBar side = new SideBar(menu);
+		side.addAll(admin,ts,rts,tu,rtu,ll,rll,mb.getItems().get(2),mb.getItems().get(3),mb.getItems().get(5));
+		side.setPrefWidth(300);
+		
+		
+		mb.getItems().remove(7);
+		mb.getItems().add(7,logout);
+		mb.getItems().remove(0, 5);
+		mb.getItems().add(menu);
+		
 		onlineUser = new ListView<>();
 		onlineUser.getItems().add("No User is online !");
 		ContextMenu oucm = new ContextMenu();
@@ -125,6 +143,7 @@ public class AdminUI implements Runnable {
 		rc1.setPercentHeight(70);
 
 		TabPane tabPane = new TabPane();
+		tabPane.setSide(Side.LEFT);
 		tabPane.getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
 		Tab user = new Tab("User Accounts");
 		Tab stud = new Tab("Student Profiles");
@@ -218,9 +237,7 @@ public class AdminUI implements Runnable {
 		studGrid.add(addStudent, Students.x, Students.y);
 		dprtGrid.add(addDepartment, Departments.x, Departments.y);
 		
-		mb.getItems().remove(8);
-		mb.getItems().add(8,logout);
-		mb.getItems().remove(1);
+		
 		user.setContent(scrollUser);
 		stud.setContent(scrollStud);
 		dprt.setContent(scrollDprt);
@@ -235,26 +252,26 @@ public class AdminUI implements Runnable {
 		
 		center.getChildren().addAll(tabPane);
 		topL.getChildren().add(admin);
-    	left.getChildren().addAll(ts, rts, tu, rtu, ll, rll);
+    	left.getChildren().addAll(topL,ts, rts, tu, rtu, ll, rll);
 		right.getChildren().addAll(au, onlineUser);
 		top.getChildren().addAll(search, srch);
 
 		
 		gpane.getColumnConstraints().addAll(cc0, cc1, cc2);
 		gpane.getRowConstraints().addAll(rc0, rc1);
-		gpane.add(topL, 0, 0);
-		gpane.add(left, 0, 1, 1, 2);
-		gpane.add(center, 1, 1);
+		gpane.add(center, 0, 1);
 		gpane.add(right, 2, 0, 1, 2);
 		gpane.add(top, 1, 0);
-		gpane.setMinSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
+		gpane.setMaxSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
 				Toolkit.getDefaultToolkit().getScreenSize().getHeight());
 		sgpane.setContent(gpane);
 		sgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		sgpane.setVbarPolicy(ScrollBarPolicy.NEVER);
+		spMain.getChildren().add(sgpane);
+		
 		stage.getScene().getStylesheets().remove(0);
 		stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
-		pane.setCenter(sgpane);
+		pane.setCenter(spMain);
 	}
 
 	private void sendData() {

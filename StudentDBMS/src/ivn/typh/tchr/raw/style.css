@@ -93,7 +93,7 @@
 	-fx-alignment: center;
 }
 #home{
-		-fx-background-color: linear-gradient(to bottom right,white,derive(-fx-base,70%));
+		-fx-background-color: white;
 		-fx-padding: 30;
 }
 #reportDialog{

@@ -15,6 +15,7 @@ import ivn.typh.tchr.TchrUI;
 
 import static com.mongodb.client.model.Filters.*;
 
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
@@ -31,6 +32,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class LogIn implements Runnable {
 
@@ -50,8 +52,8 @@ public class LogIn implements Runnable {
 	public void startUI() {
 
 		gpane = new GridPane();
-		Label user = new Label("User");
-		Label pass = new Label("Password");
+		Label user = new Label("User:");
+		Label pass = new Label("Password:");
 		TextField userText = new TextField();
 		PasswordField passText = new PasswordField();
 
@@ -59,7 +61,7 @@ public class LogIn implements Runnable {
 		dialog.setTitle("Typh™ Login");
 		dialog.setHeaderText("Enter your login information");
 
-		gpane.setPadding(new Insets(30));
+		gpane.setPadding(new Insets(50));
 		gpane.setHgap(20);
 		gpane.setVgap(20);
 		gpane.add(user, 0, 0);
@@ -196,6 +198,7 @@ public class LogIn implements Runnable {
 		}
 
 	}
+
 
 	@Override
 	public void run() {

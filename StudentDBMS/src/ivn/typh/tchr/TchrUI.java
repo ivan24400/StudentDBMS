@@ -1074,12 +1074,17 @@ public class TchrUI implements Runnable {
 			tp[i] = new TitledPane(cat[i], scroll[i]);
 		}
 		
-		mb.getItems().remove(8);
-		mb.getItems().add(8, logout);
-		mb.getItems().remove(1);
+		mb.getItems().remove(7);
+		mb.getItems().add(7, logout);
+		mb.getItems().remove(0);
 
 		accord.getPanes().addAll(tp);
 		accord.setExpandedPane(tp[0]);
+		accord.expandedPaneProperty().addListener((obs,o,n)->{
+			if(n != null)
+			if(o.equals(n))
+				n.setCollapsible(false);
+		});
 		
 		slist.setPrefWidth(150);
 		
@@ -1101,7 +1106,7 @@ public class TchrUI implements Runnable {
 		tgpane.add(aboveAcc, 1, 1);
 		tgpane.add(accord, 1, 2);
 		
-		tgpane.setMinSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
+		tgpane.setMaxSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
 				Toolkit.getDefaultToolkit().getScreenSize().getHeight());
 		sctgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		sctgpane.setVbarPolicy(ScrollBarPolicy.NEVER);

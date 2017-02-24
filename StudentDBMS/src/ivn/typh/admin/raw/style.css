@@ -72,9 +72,11 @@
 }
 
 .tab-pane {
-  -fx-tab-min-width:150px;
-  -fx-tab-max-width:150px;
-  -fx-min-width: 700px
+  -fx-tab-min-height:150px;
+  -fx-tab-max-height:300px;
+  -fx-min-width: 700px;
+   -fx-tab-min-width: 100px;
+  -fx-tab-max-width: 100px
 }
 
 .tab:selected {	
@@ -88,8 +90,12 @@
 .tab .tab-label { 
     -fx-alignment: center;
     -fx-text-fill: #000000;
+    -fx-rotate: 90
 }
 
+.tab {
+	-fx-width: 1000px;
+}
 .tab:selected .tab-label { 
     -fx-alignment: center;
     -fx-text-fill: #00ff80;
@@ -114,4 +120,9 @@
 	-fx-padding: 40;
 	-fx-hgap: 30;
 	-fx-vgap: 30;
+}
+
+#sideBar {
+	-fx-padding: 20;
+	-fx-spacing: 10
 }

@@ -22,6 +22,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
@@ -32,6 +33,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -48,18 +50,19 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 
 	static ObservableList<String> studentList;
 	static int x, y;
-	private String sc,sb,dp,yr,srno;
+	private String sc, sb, dp, yr, srno;
 	private int saveAdded;
 	private boolean isFirst;
 	private String dpImg;
 	private GridPane home;
 	private Button addS;
+	private Button del;
 	private Stage parent;
 	private TextField tsname;
 	private TextField tsid;
 	private ChoiceBox<String> tsrno;
 	private ChoiceBox<String> tsclass;
-	private ChoiceBox<String>  tsbatch;
+	private ChoiceBox<String> tsbatch;
 	private ChoiceBox<String> tsyear;
 	private TextField tsmail;
 	private TextField tsaddr;
@@ -71,7 +74,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 	private ChoiceBox<String> tsdprt;
 
 	public Students(Stage s, GridPane gp, String n, String i, String rolln, String clas, String batch, String mail,
-			String addr, String sp, String pp, String dprt, String img,String y) {
+			String addr, String sp, String pp, String dprt, String img, String y) {
 		this(s);
 		home = gp;
 
@@ -83,11 +86,11 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		tpphone.setText(pp);
 		tsdprt.setValue(dprt);
 		dpImg = img;
-		srno =rolln;
-		sc=clas;
-		sb=batch;
-		dp=dprt;
-		yr=y;
+		srno = rolln;
+		sc = clas;
+		sb = batch;
+		dp = dprt;
+		yr = y;
 	}
 
 	public Students(Stage arg) {
@@ -124,7 +127,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		dPane.setHgap(20);
 		dPane.setVgap(20);
 
-		tsyear.getItems().setAll(FXCollections.observableArrayList("FE","SE","TE","BE"));
+		tsyear.getItems().setAll(FXCollections.observableArrayList("FE", "SE", "TE", "BE"));
 		tsname.setPromptText("Name");
 		tsid.setPromptText("ID");
 		tsmail.setPromptText("Email");
@@ -134,12 +137,12 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 
 		ContextMenu cm = new ContextMenu();
 		MenuItem autog = new MenuItem("Auto Generate");
-		autog.setOnAction(arg->{
-			Departments.dprtList.forEach((key,val)->{
-					if(val==tsdprt.getValue()){
-						tsid.setText(key+tsyear.getValue()+tsclass.getValue()+tsrno.getValue());
-						
-					}
+		autog.setOnAction(arg -> {
+			Departments.dprtList.forEach((key, val) -> {
+				if (val == tsdprt.getValue()) {
+					tsid.setText(key + tsyear.getValue() + tsclass.getValue() + tsrno.getValue());
+
+				}
 			});
 		});
 		tsid.setContextMenu(cm);
@@ -244,7 +247,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 			File tmp = file.showOpenDialog(parent);
 			dpImgView.setImage(new Image(tmp.getAbsolutePath()));
 		});
-		
+
 		Label year = new Label("Current Year");
 		GridPane.setHalignment(year, HPos.RIGHT);
 		dPane.add(new Label("Name"), 0, 0);
@@ -256,7 +259,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		dPane.add(new Label("Department"), 0, 3);
 
 		dPane.add(tsdprt, 1, 3);
-	
+
 		dPane.add(new Label("Class"), 2, 1);
 		dPane.add(tsclass, 3, 1);
 		dPane.add(new Label("Batch"), 2, 0);
@@ -270,8 +273,8 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		dPane.add(new Label("Parent Phone"), 2, 4);
 		dPane.add(tpphone, 3, 4);
 		dPane.add(dpImgView, 4, 1, 1, 5);
-		
-		dPane.add(year, 1,5);
+
+		dPane.add(year, 1, 5);
 		dPane.add(tsyear, 2, 5);
 		addEdit(dPane);
 
@@ -321,15 +324,15 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 	}
 
 	private void initRooms() {
-		for(int i=1;i<100;i++){
+		for (int i = 1; i < 100; i++) {
 			tsclass.getItems().add(String.format("%02d", i));
 			tsbatch.getItems().add(String.format("%02d", i));
 		}
-		for(int i=0;i<26;i++){
-			tsbatch.getItems().add(Character.toString((char)('A'+i)));
-			tsbatch.getItems().add(Character.toString((char)('a'+i)));
+		for (int i = 0; i < 26; i++) {
+			tsbatch.getItems().add(Character.toString((char) ('A' + i)));
+			tsbatch.getItems().add(Character.toString((char) ('a' + i)));
 		}
-		for(int i=1;i<200;i++){
+		for (int i = 1; i < 200; i++) {
 			tsrno.getItems().add(String.format("%03d", i));
 		}
 	}
@@ -340,12 +343,29 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 			HBox seBox = new HBox();
 			seBox.setPadding(new Insets(50));
 			seBox.setAlignment(Pos.CENTER);
-
+			seBox.setSpacing(20);
 			edit = new ToggleButton("Edit");
+			del = new Button("Delete");
 			edit.selectedProperty().addListener((obs, o, n) -> {
 				disableAll(!n);
 			});
-			seBox.getChildren().add(edit);
+			del.setOnAction(val -> {
+				Alert dalert = new Alert(AlertType.CONFIRMATION);
+				dalert.setTitle("Delete Student - Typh™");
+				dalert.setHeaderText("Are you sure to delete Student Profile of : " + tsname.getText() + "?");
+				dalert.initOwner(this.getDialogPane().getScene().getWindow());
+				dalert.setResultConverter(value -> {
+					if (value.equals(ButtonType.OK)) {
+						Bson query = new Document("name", tsname.getText());
+						Engine.db.getCollection("Students").deleteOne(query);
+					}
+					return null;
+				});
+				dalert.show();
+
+			});
+			seBox.getChildren().addAll(edit, del);
+			
 			pane.add(seBox, 0, 6, 5, 1);
 		}
 	}
@@ -362,9 +382,13 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		tsaddr.setEditable(!flag);
 		tsphone.setEditable(!flag);
 		tpphone.setEditable(!flag);
-		tsyear.setDisable(flag);        
-		dpImgView.setDisable(flag);        
-		upload.setDisable(flag);              
+		tsyear.setDisable(flag);
+		dpImgView.setDisable(flag);
+		upload.setDisable(flag);
+		if(!isFirst)
+			del.setDisable(flag);
+
+
 	}
 
 	private void addButton() {
@@ -390,7 +414,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 			doc.append("name", tsname.getText());
 			Engine.db.getCollection("Students").insertOne(doc);
 			Button tmp = new Button(tsname.getText());
-			tmp.setOnAction(new Students(parent));
+			tmp.setOnAction(this);
 			if (x < 6) {
 				x++;
 				home.add(tmp, x - 1, y);
@@ -412,9 +436,10 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		}
 	}
 
-	public String getStudentName(){
+	public String getStudentName() {
 		return tsname.getText();
 	}
+
 	public void begin() {
 		isFirst = true;
 		createUI();
@@ -425,6 +450,5 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		isFirst = false;
 		createUI();
 	}
-
 
 }
