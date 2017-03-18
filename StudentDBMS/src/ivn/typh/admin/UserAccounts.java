@@ -253,8 +253,8 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 						Bson query = new Document("user",username.getText());
 						Engine.db.getCollection("Users").deleteOne(query);
 						Stage s_t = stage;
-						BorderPane bp_t = AdminUI.pane;
-						ToolBar b_t=AdminUI.mb;
+						BorderPane bp_t = Components.pane;
+						ToolBar b_t=Components.mb;
 						Platform.runLater(()->{
 							(new Thread(new AdminUI(s_t,bp_t,b_t))).start();
 							stage.close();

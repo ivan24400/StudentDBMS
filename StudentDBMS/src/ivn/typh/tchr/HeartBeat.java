@@ -39,7 +39,7 @@ public class HeartBeat implements Runnable {
 						String text = in.readLine();
 						if(!text.equals("beat") && !(text.equals("__NO__TEXT__"))){
 							Platform.runLater(()->{
-								Notification.message(TchrUI.stage, AlertType.INFORMATION, "Message from admin - Typh™", text);
+								Notification.message(Components.stage, AlertType.INFORMATION, "Message from admin - Typh™", text);
 							});
 						}
 					} catch (IOException e) {

@@ -271,8 +271,8 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 						Bson query = new Document("department", dname.getText());
 						Engine.db.getCollection("Departments").deleteOne(query);
 						Stage s_t = stage;
-						BorderPane bp_t = AdminUI.pane;
-						ToolBar b_t=AdminUI.mb;
+						BorderPane bp_t = Components.pane;
+						ToolBar b_t=Components.mb;
 						Platform.runLater(()->{
 							//stage.close();
 							(new Thread(new AdminUI(s_t,bp_t,b_t))).start();

@@ -125,7 +125,7 @@ public class Search extends TextField {
 	@SuppressWarnings("unchecked")
 	private void displayReport(String result) {
 		Dialog<?> report = new Dialog<>();
-		report.initOwner(TchrUI.stage);
+		report.initOwner(Components.stage);
 		ScrollPane spAcad = new ScrollPane();
 		GridPane academic = new GridPane();
 		

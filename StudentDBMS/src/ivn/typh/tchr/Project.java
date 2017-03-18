@@ -9,6 +9,8 @@ import com.mongodb.Block;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
 import ivn.typh.main.Engine;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -43,6 +45,7 @@ public class Project extends ListCell<String>{
 		HBox.setHgrow(dummy,Priority.ALWAYS);
 
 		pane.getChildren().addAll(label,dummy,download);
+		download.setId("project_download");
 		download.setOnAction(value->{
 			DirectoryChooser dir = new DirectoryChooser();
 			dir.setTitle("Select a download path - Typh™");
@@ -74,7 +77,7 @@ public class Project extends ListCell<String>{
             Dragboard dragboard = startDragAndDrop(TransferMode.MOVE);
             ClipboardContent content = new ClipboardContent();
             content.putString(getItem());
-            dragboard.setDragView(new Image(getClass().getResourceAsStream("raw/pic.jpg")));
+            dragboard.setDragView(new Image(getClass().getResourceAsStream("/ivn/typh/tchr/icons/project_drag.png")));
             dragboard.setContent(content);
 
             event.consume();

@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -51,6 +50,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.geometry.VPos;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
@@ -100,8 +100,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -109,92 +109,23 @@ import javafx.util.converter.IntegerStringConverter;
 
 public class TchrUI implements Runnable {
 
-	public static Stage stage;
-	
-	private Scene scene;
-	private String classIncharge;
-	private BorderPane pane;
 	private static ObservableList<String> studList;
 	private static ObservableMap<String, String> dprtList;
-	private ObservableList<String> repList;
-	private Button update;
-	private Button report;
-	private ToolBar mb;
-	private ComboBox<String> slist;
-	static ComboBox<String> yrlst;
-	private TitledPane[] tp;
-	private Accordion accord;
-	private Label srch;
-	private Search searchBox;
-	private Label reports;
-	private Label student;
-
-	private Button menu;
-	private Label pname;
-	private Label dprt;
-	private Label pdprt;
-	private Label cls;
-	private Label pcls;
-	private Label tstuds;
-	private Label nstuds;
-
-	// Personal
-
-	private ImageView dpImgView;
-	private TextField tsname;
-	private TextField tsid;
-	private ListView<Report> reps;
-	private ChoiceBox<String> tsrno;
-	private ChoiceBox<String> tsdprt;
-	private ChoiceBox<String> tsclass;
-	private ChoiceBox<String> tsbatch;
-	private ChoiceBox<String> tsyear;
-	private TextField tsmail;
-	private TextField tsaddr;
-	private TextField tsphone;
-	private TextField tpphone;
-
-	// Academic
-
-	private TableView<Marks> tsem1;
-	private TableView<Marks> tsem2;
-	private Button addEntry;
-	private RadioButton rbsem1;
-	private RadioButton rbsem2;
-	private LineChart<String, Number> studProgress;
-
-	// Attendance
-
-	private TableView<Attendance> atsem1;
-	private TableView<Attendance> atsem2;
-	private Button addat;
-	private RadioButton atrbsem1;
-	private RadioButton atrbsem2;
-	private BarChart<String, Number> atBarChart;
-	private CategoryAxis atXaxis;
-	private NumberAxis atYaxis;
-
-	// Projects
-
-	private ListView<String> prList;
-	private Map<String, String> prtmp;
-
-	// Assignments
-
-	private ListView<Assignment> asList;
-	private Button addAssignment;
-	private Button removeAssignment;
+	private static ComboBox<String> yrlst;
 
 	public TchrUI(Stage s, BorderPane p, Scene scen, ToolBar tb) {
-		mb = tb;
-		pane = p;
-		stage = s;
-		scene = scen;
-		menu = new Button("Menu");
-		repList = FXCollections.observableArrayList();
+		
 		studList = FXCollections.observableArrayList();
 		dprtList = FXCollections.observableHashMap();
 		Engine.gfs = GridFSBuckets.create(Engine.db, "projects");
+		
+		Components.mb = tb;
+		Components.pane = p;
+		Components.stage = s;
+		Components.scene = scen;
+		Components.menu = new Button("Menu");
+		Components.repList = FXCollections.observableArrayList();
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -224,36 +155,37 @@ public class TchrUI implements Runnable {
 	
 		Pane dummy = new Pane();
 
-		SideBar side = new SideBar(dummy,menu);
+		SideBar side = new SideBar(dummy,Components.menu);
 		side.setMenuWidth(300);
 		side.getStyleClass().add(".sideBarButton");
+		Components.menu.setGraphic(new ImageView(new Image("/ivn/typh/main/icons/menu.png")));
+
+		Components.pname = new Label();
+		Components.dprt = new Label("Department:");
+		Components.pdprt = new Label();
+		Components.cls = new Label("Class:");
+		Components.pcls = new Label();
+		Components.tstuds = new Label("Total Students:");
+		Components.nstuds = new Label();
 		
-		pname = new Label();
-		dprt = new Label("Department:");
-		pdprt = new Label();
-		cls = new Label("Class:");
-		pcls = new Label();
-		tstuds = new Label("Total Students:");
-		nstuds = new Label();
+		Components.pdprt.setId("logInfo");
+		Components.pcls.setId("logInfo");
+		Components.nstuds.setId("logInfo");
 		
-		pdprt.setId("logInfo");
-		pcls.setId("logInfo");
-		nstuds.setId("logInfo");
-		
-		reps = new ListView<>();
-		slist = new ComboBox<>();
-		srch = new Label("Search");
-		searchBox = new Search();
-		reports = new Label("Reports");
-		student = new Label("Student");
-		tp = new TitledPane[cat.length];
-		accord = new Accordion();
-		update = new Button("Update");
-		report = new Button("Report");
+		Components.reps = new ListView<>();
+		Components.slist = new ComboBox<>();
+		Components.srch = new Label("Search");
+		Components.searchBox = new Search();
+		Components.reports = new Label("Reports");
+		Components.student = new Label("Student");
+		Components.tp = new TitledPane[cat.length];
+		Components.accord = new Accordion();
+		Components.update = new Button("Update");
+		Components.report = new Button("Report");
 		yrlst = new ComboBox<>();
-		tsyear = new ChoiceBox<>();
+		Components.tsyear = new ChoiceBox<>();
 		yrlst.getItems().addAll(FXCollections.observableArrayList("FE", "SE", "TE", "BE"));
-		tsyear.getItems().addAll(yrlst.getItems());
+		Components.tsyear.getItems().addAll(yrlst.getItems());
 
 		yrlst.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
 			loadReport(n);
@@ -263,7 +195,7 @@ public class TchrUI implements Runnable {
 			loadAssignmentData(n);
 		});
 
-		aboveAcc.getChildren().addAll(student, slist, new Label("Select Year"), yrlst, editable, update, report);
+		aboveAcc.getChildren().addAll(Components.student, Components.slist, new Label("Select Year"), yrlst, editable, Components.update, Components.report);
 
 		
 		Thread pulse = new Thread(new HeartBeat());
@@ -273,8 +205,8 @@ public class TchrUI implements Runnable {
 			logoutApplication();
 		});
 
-		update.setOnAction(arg -> {
-			uploadData(tsid.getText());
+		Components.update.setOnAction(arg -> {
+			uploadData(Components.tsid.getText());
 		});
 
 		
@@ -286,12 +218,12 @@ public class TchrUI implements Runnable {
 		int scrollCount = cat.length;
 		ScrollPane[] scroll = new ScrollPane[scrollCount];
 
-		slist.getSelectionModel().selectedItemProperty().addListener((arg, o, n) -> {
+		Components.slist.getSelectionModel().selectedItemProperty().addListener((arg, o, n) -> {
 			loadStudentProfile(n.split(":")[1]);
 		});
 
-		srch.setId("search");
-		searchBox.setId("searchBox");
+		Components.srch.setId("search");
+		Components.searchBox.setId("searchBox");
 		
 		//
 		// Personal
@@ -313,30 +245,30 @@ public class TchrUI implements Runnable {
 		Label pphone = new Label("Parent Phone:");
 
 
-		dpImgView = new ImageView(new Image(getClass().getResourceAsStream("raw/pic.jpg")));
-		dpImgView.setId("dpImgView");
-		tsname = new TextField();
-		tsid = new TextField();
-		tsrno = new ChoiceBox<>();
-		tsdprt = new ChoiceBox<>();
-		tsclass = new ChoiceBox<>();
-		tsbatch = new ChoiceBox<>();
-		tsmail = new TextField();
-		tsaddr = new TextField();
-		tsphone = new TextField();
-		tpphone = new TextField();
+		Components.dpImgView = new ImageView(new Image(getClass().getResourceAsStream("/ivn/typh/main/raw/pic.jpg")));
+		Components.dpImgView.setId("dpImgView");
+		Components.tsname = new TextField();
+		Components.tsid = new TextField();
+		Components.tsrno = new ChoiceBox<>();
+		Components.tsdprt = new ChoiceBox<>();
+		Components.tsclass = new ChoiceBox<>();
+		Components.tsbatch = new ChoiceBox<>();
+		Components.tsmail = new TextField();
+		Components.tsaddr = new TextField();
+		Components.tsphone = new TextField();
+		Components.tpphone = new TextField();
 
-		tsname.setPromptText("Name");
-		tsid.setPromptText("ID");
-		tsmail.setPromptText("Email");
-		tsaddr.setPromptText("Address");
-		tsphone.setPromptText("Phone");
-		tpphone.setPromptText("Parent Phone");
+		Components.tsname.setPromptText("Name");
+		Components.tsid.setPromptText("ID");
+		Components.tsmail.setPromptText("Email");
+		Components.tsaddr.setPromptText("Address");
+		Components.tsphone.setPromptText("Phone");
+		Components.tpphone.setPromptText("Parent Phone");
 
 
-		dpImgView.setFitHeight(128);
-		dpImgView.setFitWidth(128);
-		dpImgView.setOnDragOver((arg0) -> {
+		Components.dpImgView.setFitHeight(128);
+		Components.dpImgView.setFitWidth(128);
+		Components.dpImgView.setOnDragOver((arg0) -> {
 			Dragboard db = arg0.getDragboard();
 			if (db.hasFiles()) {
 				arg0.acceptTransferModes(TransferMode.COPY);
@@ -345,12 +277,12 @@ public class TchrUI implements Runnable {
 			}
 		});
 
-		dpImgView.setOnDragDropped((arg0) -> {
+		Components.dpImgView.setOnDragDropped((arg0) -> {
 			Dragboard db = arg0.getDragboard();
 			boolean success = false;
 			if (db.hasFiles()) {
 				db.getFiles().forEach(file -> {
-					dpImgView.setImage(new Image(file.toURI().toString()));
+					Components.dpImgView.setImage(new Image(file.toURI().toString()));
 					System.out.println(file.getAbsolutePath());
 				});
 				success = true;
@@ -362,32 +294,32 @@ public class TchrUI implements Runnable {
 		Tooltip tool = new Tooltip();
 		tool.setAutoHide(true);
 
-		tsname.textProperty().addListener((obs, o, n) -> {
+		Components.tsname.textProperty().addListener((obs, o, n) -> {
 			if (!n.matches("\\D*")) {
 				tool.setText("Enter alphabets only");
-				Point2D p = tsname.localToScene(0.0, 0.0);
-				tool.show(tsname, p.getX() + tsname.getCaretPosition(), p.getY() + tsname.getHeight());
-				tsname.setText(n.replaceAll("[\\d]", ""));
+				Point2D p = Components.tsname.localToScene(0.0, 0.0);
+				tool.show(Components.tsname, p.getX() + Components.tsname.getCaretPosition(), p.getY() + Components.tsname.getHeight());
+				Components.tsname.setText(n.replaceAll("[\\d]", ""));
 			}
 		});
 
-		tsphone.textProperty().addListener((obs, o, n) -> {
+		Components.tsphone.textProperty().addListener((obs, o, n) -> {
 			if (!n.matches("\\d*")) {
 				System.out.println(obs.getValue() + "\t" + o + "\t" + n);
-				Point2D p = tsphone.localToScene(0.0, 0.0);
+				Point2D p = Components.tsphone.localToScene(0.0, 0.0);
 				tool.setText("Enter numbers only");
-				tool.show(tsphone, p.getX() + tsphone.getCaretPosition(), p.getY() + tsphone.getHeight());
-				tsphone.setText(n.replaceAll("[^\\d]", ""));
+				tool.show(Components.tsphone, p.getX() + Components.tsphone.getCaretPosition(), p.getY() + Components.tsphone.getHeight());
+				Components.tsphone.setText(n.replaceAll("[^\\d]", ""));
 			}
 		});
 
-		tpphone.textProperty().addListener((obs, o, n) -> {
+		Components.tpphone.textProperty().addListener((obs, o, n) -> {
 			if (!n.matches("\\d*")) {
-				Point2D p = tpphone.localToScene(0.0, 0.0);
+				Point2D p = Components.tpphone.localToScene(0.0, 0.0);
 				tool.setText("Enter numbers only");
 
-				tool.show(tpphone, p.getX() + tpphone.getCaretPosition(), p.getY() + tpphone.getHeight());
-				tpphone.setText(n.replaceAll("[^\\d]", ""));
+				tool.show(Components.tpphone, p.getX() + Components.tpphone.getCaretPosition(), p.getY() + Components.tpphone.getHeight());
+				Components.tpphone.setText(n.replaceAll("[^\\d]", ""));
 			}
 		});
 
@@ -395,19 +327,19 @@ public class TchrUI implements Runnable {
 		MenuItem tsida = new MenuItem("Generate ID");
 		tsida.setOnAction(arg -> {
 
-					tsid.setText(getSId());
+					Components.tsid.setText(getSId());
 		});
 		ScrollPane spReport = new ScrollPane();
 		ContextMenu repcm = new ContextMenu();
 		MenuItem del = new MenuItem("Delete this report");
 		del.setOnAction(arg -> {
-			repList.remove(reps.getSelectionModel().getSelectedIndex());
+			Components.repList.remove(Components.reps.getSelectionModel().getSelectedIndex());
 		});
 		repcm.getItems().add(del);
 
-		reps.setContextMenu(repcm);
+		Components.reps.setContextMenu(repcm);
 
-		reps.getSelectionModel().selectLast();
+		Components.reps.getSelectionModel().selectLast();
 
 		StringConverter<Report> rconvertor = new StringConverter<Report>() {
 			@Override
@@ -421,8 +353,8 @@ public class TchrUI implements Runnable {
 			}
 
 		};
-		reps.setCellFactory(CheckBoxListCell.forListView(Report::seenProperty, rconvertor));
-		report.setOnAction(arg -> {
+		Components.reps.setCellFactory(CheckBoxListCell.forListView(Report::seenProperty, rconvertor));
+		Components.report.setOnAction(arg -> {
 			Dialog<String> dialog = new Dialog<>();
 			ButtonType reportb = new ButtonType("Report", ButtonData.OK_DONE);
 			dialog.setTitle("Report - Typh™");
@@ -433,18 +365,18 @@ public class TchrUI implements Runnable {
 			ComboBox<String> sem = new ComboBox<>();
 			sem.getItems().addAll("Semester 1","Semester 2", "Semester 3","Semester 4","Semester 5","Semester 6","Semester 7","Semester 8");
 			sem.getSelectionModel().selectFirst();
-			ta.setPromptText(tsname.getText());
+			ta.setPromptText(Components.tsname.getText());
 			ta.setPromptText("Enter your report details ...");
 			
 			vb.getChildren().addAll(sem,ta);
 			dialog.getDialogPane().setContent(vb);
-			dialog.initOwner(stage);
+			dialog.initOwner(Components.stage);
 			dialog.getDialogPane().getButtonTypes().add(reportb);
 			dialog.setResultConverter(value -> {
 				try {
 					if (value.getButtonData().equals(ButtonData.OK_DONE)) {
 
-						repList.add(ta.getText());
+						Components.repList.add(ta.getText());
 					}
 				} catch (NullPointerException e) {
 					e.getMessage();
@@ -457,37 +389,37 @@ public class TchrUI implements Runnable {
 		});
 		
 		tsidcm.getItems().add(tsida);
-		tsid.setContextMenu(tsidcm);
-		GridPane.setMargin(dpImgView, new Insets(40));
-		spReport.setContent(reps);
-		GridPane.setFillWidth(reps, true);
-		reps.setPrefWidth(600);
-		reps.setPrefHeight(150);
+		Components.tsid.setContextMenu(tsidcm);
+		GridPane.setMargin(Components.dpImgView, new Insets(40));
+		spReport.setContent(Components.reps);
+		GridPane.setFillWidth(Components.reps, true);
+		Components.reps.setPrefWidth(600);
+		Components.reps.setPrefHeight(150);
 		spReport.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		spReport.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 
 		personal.add(sname, 0, 1);
-		personal.add(tsname, 1, 1);
+		personal.add(Components.tsname, 1, 1);
 		personal.add(sid, 0, 2);
-		personal.add(tsid, 1, 2);
+		personal.add(Components.tsid, 1, 2);
 		personal.add(srno, 0, 3);
-		personal.add(tsrno, 1, 3);
+		personal.add(Components.tsrno, 1, 3);
 		personal.add(sdprt, 0, 4);
-		personal.add(tsdprt, 1, 4);
+		personal.add(Components.tsdprt, 1, 4);
 		personal.add(sclass, 2, 2);
-		personal.add(tsclass, 3, 2);
+		personal.add(Components.tsclass, 3, 2);
 		personal.add(sbatch, 2, 1);
-		personal.add(tsbatch, 3, 1);
+		personal.add(Components.tsbatch, 3, 1);
 		personal.add(smail, 0, 5);
-		personal.add(tsmail, 1, 5);
+		personal.add(Components.tsmail, 1, 5);
 		personal.add(saddr, 2, 3);
-		personal.add(tsaddr, 3, 3);
+		personal.add(Components.tsaddr, 3, 3);
 		personal.add(sphone, 2, 4);
-		personal.add(tsphone, 3, 4);
+		personal.add(Components.tsphone, 3, 4);
 		personal.add(pphone, 2, 5);
-		personal.add(tpphone, 3, 5);
-		personal.add(dpImgView, 4, 1, 1, 5);
-		personal.add(reports, 0, 6);
+		personal.add(Components.tpphone, 3, 5);
+		personal.add(Components.dpImgView, 4, 1, 1, 5);
+		personal.add(Components.reports, 0, 6);
 		personal.add(spReport, 0, 7, 5, 1);
 		personal.setAlignment(Pos.CENTER);
 
@@ -513,7 +445,7 @@ public class TchrUI implements Runnable {
 
 		// Semester 1
 
-		tsem1 = new TableView<>();
+		Components.tsem1 = new TableView<>();
 		
 		TableColumn<Marks, String> sub = new TableColumn<>("Subject");
 		TableColumn<Marks, Integer> th = new TableColumn<>("Theory");
@@ -617,15 +549,15 @@ public class TchrUI implements Runnable {
 		prac.getColumns().addAll(scr2, total2);
 		tw.getColumns().addAll(scr3, total3);
 
-		tsem1.getColumns().addAll(sub, th, oral, prac, tw, back);
-		tsem1.setTooltip(new Tooltip("Semester 1"));
+		Components.tsem1.getColumns().addAll(sub, th, oral, prac, tw, back);
+		Components.tsem1.setTooltip(new Tooltip("Semester 1"));
 		
-		tsem1.setItems(subjects1);
-		GridPane.setFillWidth(tsem1, true);
+		Components.tsem1.setItems(subjects1);
+		GridPane.setFillWidth(Components.tsem1, true);
 
 		// Semester 2
 
-		tsem2 = new TableView<>();
+		Components.tsem2 = new TableView<>();
 		TableColumn<Marks, String> sub1 = new TableColumn<>("Subject");
 		TableColumn<Marks, Integer> th1 = new TableColumn<>("Theory");
 		TableColumn<Marks, Integer> oral1 = new TableColumn<>("Oral");
@@ -660,10 +592,10 @@ public class TchrUI implements Runnable {
 		oral1.getColumns().addAll(scr11, total11);
 		prac1.getColumns().addAll(scr21, total21);
 		tw1.getColumns().addAll(scr31, total31);
-		tsem2.getColumns().addAll(sub1, th1, oral1, prac1, tw1, back1);
-		tsem2.setTooltip(new Tooltip("Semester 2"));
-		tsem2.setItems(subjects2);
-		GridPane.setFillWidth(tsem2, true);
+		Components.tsem2.getColumns().addAll(sub1, th1, oral1, prac1, tw1, back1);
+		Components.tsem2.setTooltip(new Tooltip("Semester 2"));
+		Components.tsem2.setItems(subjects2);
+		GridPane.setFillWidth(Components.tsem2, true);
 		
 		sub1.setCellValueFactory(new PropertyValueFactory<Marks, String>("subject"));
 
@@ -733,26 +665,26 @@ public class TchrUI implements Runnable {
 		back1.setCellFactory(CheckBoxTableCell.forTableColumn(back1));
 		back1.setCellValueFactory(cvf -> cvf.getValue().backlogProperty());
 
-		addEntry = new Button("Add Subject");
-		rbsem1 = new RadioButton("Semester 1");
-		rbsem2 = new RadioButton("Semester 2");
+		Components.addEntry = new Button("Add Subject");
+		Components.rbsem1 = new RadioButton("Semester 1");
+		Components.rbsem2 = new RadioButton("Semester 2");
 		ToggleGroup tg = new ToggleGroup();
-		tg.getToggles().addAll(rbsem1, rbsem2);
-		tg.selectToggle(rbsem1);
+		tg.getToggles().addAll(Components.rbsem1, Components.rbsem2);
+		tg.selectToggle(Components.rbsem1);
 
-		addEntry.setOnAction((arg0) -> {
-			if (rbsem1.isSelected()) {
+		Components.addEntry.setOnAction((arg0) -> {
+			if (Components.rbsem1.isSelected()) {
 				subjects1.add(new Marks("", 0, 0, 0, 0, 0, 0, 0, 0, false));
-			} else if (rbsem2.isSelected()) {
+			} else if (Components.rbsem2.isSelected()) {
 				subjects2.add(new Marks("", 0, 0, 0, 0, 0, 0, 0, 0, false));
 			}
 		});
 
-		addEntry.setMaxWidth(1000);
-		GridPane.setFillWidth(addEntry, true);
+		Components.addEntry.setMaxWidth(1000);
+		GridPane.setFillWidth(Components.addEntry, true);
 
-		tsem1.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-		tsem2.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		Components.tsem1.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		Components.tsem2.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
 		// Student Progress
 
@@ -764,17 +696,17 @@ public class TchrUI implements Runnable {
 		NumberAxis yaxis = new NumberAxis(0.0, 100.0, 10.0);
 		yaxis.setLabel("Percentage");
 
-		studProgress = new LineChart<>(xaxis, yaxis);
-		studProgress.setTitle("Student Progress");
-		studProgress.setTitleSide(Side.TOP);
-		studProgress.setLegendVisible(false);
+		Components.studProgress = new LineChart<>(xaxis, yaxis);
+		Components.studProgress.setTitle("Student Progress");
+		Components.studProgress.setTitleSide(Side.TOP);
+		Components.studProgress.setLegendVisible(false);
 
-		academic.add(tsem1, 0, 1, 5, 1);
-		academic.add(tsem2, 0, 2, 5, 1);
-		academic.add(addEntry, 2, 0);
-		academic.add(rbsem1, 3, 0);
-		academic.add(rbsem2, 4, 0);
-		academic.add(studProgress, 0, 7, 5, 1);
+		academic.add(Components.tsem1, 0, 1, 5, 1);
+		academic.add(Components.tsem2, 0, 2, 5, 1);
+		academic.add(Components.addEntry, 2, 0);
+		academic.add(Components.rbsem1, 3, 0);
+		academic.add(Components.rbsem2, 4, 0);
+		academic.add(Components.studProgress, 0, 7, 5, 1);
 		
 		scroll[cat.length - (scrollCount)].setHbarPolicy(ScrollBarPolicy.NEVER);
 		scroll[cat.length - (scrollCount--)].setContent(academic);
@@ -787,16 +719,16 @@ public class TchrUI implements Runnable {
 		attendance.setId("attendanceP");
 		scroll[cat.length - (scrollCount)] = new ScrollPane();
 
-		addat = new Button("Add Record");
+		Components.addat = new Button("Add Record");
 		ObservableList<Attendance> atsem1Data = FXCollections.observableArrayList();
 
 
-		atrbsem1 = new RadioButton("Semester 1");
-		atrbsem1.setUserData(1);
-		atrbsem2 = new RadioButton("Semester 2");
-		atrbsem2.setUserData(2);
+		Components.atrbsem1 = new RadioButton("Semester 1");
+		Components.atrbsem1.setUserData(1);
+		Components.atrbsem2 = new RadioButton("Semester 2");
+		Components.atrbsem2.setUserData(2);
 		ToggleGroup artg = new ToggleGroup();
-		artg.getToggles().addAll(atrbsem1, atrbsem2);
+		artg.getToggles().addAll(Components.atrbsem1, Components.atrbsem2);
 
 		artg.selectedToggleProperty().addListener((obs, o, n) -> {
 			loadAttendanceChart(yrlst.getSelectionModel().getSelectedItem(),
@@ -805,7 +737,7 @@ public class TchrUI implements Runnable {
 
 		// Semester 1 table
 
-		atsem1 = new TableView<Attendance>();
+		Components.atsem1 = new TableView<Attendance>();
 		TableColumn<Attendance, String> atsub = new TableColumn<>("Subjects");
 		TableColumn<Attendance, Integer> atAttended = new TableColumn<>("Attended");
 		TableColumn<Attendance, Integer> atTotal = new TableColumn<>("Total");
@@ -829,13 +761,13 @@ public class TchrUI implements Runnable {
 			((Attendance) t.getTableView().getItems().get(t.getTablePosition().getRow())).setTotal(t.getNewValue());
 		});
 
-		atsem1.getColumns().addAll(atsub, atAttended, atTotal);
-		atsem1.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-		atsem1.setItems(atsem1Data);
+		Components.atsem1.getColumns().addAll(atsub, atAttended, atTotal);
+		Components.atsem1.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		Components.atsem1.setItems(atsem1Data);
 
 		// Semester 2 table
 
-		atsem2 = new TableView<Attendance>();
+		Components.atsem2 = new TableView<Attendance>();
 		TableColumn<Attendance, String> atsub1 = new TableColumn<>("Subjects");
 		TableColumn<Attendance, Integer> atAttended1 = new TableColumn<>("Attended");
 		TableColumn<Attendance, Integer> atTotal1 = new TableColumn<>("Total");
@@ -861,23 +793,23 @@ public class TchrUI implements Runnable {
 			((Attendance) t.getTableView().getItems().get(t.getTablePosition().getRow())).setTotal(t.getNewValue());
 		});
 
-		atsem2.getColumns().addAll(atsub1, atAttended1, atTotal1);
-		atsem2.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-		atsem2.setItems(atsem2Data);
+		Components.atsem2.getColumns().addAll(atsub1, atAttended1, atTotal1);
+		Components.atsem2.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		Components.atsem2.setItems(atsem2Data);
 
 		// Attendance Graph
 
-		atXaxis = new CategoryAxis();
-		atYaxis = new NumberAxis(0.0, 100.0, 10.0);
+		Components.atXaxis = new CategoryAxis();
+		Components.atYaxis = new NumberAxis(0.0, 100.0, 10.0);
 
-		atYaxis.setLabel("Percentage");
-		atXaxis.setLabel("Subjects");
-		atBarChart = new BarChart<>(atXaxis, atYaxis);
-		atBarChart.setTitle("Semester Attendance Report");
-		atBarChart.setLegendVisible(false);
+		Components.atYaxis.setLabel("Percentage");
+		Components.atXaxis.setLabel("Subjects");
+		Components.atBarChart = new BarChart<>(Components.atXaxis, Components.atYaxis);
+		Components.atBarChart.setTitle("Semester Attendance Report");
+		Components.atBarChart.setLegendVisible(false);
 
-		addat.setOnAction(arg -> {
-			if (atrbsem1.isSelected()) {
+		Components.addat.setOnAction(arg -> {
+			if (Components.atrbsem1.isSelected()) {
 				atsem1Data.add(new Attendance("subject", 0, 0));
 			} else {
 				atsem2Data.add(new Attendance("subject", 0, 0));
@@ -885,13 +817,13 @@ public class TchrUI implements Runnable {
 			}
 		});
 
-		GridPane.setHalignment(addat,HPos.RIGHT);
-		attendance.add(atsem1, 0, 1, 3, 1);
-		attendance.add(atsem2, 4, 1, 3, 1);
-		attendance.add(addat, 2, 2);
-		attendance.add(atrbsem1, 3, 2);
-		attendance.add(atrbsem2, 4, 2);
-		attendance.add(atBarChart, 0, 4, 8, 1);
+		GridPane.setHalignment(Components.addat,HPos.RIGHT);
+		attendance.add(Components.atsem1, 0, 1, 3, 1);
+		attendance.add(Components.atsem2, 4, 1, 3, 1);
+		attendance.add(Components.addat, 2, 2);
+		attendance.add(Components.atrbsem1, 3, 2);
+		attendance.add(Components.atrbsem2, 4, 2);
+		attendance.add(Components.atBarChart, 0, 4, 8, 1);
 
 		scroll[cat.length - (scrollCount)].setContent(attendance);
 		scroll[cat.length - (scrollCount--)].setHbarPolicy(ScrollBarPolicy.NEVER);
@@ -903,15 +835,17 @@ public class TchrUI implements Runnable {
 		GridPane projects = new GridPane();
 		projects.setId("projectsP");
 		scroll[cat.length - (scrollCount)] = new ScrollPane();
-		prtmp = new HashMap<>();
+		Components.prtmp = new HashMap<>();
 		Button upload = new Button("Upload");
 
-		Circle bin = new Circle(20);
+		Rectangle bin = new Rectangle(150,150);
+		ImagePattern binIcon = new ImagePattern(new Image("/ivn/typh/tchr/icons/recycle_empty.png"));
+		bin.setFill(binIcon);
+
 		bin.setEffect(new DropShadow());
-		bin.setFill(Color.AQUA);
-		prList = new ListView<>();
-		prList.setPrefWidth(600);
-		prList.setTooltip(new Tooltip("Drag and Drop Files Over Here"));
+		Components.prList = new ListView<>();
+		Components.prList.setPrefWidth(600);
+		Components.prList.setTooltip(new Tooltip("Drag and Drop Files Over Here"));
 
 		upload.setOnAction(event -> {
 			FileChooser fc = new FileChooser();
@@ -919,23 +853,25 @@ public class TchrUI implements Runnable {
 			FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Compressed files only", "*.zip",
 					"*.rar", "*.tar", "*.7z", "*.xz", "*.gz");
 			fc.getExtensionFilters().add(filter);
-			File uploadFile = fc.showOpenDialog(scene.getWindow());
-			prtmp.put(uploadFile.getName(), uploadFile.getAbsolutePath());
-			prList.getItems().add(uploadFile.getName());
+			File uploadFile = fc.showOpenDialog(Components.scene.getWindow());
+			Components.prtmp.put(uploadFile.getName(), uploadFile.getAbsolutePath());
+			Components.prList.getItems().add(uploadFile.getName());
 		});
 
-		prList.setCellFactory((arg0) -> {
+		Components.prList.setCellFactory((arg0) -> {
 
-			return (new Project(scene));
+			return (new Project(Components.scene));
 
 		});
+		
 		Tooltip tip = new Tooltip();
 
 		bin.setOnMouseEntered(value -> {
 			tip.hide();
+
 			Point2D p = bin.localToScene(0.0, 0.0);
 			tip.setText("Drag projects to delete");
-			tip.show(bin, p.getX(), p.getY() + bin.getRadius());
+			tip.show(bin, p.getX(), p.getY() + bin.getWidth());
 		});
 
 		bin.setOnMouseExited(value -> {
@@ -943,17 +879,17 @@ public class TchrUI implements Runnable {
 		});
 
 		bin.setOnDragOver(value -> {
-			if (value.getGestureSource() != null)
+			if (value.getGestureSource() != null){
 				value.acceptTransferModes(TransferMode.MOVE);
+			}
 		});
 		bin.setOnDragDropped(value -> {
 			Dragboard db = value.getDragboard();
-
 			boolean success = false;
 			if (value.getDragboard().hasString()) {
-				int index = prList.getItems().indexOf(db.getString());
-				prList.getItems().remove(index);
-				Notification.message(stage, AlertType.INFORMATION, "Project - Typh™",
+				int index = Components.prList.getItems().indexOf(db.getString());
+				Components.prList.getItems().remove(index);
+				Notification.message(Components.stage, AlertType.INFORMATION, "Project - Typh™",
 						"Project " + db.getString() + " deleted !!!");
 				success = true;
 			}
@@ -962,7 +898,7 @@ public class TchrUI implements Runnable {
 			value.consume();
 		});
 
-		prList.setOnDragOver((arg0) -> {
+		Components.prList.setOnDragOver((arg0) -> {
 			Dragboard db = arg0.getDragboard();
 			if (db.hasFiles()) {
 				arg0.acceptTransferModes(TransferMode.COPY);
@@ -971,14 +907,14 @@ public class TchrUI implements Runnable {
 			}
 		});
 
-		prList.setOnDragDropped((arg0) -> {
+		Components.prList.setOnDragDropped((arg0) -> {
 			Dragboard db = arg0.getDragboard();
 			boolean success = false;
 			if (db.hasFiles()) {
 				success = true;
 				for (File file : db.getFiles()) {
-					prtmp.put(file.getName(), file.getAbsolutePath());
-					prList.getItems().add(file.getName());
+					Components.prtmp.put(file.getName(), file.getAbsolutePath());
+					Components.prList.getItems().add(file.getName());
 				}
 			}
 			arg0.setDropCompleted(success);
@@ -986,7 +922,7 @@ public class TchrUI implements Runnable {
 		});
 
 		projects.add(upload, 1, 0);
-		projects.add(prList, 0, 0, 1, 2);
+		projects.add(Components.prList, 0, 0, 1, 2);
 		projects.add(bin, 1, 1);
 
 		scroll[cat.length - (scrollCount--)].setContent(projects);
@@ -999,13 +935,13 @@ public class TchrUI implements Runnable {
 		
 		ScrollPane spAssignment = new ScrollPane();
 		
-		addAssignment = new Button("Add an Assignment");
-		removeAssignment = new Button("Remove selected item");
-		asList = new ListView<>();
+		Components.addAssignment = new Button("Add an Assignment");
+		Components.removeAssignment = new Button("Remove selected item");
+		Components.asList = new ListView<>();
 
-		asList.setPrefWidth(600);
-		GridPane.setFillWidth(asList, true);
-		spAssignment.setContent(asList);
+		Components.asList.setPrefWidth(600);
+		GridPane.setFillWidth(Components.asList, true);
+		spAssignment.setContent(Components.asList);
 		spAssignment.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		spAssignment.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		StringConverter<Assignment> converter = new StringConverter<Assignment>() {
@@ -1020,8 +956,8 @@ public class TchrUI implements Runnable {
 			}
 
 		};
-		asList.setCellFactory(CheckBoxListCell.forListView(Assignment::completedProperty, converter));
-		addAssignment.setOnAction(arg0 -> {
+		Components.asList.setCellFactory(CheckBoxListCell.forListView(Assignment::completedProperty, converter));
+		Components.addAssignment.setOnAction(arg0 -> {
 			Dialog<Assignment> dialog = new Dialog<>();
 			TextField asTitle = new TextField();
 			ComboBox<String> asYear = new ComboBox<>();
@@ -1057,21 +993,21 @@ public class TchrUI implements Runnable {
 
 			asTitle.setPrefWidth(500);
 
-			dialog.initOwner(stage);
+			dialog.initOwner(Components.stage);
 			Optional<Assignment> result = dialog.showAndWait();
-			result.ifPresent(arg -> asList.getItems().add(arg));
+			result.ifPresent(arg -> Components.asList.getItems().add(arg));
 		});
 
-		removeAssignment.setTooltip(new Tooltip("Deletes last assignment by default"));
-		removeAssignment.setOnAction(value -> {
-			asList.getSelectionModel().select(asList.getItems().size() - 1);
-			int index = asList.getSelectionModel().getSelectedIndex();
-			asList.getItems().remove(index);
+		Components.removeAssignment.setTooltip(new Tooltip("Deletes last assignment by default"));
+		Components.removeAssignment.setOnAction(value -> {
+			Components.asList.getSelectionModel().select(Components.asList.getItems().size() - 1);
+			int index = Components.asList.getSelectionModel().getSelectedIndex();
+			Components.asList.getItems().remove(index);
 
 		});
 
-		assignment.add(addAssignment, 2, 0);
-		assignment.add(removeAssignment, 3, 0);
+		assignment.add(Components.addAssignment, 2, 0);
+		assignment.add(Components.removeAssignment, 3, 0);
 		assignment.add(spAssignment, 0, 1, 4, 1);
 
 		scroll[cat.length - (scrollCount)].setContent(assignment);
@@ -1084,40 +1020,37 @@ public class TchrUI implements Runnable {
 		
 		for (int i = 0; i < cat.length; i++) {
 			scroll[i].setId("homeScrollPane");
-			tp[i] = new TitledPane(cat[i], scroll[i]);
+			Components.tp[i] = new TitledPane(cat[i], scroll[i]);
 		}
 		
 		
-		accord.getPanes().addAll(tp);
-		accord.setExpandedPane(tp[0]);
-		accord.expandedPaneProperty().addListener((obs,o,n)->{
-			if(n != null)
-			if(o.equals(n))
-				n.setCollapsible(false);
-		});
-		
-		slist.setPrefWidth(150);
-		
-		GridPane.setHgrow(accord, Priority.ALWAYS);
+		Components.accord.getPanes().addAll(Components.tp);
+		Components.accord.setExpandedPane(Components.tp[0]);
 
-		top.getChildren().addAll(srch, searchBox);
+		Components.slist.setPrefWidth(150);
+		
+		GridPane.setHgrow(Components.accord, Priority.ALWAYS);
+
+		top.getChildren().addAll(Components.srch, Components.searchBox);
 			
-		topL.getChildren().add(pname);
+		topL.getChildren().add(Components.pname);
 
-		left.getChildren().addAll(dprt, pdprt, cls, pcls, tstuds, nstuds);
-		side.addNodes(topL,left,mb.getItems().get(2),mb.getItems().get(3),mb.getItems().get(5));
+		left.getChildren().addAll(Components.dprt, Components.pdprt, Components.cls, Components.pcls, Components.tstuds, Components.nstuds);
+		side.addNodes(topL,left,Components.mb.getItems().get(2),Components.mb.getItems().get(3),Components.mb.getItems().get(5));
 		
-		mb.getItems().remove(7);
-		mb.getItems().add(7, logout);
-		mb.getItems().remove(0, 5);
-		mb.getItems().add(0,menu);
+		Components.mb.getItems().remove(7);
+		Components.mb.getItems().add(7, logout);
+		Components.mb.getItems().remove(0, 4);
+		Components.mb.getItems().add(0,Components.menu);
+		Components.mb.getItems().get(2).setId("fullscreen");
+		
 
 		GridPane.setValignment(left, VPos.CENTER);
 		StackPane.setAlignment(side, Pos.CENTER_LEFT);
 
 		tgpane.add(top, 0, 0);
 		tgpane.add(aboveAcc, 0, 1);
-		tgpane.add(accord, 0, 2);
+		tgpane.add(Components.accord, 0, 2);
 		
 		tgpane.setMaxSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
 				Toolkit.getDefaultToolkit().getScreenSize().getHeight());
@@ -1126,28 +1059,28 @@ public class TchrUI implements Runnable {
 		sctgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		sctgpane.setVbarPolicy(ScrollBarPolicy.NEVER);
 		sctgpane.setContent(tgpane);
-		stage.getScene().getStylesheets().remove(0);
-		stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
+		Components.stage.getScene().getStylesheets().remove(0);
+		Components.stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
 		
 		spMain.getChildren().addAll(sctgpane,dummy,side);
-		pane.setCenter(spMain);
+		Components.pane.setCenter(spMain);
 
 		disableAll(true);
-		slist.getSelectionModel().selectFirst();
+		Components.slist.getSelectionModel().selectFirst();
 		yrlst.getSelectionModel().selectFirst();
 	
 	}
 
 	private void uploadData(String sid) {
 		Bson filter = new Document("sid", sid);
-		Document newValue = new Document("name", tsname.getText().trim()).append("rno", tsrno.getValue())
-				.append("batch", tsbatch.getValue()).append("class", tsclass.getValue())
-				.append("email", tsmail.getText()).append("address", tsaddr.getText())
-				.append("studentPhone", tsphone.getText()).append("parentPhone", tpphone.getText())
-				.append("department", tsdprt.getSelectionModel().getSelectedItem());
+		Document newValue = new Document("name", Components.tsname.getText().trim()).append("rno", Components.tsrno.getValue())
+				.append("batch", Components.tsbatch.getValue()).append("class", Components.tsclass.getValue())
+				.append("email", Components.tsmail.getText()).append("address", Components.tsaddr.getText())
+				.append("studentPhone", Components.tsphone.getText()).append("parentPhone", Components.tpphone.getText())
+				.append("department", Components.tsdprt.getSelectionModel().getSelectedItem());
 
 		int[] sem = null;
-		int year = sMatchesY(0, tsyear.getValue());
+		int year = sMatchesY(0, Components.tsyear.getValue());
 		String yr = null;
 		switch (year) {
 		case 1:
@@ -1171,49 +1104,49 @@ public class TchrUI implements Runnable {
 		}
 
 		List<Document> acData = new LinkedList<>();
-		for (int i = 0; i < (tsem1.getItems().size() + tsem2.getItems().size()); i++) {
-			if (i <= (tsem1.getItems().size() - 1)) {
-				Document tmp = new Document("name", tsem1.getItems().get(i).getSubject())
-						.append("thScored", tsem1.getItems().get(i).getTheoryScored())
-						.append("thTotal", tsem1.getItems().get(i).getTheoryTotal())
-						.append("orScored", tsem1.getItems().get(i).getOralScored())
-						.append("orTotal", tsem1.getItems().get(i).getOralTotal())
-						.append("prScored", tsem1.getItems().get(i).getPracsScored())
-						.append("prTotal", tsem1.getItems().get(i).getPracsTotal())
-						.append("back", tsem1.getItems().get(i).getBacklog())
-						.append("attended", atsem1.getItems().get(i).getAttended())
-						.append("attendedTotal", atsem1.getItems().get(i).getTotal())
-						.append("twScored", tsem1.getItems().get(i).getTermworkScored())
-						.append("twTotal", tsem1.getItems().get(i).getTermworkTotal()).append("sem", sem[0]);
+		for (int i = 0; i < (Components.tsem1.getItems().size() + Components.tsem2.getItems().size()); i++) {
+			if (i <= (Components.tsem1.getItems().size() - 1)) {
+				Document tmp = new Document("name", Components.tsem1.getItems().get(i).getSubject())
+						.append("thScored", Components.tsem1.getItems().get(i).getTheoryScored())
+						.append("thTotal", Components.tsem1.getItems().get(i).getTheoryTotal())
+						.append("orScored", Components.tsem1.getItems().get(i).getOralScored())
+						.append("orTotal", Components.tsem1.getItems().get(i).getOralTotal())
+						.append("prScored", Components.tsem1.getItems().get(i).getPracsScored())
+						.append("prTotal", Components.tsem1.getItems().get(i).getPracsTotal())
+						.append("back", Components.tsem1.getItems().get(i).getBacklog())
+						.append("attended", Components.atsem1.getItems().get(i).getAttended())
+						.append("attendedTotal", Components.atsem1.getItems().get(i).getTotal())
+						.append("twScored", Components.tsem1.getItems().get(i).getTermworkScored())
+						.append("twTotal", Components.tsem1.getItems().get(i).getTermworkTotal()).append("sem", sem[0]);
 				acData.add(tmp);
 			} else {
-				Document tmp = new Document("name", tsem2.getItems().get(i - 6).getSubject())
-						.append("thScored", tsem2.getItems().get(i - 6).getTheoryScored())
-						.append("thTotal", tsem2.getItems().get(i - 6).getTheoryTotal())
-						.append("orScored", tsem2.getItems().get(i - 6).getOralScored())
-						.append("orTotal", tsem2.getItems().get(i - 6).getOralTotal())
-						.append("prScored", tsem2.getItems().get(i - 6).getPracsScored())
-						.append("prTotal", tsem2.getItems().get(i - 6).getPracsTotal())
-						.append("back", tsem2.getItems().get(i - 6).getBacklog())
-						.append("attended", atsem2.getItems().get(i - 6).getAttended())
-						.append("attendedTotal", atsem2.getItems().get(i - 6).getTotal())
-						.append("twScored", tsem2.getItems().get(i - 6).getTermworkScored())
-						.append("twTotal", tsem2.getItems().get(i - 6).getTermworkTotal()).append("sem", sem[1]);
+				Document tmp = new Document("name", Components.tsem2.getItems().get(i - 6).getSubject())
+						.append("thScored", Components.tsem2.getItems().get(i - 6).getTheoryScored())
+						.append("thTotal", Components.tsem2.getItems().get(i - 6).getTheoryTotal())
+						.append("orScored", Components.tsem2.getItems().get(i - 6).getOralScored())
+						.append("orTotal", Components.tsem2.getItems().get(i - 6).getOralTotal())
+						.append("prScored", Components.tsem2.getItems().get(i - 6).getPracsScored())
+						.append("prTotal", Components.tsem2.getItems().get(i - 6).getPracsTotal())
+						.append("back", Components.tsem2.getItems().get(i - 6).getBacklog())
+						.append("attended", Components.atsem2.getItems().get(i - 6).getAttended())
+						.append("attendedTotal", Components.atsem2.getItems().get(i - 6).getTotal())
+						.append("twScored", Components.tsem2.getItems().get(i - 6).getTermworkScored())
+						.append("twTotal", Components.tsem2.getItems().get(i - 6).getTermworkTotal()).append("sem", sem[1]);
 				acData.add(tmp);
 			}
 
 		}
 
 		List<Document> asData = new LinkedList<>();
-		for(int i =0 ;i<asList.getItems().size();i++){
-			Document tmp = new Document("title",asList.getItems().get(i).getTitle()).append("sem", asList.getItems().get(i).getSem()).append("completed",asList.getItems().get(i).getCompleted());
+		for(int i =0 ;i<Components.asList.getItems().size();i++){
+			Document tmp = new Document("title",Components.asList.getItems().get(i).getTitle()).append("sem", Components.asList.getItems().get(i).getSem()).append("completed",Components.asList.getItems().get(i).getCompleted());
 			asData.add(tmp);
 		}
 		
 		
 		List<Document> repData = new LinkedList<>();
-		for(int i=0; i<reps.getItems().size();i++){
-			Document tmp = new Document("sem",reps.getItems().get(i).getSem()).append("seen",reps.getItems().get(i).getSeen()).append("report", reps.getItems().get(i).getReport());
+		for(int i=0; i<Components.reps.getItems().size();i++){
+			Document tmp = new Document("sem",Components.reps.getItems().get(i).getSem()).append("seen",Components.reps.getItems().get(i).getSeen()).append("report", Components.reps.getItems().get(i).getReport());
 			repData.add(tmp);
 		}
 		
@@ -1223,7 +1156,7 @@ public class TchrUI implements Runnable {
 		Engine.db.getCollection("Students").updateOne(filter, query);
 
 		GridFSBucket gfsBucket = GridFSBuckets.create(Engine.db, "projects");
-		prtmp.forEach((key, val) -> {
+		Components.prtmp.forEach((key, val) -> {
 			InputStream in = null;
 			try {
 				in = new FileInputStream(new File(val));
@@ -1249,33 +1182,33 @@ public class TchrUI implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		dpImgView.setImage(SwingFXUtils.toFXImage(bf, null));
-		tsname.setText(jsonData.getString("name"));
-		tsid.setText(jsonData.getString("sid"));
-		tsrno.getSelectionModel().select(jsonData.getString("rno"));
-		tsdprt.getSelectionModel().select(jsonData.getString("department"));
-		tsclass.getSelectionModel().select(jsonData.getString("batch"));
-		tsbatch.getSelectionModel().select(jsonData.getString("class"));
-		tsmail.setText(jsonData.getString("email"));
-		tsaddr.setText(jsonData.getString("address"));
-		tsphone.setText(jsonData.getString("studentPhone"));
-		tpphone.setText(jsonData.getString("parentPhone"));
-		tsyear.getSelectionModel().select(jsonData.getString("year"));
+		Components.dpImgView.setImage(SwingFXUtils.toFXImage(bf, null));
+		Components.tsname.setText(jsonData.getString("name"));
+		Components.tsid.setText(jsonData.getString("sid"));
+		Components.tsrno.getSelectionModel().select(jsonData.getString("rno"));
+		Components.tsdprt.getSelectionModel().select(jsonData.getString("department"));
+		Components.tsclass.getSelectionModel().select(jsonData.getString("batch"));
+		Components.tsbatch.getSelectionModel().select(jsonData.getString("class"));
+		Components.tsmail.setText(jsonData.getString("email"));
+		Components.tsaddr.setText(jsonData.getString("address"));
+		Components.tsphone.setText(jsonData.getString("studentPhone"));
+		Components.tpphone.setText(jsonData.getString("parentPhone"));
+		Components.tsyear.getSelectionModel().select(jsonData.getString("year"));
 		
 		// Academic
 
-		studProgress.getData().clear();
-		tsem1.setFixedCellSize(24);
-		tsem1.prefHeightProperty().bind(Bindings.size(tsem1.getItems()).multiply(tsem1.getFixedCellSize()).add(90));
-		tsem2.setFixedCellSize(24);
-		tsem2.prefHeightProperty().bind(Bindings.size(tsem2.getItems()).multiply(tsem2.getFixedCellSize()).add(90));
+		Components.studProgress.getData().clear();
+		Components.tsem1.setFixedCellSize(24);
+		Components.tsem1.prefHeightProperty().bind(Bindings.size(Components.tsem1.getItems()).multiply(Components.tsem1.getFixedCellSize()).add(90));
+		Components.tsem2.setFixedCellSize(24);
+		Components.tsem2.prefHeightProperty().bind(Bindings.size(Components.tsem2.getItems()).multiply(Components.tsem2.getFixedCellSize()).add(90));
 		XYChart.Series<String, Number> data = new XYChart.Series<>();
 		for (int j = 1; j <= 8; j++) {
 			float p = getSemesterPercent(j);
 			if (p != 0)
 				data.getData().addAll(new XYChart.Data<>("Semester " + j, p));
 		}
-		studProgress.getData().add(data);
+		Components.studProgress.getData().add(data);
 
 		// Projects
 
@@ -1284,14 +1217,14 @@ public class TchrUI implements Runnable {
 	}
 
 	private String getSId() {
-		String id = dprtList.entrySet().stream().filter(a -> a.getValue().equals(tsdprt.getSelectionModel().getSelectedItem())).map(map->map.getKey()).collect(Collectors.joining());
-		return (id + String.format("%02d", sMatchesY(0, yrlst.getValue())) + tsclass.getValue() + tsrno.getValue());
+		String id = dprtList.entrySet().stream().filter(a -> a.getValue().equals(Components.tsdprt.getSelectionModel().getSelectedItem())).map(map->map.getKey()).collect(Collectors.joining());
+		return (id + String.format("%02d", sMatchesY(0, yrlst.getValue())) + Components.tsclass.getValue() + Components.tsrno.getValue());
 	}
 
 	private void loadReport(String n) {
 
-		reps.getItems().clear();
-		String data = Engine.db.getCollection("Students").find(eq("sid", tsid.getText())).first().toJson();
+		Components.reps.getItems().clear();
+		String data = Engine.db.getCollection("Students").find(eq("sid", Components.tsid.getText())).first().toJson();
 		JSONArray rep = new JSONObject(data).getJSONArray("reports");
 		Iterator<?> it = rep.iterator();
 		while (it.hasNext()) {
@@ -1300,7 +1233,7 @@ public class TchrUI implements Runnable {
 			int sem = j.getInt("sem");
 			String r = j.getString("report");
 			if (sMatchesY(sem, n) == 1)
-				reps.getItems().add(new Report(b, sem, r));
+				Components.reps.getItems().add(new Report(b, sem, r));
 		}
 	}
 
@@ -1312,11 +1245,11 @@ public class TchrUI implements Runnable {
 		else if (year.equals("BE"))
 			semester = semester + 6;
 
-		String data = Engine.db.getCollection("Students").find(eq("sid", tsid.getText())).first().toJson();
+		String data = Engine.db.getCollection("Students").find(eq("sid", Components.tsid.getText())).first().toJson();
 		JSONArray jsona = new JSONObject(data).getJSONArray(year.toLowerCase());
 		Iterator<?> it = jsona.iterator();
 
-		atBarChart.getData().clear();
+		Components.atBarChart.getData().clear();
 		XYChart.Series<String, Number> cdata = new XYChart.Series<String, Number>();
 		while (it.hasNext()) {
 			JSONObject json = (JSONObject) it.next();
@@ -1325,15 +1258,15 @@ public class TchrUI implements Runnable {
 				float at = json.getInt("attended");
 				float att = json.getInt("attendedTotal");
 				at = (at / att) * 100;
-				atXaxis.getCategories().add(name);
+				Components.atXaxis.getCategories().add(name);
 				cdata.getData().add(new XYChart.Data<>(name, at));
 			}
 		}
-		atBarChart.getData().add(cdata);
+		Components.atBarChart.getData().add(cdata);
 	}
 
 	private float getSemesterPercent(int i) {
-		String data = Engine.db.getCollection("Students").find(eq("sid", tsid.getText())).first().toJson();
+		String data = Engine.db.getCollection("Students").find(eq("sid", Components.tsid.getText())).first().toJson();
 		JSONObject json = new JSONObject(data);
 		float percent = 0, scored, total;
 		int theory = 0, oral = 0, practical = 0, termwork = 0, theoryt = 0, oralt = 0, practicalt = 0, termworkt = 0;
@@ -1417,17 +1350,17 @@ public class TchrUI implements Runnable {
 	private void loadAssignmentData(String n) {
 		JSONArray jsona = null;
 		try {
-			String data = Engine.db.getCollection("Students").find(eq("sid", tsid.getText())).first().toJson();
+			String data = Engine.db.getCollection("Students").find(eq("sid", Components.tsid.getText())).first().toJson();
 			jsona = new JSONObject(data).getJSONArray(n.toLowerCase() + "Assignments");
 
-			asList.getItems().clear();
+			Components.asList.getItems().clear();
 			Iterator<?> it = jsona.iterator();
 			while (it.hasNext()) {
 				JSONObject json = (JSONObject) it.next();
 				String title = json.getString("title");
 				int semester = json.getInt("sem");
 				boolean flag = json.getBoolean("completed");
-				asList.getItems().add(new Assignment(semester, title, flag));
+				Components.asList.getItems().add(new Assignment(semester, title, flag));
 			}
 		} catch (JSONException | NullPointerException e) {
 		}
@@ -1436,13 +1369,13 @@ public class TchrUI implements Runnable {
 	private void loadAttendanceData(String n) {
 		JSONArray jsona = null;
 		try {
-			String data = Engine.db.getCollection("Students").find(eq("sid", tsid.getText())).first().toJson();
+			String data = Engine.db.getCollection("Students").find(eq("sid", Components.tsid.getText())).first().toJson();
 			jsona = new JSONObject(data).getJSONArray(n.toLowerCase());
 		} catch (JSONException e) {
 		}
 		Iterator<?> it = jsona.iterator();
-		atsem1.getItems().clear();
-		atsem2.getItems().clear();
+		Components.atsem1.getItems().clear();
+		Components.atsem2.getItems().clear();
 		while (it.hasNext()) {
 			JSONObject json = (JSONObject) it.next();
 			String name = json.getString("name");
@@ -1450,13 +1383,13 @@ public class TchrUI implements Runnable {
 			int att = json.getInt("attendedTotal");
 			int sem = json.getInt("sem");
 			if (sem % 2 == 1) {
-				atsem1.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
-				atrbsem1.setText("Semester: " + Integer.toString(sem));
-				atsem1.getItems().add(new Attendance(name, at, att));
+				Components.atsem1.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
+				Components.atrbsem1.setText("Semester: " + Integer.toString(sem));
+				Components.atsem1.getItems().add(new Attendance(name, at, att));
 			} else {
-				atsem2.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
-				atsem2.getItems().add(new Attendance(name, at, att));
-				atrbsem2.setText("Semester: " + Integer.toString(sem));
+				Components.atsem2.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
+				Components.atsem2.getItems().add(new Attendance(name, at, att));
+				Components.atrbsem2.setText("Semester: " + Integer.toString(sem));
 
 			}
 		}
@@ -1465,13 +1398,13 @@ public class TchrUI implements Runnable {
 	private void loadAcademicData(String n) {
 		JSONArray jsona = null;
 		try {
-			String data = Engine.db.getCollection("Students").find(eq("sid", tsid.getText())).first().toJson();
+			String data = Engine.db.getCollection("Students").find(eq("sid", Components.tsid.getText())).first().toJson();
 			jsona = new JSONObject(data).getJSONArray(n.toLowerCase());
 		} catch (JSONException e) {
 		}
 		Iterator<?> it = jsona.iterator();
-		tsem1.getItems().clear();
-		tsem2.getItems().clear();
+		Components.tsem1.getItems().clear();
+		Components.tsem2.getItems().clear();
 		while (it.hasNext()) {
 			JSONObject json = (JSONObject) it.next();
 			String name = json.getString("name");
@@ -1487,25 +1420,25 @@ public class TchrUI implements Runnable {
 			int sem = json.getInt("sem");
 
 			if (sem % 2 == 1) {
-				tsem1.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
-				tsem1.getItems().add(new Marks(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
+				Components.tsem1.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
+				Components.tsem1.getItems().add(new Marks(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
 			} else {
-				tsem2.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
-				tsem2.getItems().add(new Marks(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
+				Components.tsem2.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
+				Components.tsem2.getItems().add(new Marks(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
 			}
 		}
 
 	}
 
 	private void loadProjectData(String y) {
-		prList.getItems().clear();
+		Components.prList.getItems().clear();
 		Engine.gfs.find().forEach(new Block<GridFSFile>() {
 			public void apply(final GridFSFile file) {
 				String name = file.getFilename().split(":")[1];
 				String gfsid = file.getFilename().split(":")[0];
 				int year = Integer.parseInt(gfsid.substring(2, 4));
 				if (year == sMatchesY(0, y))
-					prList.getItems().add(name);
+					Components.prList.getItems().add(name);
 			}
 		});
 	}
@@ -1531,12 +1464,12 @@ public class TchrUI implements Runnable {
 	}
 
 	private void loadData() {
-		pname.setText(BasicUI.user);
-		pdprt.setText(
+		Components.pname.setText(BasicUI.user);
+		Components.pdprt.setText(
 				(String) Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first().get("department"));
-		classIncharge = (String) Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first()
+		Components.classIncharge = (String) Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first()
 				.get("classIncharge");
-		pcls.setText(classIncharge);
+		Components.pcls.setText(Components.classIncharge);
 		MongoCursor<Document> cursor = Engine.db.getCollection("Students").find().iterator();
 		while (cursor.hasNext()) {
 			JSONObject json = new JSONObject(cursor.next().toJson());
@@ -1557,17 +1490,17 @@ public class TchrUI implements Runnable {
 						+ "h:" + String.format("%02d", LocalDateTime.now().getMinute()) + "m:"
 						+ String.format("%02d", LocalDateTime.now().getSecond()) + "s")));
 
-		tsdprt.getItems().addAll(dprtList.values());
+		Components.tsdprt.getItems().addAll(dprtList.values());
 		for (int i = 1; i <= 200; i++) {
-			tsrno.getItems().add(String.format("%03d", i));
+			Components.tsrno.getItems().add(String.format("%03d", i));
 		}
 		for (int i = 1; i < 100; i++) {
-			tsclass.getItems().add(String.format("%02d", i));
-			tsbatch.getItems().add(String.format("%02d", i));
+			Components.tsclass.getItems().add(String.format("%02d", i));
+			Components.tsbatch.getItems().add(String.format("%02d", i));
 		}
 		for (int i = 0; i < 26; i++) {
-			tsbatch.getItems().add(Character.toString((char) ('A' + i)));
-			tsbatch.getItems().add(Character.toString((char) ('a' + i)));
+			Components.tsbatch.getItems().add(Character.toString((char) ('A' + i)));
+			Components.tsbatch.getItems().add(Character.toString((char) ('a' + i)));
 		}
 		
 		List<String> name = new ArrayList<>();
@@ -1577,65 +1510,65 @@ public class TchrUI implements Runnable {
 		
 			int i=0;
 			String tmp = student.split("]")[0].substring(1);
-			if (classIncharge.equals(tmp)){
-				slist.getItems().add(student);
+			if (Components.classIncharge.equals(tmp)){
+				Components.slist.getItems().add(student);
 				i++;
 			}
-			nstuds.setText(Integer.toString(i));
+			Components.nstuds.setText(Integer.toString(i));
 		});
 		
-		searchBox.setItems(name);
+		Components.searchBox.setItems(name);
 	}
 
 	
 	private void disableAll(boolean flag) {
-		update.setDisable(flag);
-		report.setDisable(flag);
+		Components.update.setDisable(flag);
+		Components.report.setDisable(flag);
 		
 		// Personal Pane
 
-		dpImgView.setDisable(flag);
-		tsname.setEditable(!flag);
-		tsid.setEditable(!flag);
-		tsrno.setDisable(flag);
-		tsdprt.setDisable(flag);
-		tsclass.setDisable(flag);
-		tsbatch.setDisable(flag);
-		tsmail.setEditable(!flag);
-		tsaddr.setEditable(!flag);
-		tsphone.setEditable(!flag);
-		tpphone.setEditable(!flag);
+		Components.dpImgView.setDisable(flag);
+		Components.tsname.setEditable(!flag);
+		Components.tsid.setEditable(!flag);
+		Components.tsrno.setDisable(flag);
+		Components.tsdprt.setDisable(flag);
+		Components.tsclass.setDisable(flag);
+		Components.tsbatch.setDisable(flag);
+		Components.tsmail.setEditable(!flag);
+		Components.tsaddr.setEditable(!flag);
+		Components.tsphone.setEditable(!flag);
+		Components.tpphone.setEditable(!flag);
 
 		// Academic Pane
 
-		tsem1.setEditable(!flag);
-		tsem2.setEditable(!flag);
-		addEntry.setDisable(flag);
-		rbsem1.setDisable(flag);
-		rbsem2.setDisable(flag);
+		Components.tsem1.setEditable(!flag);
+		Components.tsem2.setEditable(!flag);
+		Components.addEntry.setDisable(flag);
+		Components.rbsem1.setDisable(flag);
+		Components.rbsem2.setDisable(flag);
 		
 		// Attendance Pane
 
-		atsem1.setEditable(!flag);
-		atsem2.setEditable(!flag);
-		addat.setDisable(flag);
+		Components.atsem1.setEditable(!flag);
+		Components.atsem2.setEditable(!flag);
+		Components.addat.setDisable(flag);
 
 		// Projects Pane
 		
-		prList.setEditable(!flag);
+		Components.prList.setDisable(flag);
 
 		// Assignments Pane
 
-		asList.setEditable(!flag);
-		addAssignment.setDisable(flag);
-		removeAssignment.setDisable(flag);
+		Components.asList.setEditable(!flag);
+		Components.addAssignment.setDisable(flag);
+		Components.removeAssignment.setDisable(flag);
 
 	}
 	private void logoutApplication() {
 		Alert ex = new Alert(AlertType.CONFIRMATION);
 		ex.setHeaderText("LogOut "+BasicUI.user+" - Typh™ ? ");
 		ex.setTitle("Exit - Typh™");
-		ex.initOwner(stage);
+		ex.initOwner(Components.stage);
 		ex.getButtonTypes().setAll(ButtonType.OK,ButtonType.CANCEL);
 
 		Optional<ButtonType> result = ex.showAndWait();

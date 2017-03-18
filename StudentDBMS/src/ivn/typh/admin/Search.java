@@ -47,7 +47,7 @@ public class Search extends TextField {
 	}
 
 	private void loadData() {
-		AdminUI.studGrid.getChildren().forEach(arg->{
+		Components.studGrid.getChildren().forEach(arg->{
 			Button tmp = (Button)arg;
 			if(tmp.getText().equals(result))
 				tmp.fire();

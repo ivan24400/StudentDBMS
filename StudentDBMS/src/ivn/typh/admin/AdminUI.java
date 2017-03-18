@@ -16,6 +16,7 @@ import com.mongodb.client.MongoCursor;
 
 import ivn.typh.main.Engine;
 import ivn.typh.main.Notification;
+import ivn.typh.admin.Components;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Alert.AlertType;
@@ -34,9 +35,12 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -52,34 +56,14 @@ import static com.mongodb.client.model.Filters.*;
 
 public class AdminUI implements Runnable {
 
-	private Stage stage;
-
-	private GridPane userGrid;
-	static GridPane studGrid;
-	private GridPane dprtGrid;
-
-	private static Button addAcc;
-	private static Button addDepartment;
-	private static Button addStudent;
-
-	static ListView<String> onlineUser;
-	static ToolBar mb;
-
-	private Button menu;
-	private Label rts;
-	private Label rtu;
-	private Label rll;
-	private Search srch;
-	static BorderPane pane;
-
 	public AdminUI(Stage s, BorderPane p, ToolBar tb) {
-		mb = tb;
-		stage = s;
-		pane = p;
-		menu = new Button("Menu");
-		rts = new Label();
-		rtu = new Label();
-		rll = new Label();
+		Components.mb = tb;
+		Components.stage = s;
+		Components.pane = p;
+		Components.menu = new Button("Menu");
+		Components.rts = new Label();
+		Components.rtu = new Label();
+		Components.rll = new Label();
 	}
 
 	public void startUI() {
@@ -98,9 +82,9 @@ public class AdminUI implements Runnable {
 		pulse.start();
 
 		gpane.setId("TheGrid");
-		rts.setId("logInfo");
-		rtu.setId("logInfo");
-		rll.setId("logInfo");
+		Components.rts.setId("logInfo");
+		Components.rtu.setId("logInfo");
+		Components.rll.setId("logInfo");
 
 		ColumnConstraints cc0 = new ColumnConstraints();
 		ColumnConstraints cc1 = new ColumnConstraints();
@@ -115,17 +99,17 @@ public class AdminUI implements Runnable {
 		Label search = new Label("Search");
 		Label au = new Label("Online Users");
 		Button logout = new Button("Log Out");
-		srch = new Search();
+		Components.srch = new Search();
 		
 		logout.setId("logout");
 		search.setId("search");
-		srch.setId("searchBox");
+		Components.srch.setId("searchBox");
 
-		SideBar side = new SideBar(dummy, menu);
+		SideBar side = new SideBar(dummy, Components.menu);
 		side.setMenuWidth(300);
 
-		onlineUser = new ListView<>();
-		onlineUser.getItems().add("No User is online !");
+		Components.onlineUser = new ListView<>();
+		Components.onlineUser.getItems().add("No User is online !");
 		ContextMenu oucm = new ContextMenu();
 		MenuItem sText = new MenuItem("Send a message");
 		oucm.getItems().add(sText);
@@ -133,7 +117,8 @@ public class AdminUI implements Runnable {
 			sendData();
 		});
 
-		onlineUser.setContextMenu(oucm);
+		Components.onlineUser.setContextMenu(oucm);
+		Components.menu.setGraphic(new ImageView(new Image("/ivn/typh/main/icons/menu.png")));
 
 		cc0.setPercentWidth(70);
 		cc1.setPercentWidth(30);
@@ -141,7 +126,6 @@ public class AdminUI implements Runnable {
 		rc1.setPercentHeight(85);
 
 		TabPane tabPane = new TabPane();
-		tabPane.setSide(Side.LEFT);
 		tabPane.getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
 
 		Tab user = new Tab("Users");
@@ -162,30 +146,30 @@ public class AdminUI implements Runnable {
 			logoutApplication();
 		});
 
-		userGrid = new GridPane();
-		studGrid = new GridPane();
-		dprtGrid = new GridPane();
+		Components.userGrid = new GridPane();
+		Components.studGrid = new GridPane();
+		Components.dprtGrid = new GridPane();
 
-		userGrid.setId("uGrid");
-		studGrid.setId("sGrid");
-		dprtGrid.setId("dGrid");
+		Components.userGrid.setId("uGrid");
+		Components.studGrid.setId("sGrid");
+		Components.dprtGrid.setId("dGrid");
 
 		ScrollPane scrollStud = new ScrollPane();
 		ScrollPane scrollUser = new ScrollPane();
 		ScrollPane scrollDprt = new ScrollPane();
 
-		scrollStud.setContent(studGrid);
+		scrollStud.setContent(Components.studGrid);
 		scrollStud.setHbarPolicy(ScrollBarPolicy.NEVER);
 
-		scrollUser.setContent(userGrid);
+		scrollUser.setContent(Components.userGrid);
 		scrollUser.setHbarPolicy(ScrollBarPolicy.NEVER);
 
-		scrollDprt.setContent(dprtGrid);
+		scrollDprt.setContent(Components.dprtGrid);
 		scrollDprt.setHbarPolicy(ScrollBarPolicy.NEVER);
 
-		addAcc = new Button("+");
-		addDepartment = new Button("+");
-		addStudent = new Button("+");
+		Components.addAcc = new Button("+");
+		Components.addDepartment = new Button("+");
+		Components.addStudent = new Button("+");
 
 		Tooltip tabtipd = new Tooltip("Add a Department");
 		tabtipd.setFont(new Font(12));
@@ -196,43 +180,43 @@ public class AdminUI implements Runnable {
 		Tooltip tabtips = new Tooltip("Add a Student");
 		tabtips.setFont(new Font(12));
 
-		addDepartment.setTooltip(tabtipd);
-		addAcc.setTooltip(tabtipu);
-		addStudent.setTooltip(tabtips);
+		Components.addDepartment.setTooltip(tabtipd);
+		Components.addAcc.setTooltip(tabtipu);
+		Components.addStudent.setTooltip(tabtips);
 
 		loadProfiles();
 
-		addAcc.setOnAction((arg0) -> {
+		Components.addAcc.setOnAction((arg0) -> {
 			if (Departments.dprtList != null) {
-				UserAccounts dialog = new UserAccounts(stage, userGrid, addAcc);
+				UserAccounts dialog = new UserAccounts(Components.stage, Components.userGrid, Components.addAcc);
 				dialog.begin();
 
 			} else
-				Notification.message(stage, AlertType.ERROR, "Error - Empty List - Typh™",
+				Notification.message(Components.stage, AlertType.ERROR, "Error - Empty List - Typh™",
 						"First add at least one department before adding an account !");
 
 		});
 
-		addDepartment.setOnAction((arg0) -> {
-			Departments dialog = new Departments(stage, dprtGrid, addDepartment);
+		Components.addDepartment.setOnAction((arg0) -> {
+			Departments dialog = new Departments(Components.stage, Components.dprtGrid, Components.addDepartment);
 			dialog.begin();
 
 		});
 
-		addStudent.setOnAction((arg0) -> {
+		Components.addStudent.setOnAction((arg0) -> {
 			if (Departments.dprtList != null) {
-				Students dialog = new Students(stage, studGrid, addStudent);
+				Students dialog = new Students(Components.stage, Components.studGrid, Components.addStudent);
 				dialog.begin();
 
 			} else {
-				Notification.message(stage, AlertType.ERROR, "Error - Empty List - Typh™",
+				Notification.message(Components.stage, AlertType.ERROR, "Error - Empty List - Typh™",
 						"First add at least one department before adding a profile !");
 			}
 		});
 
-		userGrid.add(addAcc, UserAccounts.x, UserAccounts.y);
-		studGrid.add(addStudent, Students.x, Students.y);
-		dprtGrid.add(addDepartment, Departments.x, Departments.y);
+		Components.userGrid.add(Components.addAcc, UserAccounts.x, UserAccounts.y);
+		Components.studGrid.add(Components.addStudent, Students.x, Students.y);
+		Components.dprtGrid.add(Components.addDepartment, Departments.x, Departments.y);
 
 		user.setContent(scrollUser);
 		stud.setContent(scrollStud);
@@ -247,23 +231,30 @@ public class AdminUI implements Runnable {
 		top.setId("top");
 
 		HBox.setHgrow(tabPane, Priority.ALWAYS);
-		VBox.setVgrow(onlineUser, Priority.ALWAYS);
+		VBox.setVgrow(Components.onlineUser, Priority.ALWAYS);
 		StackPane.setAlignment(side, Pos.CENTER_LEFT);
 
 		center.getChildren().add(tabPane);
 
 		topL.getChildren().add(admin);
-		left.getChildren().addAll(topL, ts, rts, tu, rtu, ll, rll);
-		right.getChildren().addAll(au, onlineUser);
-		top.getChildren().addAll(search, srch);
+		left.getChildren().addAll(topL, ts, Components.rts, tu, Components.rtu, ll, Components.rll);
+		right.getChildren().addAll(au, Components.onlineUser);
+		top.getChildren().addAll(search, Components.srch);
 
-		side.addNodes(topL, left, mb.getItems().get(2), mb.getItems().get(3), mb.getItems().get(5));
+		Button tmp = ((Button)Components.mb.getItems().get(3));
+		tmp.setMinWidth(300);
+		side.addNodes(topL, left, Components.mb.getItems().get(2), tmp);
+		ToggleButton ttb =  (ToggleButton) Components.mb.getItems().get(5);
+		tmp.setMinWidth(300);
+		side.addNodes(ttb);
 		side.setPrefWidth(300);
 
-		mb.getItems().remove(7);
-		mb.getItems().add(7, logout);
-		mb.getItems().remove(0, 5);
-		mb.getItems().add(0, menu);
+		Components.mb.getItems().remove(7);
+		Components.mb.getItems().add(7, logout);
+		Components.mb.getItems().remove(0, 4);
+		Components.mb.getItems().add(0, Components.menu);
+		Components.mb.getItems().get(2).setId("fullscreen");
+
 
 		gpane.getColumnConstraints().addAll(cc0, cc1);
 		gpane.getRowConstraints().addAll(rc0, rc1);
@@ -283,23 +274,23 @@ public class AdminUI implements Runnable {
 		sgpane.setVbarPolicy(ScrollBarPolicy.NEVER);
 		spMain.getChildren().addAll(sgpane, dummy, side);
 
-		stage.getScene().getStylesheets().remove(0);
-		stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
-		pane.setCenter(spMain);
+		Components.stage.getScene().getStylesheets().remove(0);
+		Components.stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
+		Components.pane.setCenter(spMain);
 
-		pane.applyCss();
-		pane.layout();
-		pane.requestLayout();
+		Components.pane.applyCss();
+		Components.pane.layout();
+		Components.pane.requestLayout();
 		tabPane.setTabMinWidth(tabPane.getHeight() / 3 - 17);
 		tabPane.setTabMaxWidth(tabPane.getHeight() / 3 - 17);
 
 	}
 
 	private void sendData() {
-		String item = onlineUser.getSelectionModel().getSelectedItem();
+		String item = Components.onlineUser.getSelectionModel().getSelectedItem();
 		if (item == null || item.equals("No User is online !")) {
 			Platform.runLater(() -> {
-				Notification.message(stage, AlertType.ERROR, "Invalid User - Typh™", "First select a valid user.");
+				Notification.message(Components.stage, AlertType.ERROR, "Invalid User - Typh™", "First select a valid user.");
 			});
 			return;
 		}
@@ -307,7 +298,7 @@ public class AdminUI implements Runnable {
 		dialog.setHeaderText("Enter message for " + item);
 		dialog.setTitle("Messenger - Typh™");
 		dialog.getDialogPane().setPadding(new Insets(50));
-		dialog.initOwner(stage);
+		dialog.initOwner(Components.stage);
 		TextField text = new TextField();
 		text.setPromptText("Enter message ...");
 		ButtonType send = new ButtonType("Send", ButtonData.OK_DONE);
@@ -331,9 +322,9 @@ public class AdminUI implements Runnable {
 	private void loadProfiles() {
 
 		Document tmpdoc = Engine.db.getCollection("Users").find(eq("user", "admin")).first();
-		rll.setText(tmpdoc.getString("lastLogin"));
+		Components.rll.setText(tmpdoc.getString("lastLogin"));
 
-		rtu.setText(Long.toString(Engine.db.getCollection("Users").count() - 1));
+		Components.rtu.setText(Long.toString(Engine.db.getCollection("Users").count() - 1));
 		Engine.db.getCollection("Users").updateOne(eq("user", "admin"),
 				new Document("$set", new Document("lastLogin",
 						LocalDateTime.now().getDayOfMonth() + "-" + LocalDateTime.now().getMonthValue() + "-"
@@ -359,19 +350,19 @@ public class AdminUI implements Runnable {
 				Departments.dprtList.put(id, name);
 
 				Button tmp = new Button(name);
-				tmp.setOnAction(new Departments(stage, dprtGrid, name, head, crooms, labs, srooms, id, lib));
+				tmp.setOnAction(new Departments(Components.stage, Components.dprtGrid, name, head, crooms, labs, srooms, id, lib));
 				if (Departments.x < 6) {
 					Departments.x++;
-					dprtGrid.add(tmp, Departments.x - 1, Departments.y);
-					GridPane.setColumnIndex(addDepartment, Departments.x);
-					GridPane.setRowIndex(addDepartment, Departments.y);
+					Components.dprtGrid.add(tmp, Departments.x - 1, Departments.y);
+					GridPane.setColumnIndex(Components.addDepartment, Departments.x);
+					GridPane.setRowIndex(Components.addDepartment, Departments.y);
 
 				} else {
 					Departments.x = 1;
 					Departments.y++;
-					dprtGrid.add(tmp, Departments.x - 1, Departments.y);
-					GridPane.setColumnIndex(addDepartment, Departments.x);
-					GridPane.setRowIndex(addDepartment, Departments.y);
+					Components.dprtGrid.add(tmp, Departments.x - 1, Departments.y);
+					GridPane.setColumnIndex(Components.addDepartment, Departments.x);
+					GridPane.setRowIndex(Components.addDepartment, Departments.y);
 
 				}
 			}
@@ -398,25 +389,25 @@ public class AdminUI implements Runnable {
 				Students.studentList.add(tsname);
 
 				Button tmp = new Button(tsname);
-				tmp.setOnAction(new Students(stage, studGrid, tsname, tsid, tsrno, tsclass, tsbatch, tsmail, tsaddr,
+				tmp.setOnAction(new Students(Components.stage, Components.studGrid, tsname, tsid, tsrno, tsclass, tsbatch, tsmail, tsaddr,
 						tsphone, tpphone, tsdprt, img, y));
 				if (Students.x < 6) {
 					Students.x++;
-					studGrid.add(tmp, Students.x - 1, Students.y);
-					GridPane.setColumnIndex(addStudent, Students.x);
-					GridPane.setRowIndex(addStudent, Students.y);
+					Components.studGrid.add(tmp, Students.x - 1, Students.y);
+					GridPane.setColumnIndex(Components.addStudent, Students.x);
+					GridPane.setRowIndex(Components.addStudent, Students.y);
 
 				} else {
 					Students.x = 1;
 					Students.y++;
-					studGrid.add(tmp, Students.x - 1, Students.y);
-					GridPane.setColumnIndex(addStudent, Students.x);
-					GridPane.setRowIndex(addStudent, Students.y);
+					Components.studGrid.add(tmp, Students.x - 1, Students.y);
+					GridPane.setColumnIndex(Components.addStudent, Students.x);
+					GridPane.setRowIndex(Components.addStudent, Students.y);
 
 				}
 			}
 
-			rts.setText(Integer.toString(Students.studentList.size()));
+			Components.rts.setText(Integer.toString(Students.studentList.size()));
 			// UserAccounts
 			cursor = Engine.db.getCollection("Users").find().iterator();
 			UserAccounts.userList = FXCollections.observableArrayList();
@@ -441,34 +432,34 @@ public class AdminUI implements Runnable {
 					}
 					UserAccounts.userList.add(json.getString("user"));
 					Button tmp = new Button(username);
-					tmp.setOnAction(new UserAccounts(stage, userGrid, username, full, password, email, dprt, cli, yin,
+					tmp.setOnAction(new UserAccounts(Components.stage, Components.userGrid, username, full, password, email, dprt, cli, yin,
 							ll, stat));
 					if (UserAccounts.x < 6) {
 						UserAccounts.x++;
-						userGrid.add(tmp, UserAccounts.x - 1, UserAccounts.y);
-						GridPane.setColumnIndex(addAcc, UserAccounts.x);
-						GridPane.setRowIndex(addAcc, UserAccounts.y);
+						Components.userGrid.add(tmp, UserAccounts.x - 1, UserAccounts.y);
+						GridPane.setColumnIndex(Components.addAcc, UserAccounts.x);
+						GridPane.setRowIndex(Components.addAcc, UserAccounts.y);
 
 					} else {
 						UserAccounts.x = 1;
 						UserAccounts.y++;
-						userGrid.add(tmp, UserAccounts.x - 1, UserAccounts.y);
-						GridPane.setColumnIndex(addAcc, UserAccounts.x);
-						GridPane.setRowIndex(addAcc, UserAccounts.y);
+						Components.userGrid.add(tmp, UserAccounts.x - 1, UserAccounts.y);
+						GridPane.setColumnIndex(Components.addAcc, UserAccounts.x);
+						GridPane.setRowIndex(Components.addAcc, UserAccounts.y);
 
 					}
 				}
 			}
 		} catch (JSONException e) {
 		}
-		srch.setItems(Students.studentList);
+		Components.srch.setItems(Students.studentList);
 	}
 
 	private void logoutApplication() {
 		Alert ex = new Alert(AlertType.CONFIRMATION);
 		ex.setHeaderText("LogOut Typh™ ? ");
 		ex.setTitle("Exit - Typh™");
-		ex.initOwner(stage);
+		ex.initOwner(Components.stage);
 		ex.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
 
 		Optional<ButtonType> result = ex.showAndWait();

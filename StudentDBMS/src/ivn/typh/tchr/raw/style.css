@@ -68,7 +68,7 @@
 }
 
 #search{
-		-fx-graphic: url('search.png');
+		-fx-graphic: url('/ivn/typh/tchr/main/search.png');
 	
 }
 #searchBox{
@@ -82,6 +82,17 @@
 	-fx-background-color:  derive(-fx-base,95.0%)
 }
 
+#fullscreen{
+	-fx-graphic: url('/ivn/typh/main/icons/fullscreen.png')
+}
+
+#fullscreen:selected{
+	-fx-graphic: url('/ivn/typh/main/icons/fullscreen_exit.png')
+}
+
+#project_download{
+	-fx-graphic: url('/ivn/typh/tchr/icons/project_download.png')
+}
 #sideBar {
 	-fx-effect: dropshadow(gaussian,black,20.0,-20.0,5.0,0.0);
 	-fx-alignment: center;

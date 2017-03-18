@@ -15,7 +15,12 @@ import com.mongodb.MongoClientURI;
 import javafx.animation.FillTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.concurrent.Task;
+import javafx.concurrent.Worker;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
@@ -71,7 +76,7 @@ public class BasicUI extends Application implements Runnable {
 		about = new Button("About");
 		help = new Button("Help");
 		cnct = new Button("Connect");
-		fulls = new ToggleButton("X");
+		fulls = new ToggleButton();
 
 		exit.setId("logout");
 		about.setId("about");
@@ -352,5 +357,6 @@ public class BasicUI extends Application implements Runnable {
 	public void run() {
 		launch();
 	}
+
 
 }

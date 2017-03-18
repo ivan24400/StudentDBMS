@@ -36,13 +36,13 @@ public class HeartBeat implements Runnable {
 							@SuppressWarnings("unchecked")
 							List<String> u = (List<String>) in.readObject();
 							Platform.runLater(() -> {
-								AdminUI.onlineUser.getItems().clear();
+								Components.onlineUser.getItems().clear();
 								u.forEach(item -> {
-									AdminUI.onlineUser.getItems().add((String) item);
+									Components.onlineUser.getItems().add((String) item);
 
 								});
-								if (AdminUI.onlineUser.getItems().isEmpty())
-									AdminUI.onlineUser.getItems().add("No User is online !");
+								if (Components.onlineUser.getItems().isEmpty())
+									Components.onlineUser.getItems().add("No User is online !");
 							});
 							out.reset();
 							out.writeObject(message);

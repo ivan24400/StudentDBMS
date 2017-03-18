@@ -14,9 +14,6 @@
     -fx-accent: #4d4dff;
 }
 
-#TheGrid{
-	    -fx-background-color: linear-gradient(to bottom right ,white,#e6ffff);
-}
 
 .button {
 	-fx-background-insets: 0.0;
@@ -48,10 +45,7 @@
     -fx-padding: 0.0 0.0 2.0 5.0; 
 }
 
-.tab-pane {
-	-fx-tab-min-height:100.0px;
-	-fx-tab-max-height:100.0px;
-}
+
 
 .tab-pane.floating .tab:selected > .tab-content-area{
 	-fx-background-color: derive(#3c3c3c,50.0%)
@@ -67,7 +61,6 @@
 .tab .tab-label { 
     -fx-alignment: center;
     -fx-text-fill: #000000;
-    -fx-rotate: 90.0
 }
 
 .tab:selected .tab-label { 
@@ -84,6 +77,11 @@
 
 #logInfo{
 	-fx-text-fill: -fx-base
+}
+
+
+#TheGrid{
+	    -fx-background-color: linear-gradient(to bottom right ,white,#e6ffff);
 }
 
 #search{
