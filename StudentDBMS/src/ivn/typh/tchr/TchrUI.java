@@ -34,6 +34,7 @@ import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
+import ivn.typh.admin.Components;
 import ivn.typh.admin.SideBar;
 import ivn.typh.main.BasicUI;
 import ivn.typh.main.Engine;
@@ -50,7 +51,6 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.geometry.VPos;
-import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;

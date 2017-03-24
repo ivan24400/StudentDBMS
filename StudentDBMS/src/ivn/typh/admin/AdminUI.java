@@ -241,11 +241,12 @@ public class AdminUI implements Runnable {
 		right.getChildren().addAll(au, Components.onlineUser);
 		top.getChildren().addAll(search, Components.srch);
 
-		Button tmp = ((Button)Components.mb.getItems().get(3));
-		tmp.setMinWidth(300);
-		side.addNodes(topL, left, Components.mb.getItems().get(2), tmp);
+		Button tmp0 = ((Button)Components.mb.getItems().get(3));
+		Button tmp1 = ((Button)Components.mb.getItems().get(2));
+		tmp0.setMinWidth(280);
+		tmp1.setMinWidth(280);
+		side.addNodes(topL, left, tmp0, tmp1);
 		ToggleButton ttb =  (ToggleButton) Components.mb.getItems().get(5);
-		tmp.setMinWidth(300);
 		side.addNodes(ttb);
 		side.setPrefWidth(300);
 

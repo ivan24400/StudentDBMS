@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.poi.POIXMLProperties;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -49,8 +51,17 @@ public class Export {
 
 	private static void writeData() {
 		book = new XSSFWorkbook();
+		POIXMLProperties property = book.getProperties();
+		POIXMLProperties.CoreProperties cproperty = property.getCoreProperties();
+		cproperty.setCreator(Components.pname.getText());
+		cproperty.setTitle(Components.tsname.getText());
+		cproperty.setCategory("Academic");
+		
+		
 		XSSFSheet sheet = book.createSheet();
 		XSSFFont cell_font = book.createFont();
+		book.setSheetName(0, Components.tsname.getText()+"\'s Data");
+
 		cell_font.setBold(true);
 		CellStyle cell_summary = book.createCellStyle();
 		cell_summary.setFont(cell_font);

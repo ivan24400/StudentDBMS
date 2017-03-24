@@ -81,7 +81,7 @@
 
 
 #TheGrid{
-	    -fx-background-color: linear-gradient(to bottom right ,white,#e6ffff);
+	    -fx-background-color: white;
 }
 
 #search{
