@@ -5,5 +5,11 @@
 	<classpathentry kind="lib" path="src/ivn/typh/lib/jfxrt.jar"/>
 	<classpathentry kind="lib" path="src/ivn/typh/lib/mongo-java-driver-3.4.0.jar"/>
 	<classpathentry kind="lib" path="src/ivn/typh/lib/json-java.jar"/>
+	<classpathentry kind="lib" path="src/ivn/typh/lib/commons-collections4-4.1.jar"/>
+	<classpathentry kind="lib" path="src/ivn/typh/lib/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="src/ivn/typh/lib/poi-3.15.jar"/>
+	<classpathentry kind="lib" path="src/ivn/typh/lib/poi-ooxml-3.15.jar"/>
+	<classpathentry kind="lib" path="src/ivn/typh/lib/poi-ooxml-schemas-3.15.jar"/>
+	<classpathentry kind="lib" path="src/ivn/typh/lib/xmlbeans-2.6.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

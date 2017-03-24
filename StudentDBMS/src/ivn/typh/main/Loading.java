@@ -28,7 +28,6 @@ public class Loading{
 		if(p != null){
 			p.setProgress(-1);
 			p.progressProperty().unbind();
-		//	p.progressProperty().bind(cm.progressProperty());
 			alert.initOwner(stage);
 			alert.getDialogPane().setStyle("-fx-background-color:rgba(0,0,0,0);");
 			alert.getDialogPane().getScene().setFill(Color.TRANSPARENT);

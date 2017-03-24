@@ -33,15 +33,16 @@ public class Components {
 	public static ObservableList<String> repList;
 	public static Button update;
 	public static Button report;
+	public static Button export;
+	public static Button menu;
 	public static ToolBar mb;
 	public static ComboBox<String> slist;
 	public static TitledPane[] tp;
 	public static Accordion accord;
-	public static Label srch;
 	public static Search searchBox;
+	public static Label srch;
 	public static Label reports;
 	public static Label student;
-	public static Button menu;
 	public static Label pname;
 	public static Label dprt;
 	public static Label pdprt;
@@ -61,6 +62,7 @@ public class Components {
 	public static ChoiceBox<String> tsclass;
 	public static ChoiceBox<String> tsbatch;
 	public static ChoiceBox<String> tsyear;
+	public static String tscyear;
 	public static TextField tsmail;
 	public static TextField tsaddr;
 	public static TextField tsphone;

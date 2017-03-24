@@ -182,11 +182,10 @@ public class TchrUI implements Runnable {
 		Components.accord = new Accordion();
 		Components.update = new Button("Update");
 		Components.report = new Button("Report");
-		yrlst = new ComboBox<>();
 		Components.tsyear = new ChoiceBox<>();
-		yrlst.getItems().addAll(FXCollections.observableArrayList("FE", "SE", "TE", "BE"));
-		Components.tsyear.getItems().addAll(yrlst.getItems());
 
+		yrlst = new ComboBox<>();
+		yrlst.getItems().addAll(FXCollections.observableArrayList("FE", "SE", "TE", "BE"));
 		yrlst.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
 			loadReport(n);
 			loadAcademicData(n);
@@ -194,12 +193,15 @@ public class TchrUI implements Runnable {
 			loadProjectData(n);
 			loadAssignmentData(n);
 		});
+		
+		Components.tsyear.getItems().addAll(yrlst.getItems());
 
-		aboveAcc.getChildren().addAll(Components.student, Components.slist, new Label("Select Year"), yrlst, editable, Components.update, Components.report);
-
+		//		Start the heartbeat
 		
 		Thread pulse = new Thread(new HeartBeat());
 		pulse.start();
+		
+		//		Logout Action
 		
 		logout.setOnAction(arg -> {
 			logoutApplication();
@@ -222,8 +224,20 @@ public class TchrUI implements Runnable {
 			loadStudentProfile(n.split(":")[1]);
 		});
 
+		// 		Search Box 
+		
 		Components.srch.setId("search");
 		Components.searchBox.setId("searchBox");
+		
+		//		Export Data
+		
+		Components.export = new Button("Export");
+		Components.export.setOnAction(arg->{
+			Export.export();
+		});
+		
+		aboveAcc.getChildren().addAll(Components.student, Components.slist, new Label("Select Year"), yrlst, editable, Components.update, Components.report, Components.export);
+
 		
 		//
 		// Personal
@@ -1071,6 +1085,7 @@ public class TchrUI implements Runnable {
 	
 	}
 
+
 	private void uploadData(String sid) {
 		Bson filter = new Document("sid", sid);
 		Document newValue = new Document("name", Components.tsname.getText().trim()).append("rno", Components.tsrno.getValue())
@@ -1193,7 +1208,24 @@ public class TchrUI implements Runnable {
 		Components.tsaddr.setText(jsonData.getString("address"));
 		Components.tsphone.setText(jsonData.getString("studentPhone"));
 		Components.tpphone.setText(jsonData.getString("parentPhone"));
-		Components.tsyear.getSelectionModel().select(jsonData.getString("year"));
+		
+		Components.tscyear = jsonData.getString("year");
+		
+		Components.tsyear.getItems().clear();
+		switch(Components.tscyear){
+		case "BE":
+			Components.tsyear.getItems().add("BE");
+		case "TE":
+			Components.tsyear.getItems().add("TE");
+		case "SE":
+			Components.tsyear.getItems().add("SE");
+		case "FE":
+			Components.tsyear.getItems().add("FE");
+		}
+		
+		Components.tsyear.getSelectionModel().select(Components.tscyear);
+		
+		
 		
 		// Academic
 
@@ -1395,11 +1427,11 @@ public class TchrUI implements Runnable {
 		}
 	}
 
-	private void loadAcademicData(String n) {
+	private void loadAcademicData(String year) {
 		JSONArray jsona = null;
 		try {
 			String data = Engine.db.getCollection("Students").find(eq("sid", Components.tsid.getText())).first().toJson();
-			jsona = new JSONObject(data).getJSONArray(n.toLowerCase());
+			jsona = new JSONObject(data).getJSONArray(year.toLowerCase());
 		} catch (JSONException e) {
 		}
 		Iterator<?> it = jsona.iterator();
@@ -1430,14 +1462,14 @@ public class TchrUI implements Runnable {
 
 	}
 
-	private void loadProjectData(String y) {
+	private void loadProjectData(String yr) {
 		Components.prList.getItems().clear();
 		Engine.gfs.find().forEach(new Block<GridFSFile>() {
 			public void apply(final GridFSFile file) {
 				String name = file.getFilename().split(":")[1];
 				String gfsid = file.getFilename().split(":")[0];
 				int year = Integer.parseInt(gfsid.substring(2, 4));
-				if (year == sMatchesY(0, y))
+				if (year == sMatchesY(0, yr))
 					Components.prList.getItems().add(name);
 			}
 		});
@@ -1524,7 +1556,8 @@ public class TchrUI implements Runnable {
 	private void disableAll(boolean flag) {
 		Components.update.setDisable(flag);
 		Components.report.setDisable(flag);
-		
+		Components.export.setDisable(flag);
+
 		// Personal Pane
 
 		Components.dpImgView.setDisable(flag);
