@@ -129,7 +129,7 @@ public class LogIn implements Runnable {
 				if (flag == 1) {
 					loadUI();
 					try {
-						Thread.sleep(5000);
+						Thread.sleep(3000);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
