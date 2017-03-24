@@ -151,13 +151,13 @@ public class Export {
 			cell = row.createCell(col_index++);
 			cell.setCellValue("Semester");
 			cell = row.createCell(col_index++);
-			cell.setCellValue(sem);
+			//cell.setCellValue(sem);
 			
 			row = sheet.createRow(row_index +9);
 			cell = row.createCell(col_index++);
 			cell.setCellValue("Semester");
 			cell = row.createCell(col_index++);
-			cell.setCellValue(sem);
+			//cell.setCellValue(sem);
 			
 			while(it.hasNext()){
 				JSONObject json = (JSONObject) it.next();
