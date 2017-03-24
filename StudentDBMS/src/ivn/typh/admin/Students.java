@@ -12,6 +12,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import ivn.typh.main.Engine;
+import ivn.typh.tchr.Components;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -50,7 +51,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 
 	static ObservableList<String> studentList;
 	static int x, y;
-	private String sc, sb, dp, yr, srno;
+	private String sc, sb, dp, semester, srno;
 	private int saveAdded;
 	private boolean isFirst;
 	private String dpImg;
@@ -63,7 +64,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 	private ChoiceBox<String> tsrno;
 	private ChoiceBox<String> tsclass;
 	private ChoiceBox<String> tsbatch;
-	private ChoiceBox<String> tsyear;
+	private ChoiceBox<String> tssem;
 	private TextField tsmail;
 	private TextField tsaddr;
 	private TextField tsphone;
@@ -74,7 +75,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 	private ChoiceBox<String> tsdprt;
 
 	public Students(Stage s, GridPane gp, String n, String i, String rolln, String clas, String batch, String mail,
-			String addr, String sp, String pp, String dprt, String img, String y) {
+			String addr, String sp, String pp, String dprt, String img, String csem) {
 		this(s);
 		home = gp;
 
@@ -90,7 +91,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		sc = clas;
 		sb = batch;
 		dp = dprt;
-		yr = y;
+		semester = csem;
 	}
 
 	public Students(Stage arg) {
@@ -106,7 +107,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		tsaddr = new TextField();
 		tsphone = new TextField();
 		tpphone = new TextField();
-		tsyear = new ChoiceBox<>();
+		tssem = new ChoiceBox<>();
 		upload = new Button("Upload");
 		dpImg = new String();
 	}
@@ -127,7 +128,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		dPane.setHgap(20);
 		dPane.setVgap(20);
 
-		tsyear.getItems().setAll(FXCollections.observableArrayList("FE", "SE", "TE", "BE"));
+		tssem.getItems().setAll(FXCollections.observableArrayList("SEM 1","SEM 2","SEM 3","SEM 4","SEM 5","SEM 6","SEM 7","SEM 8"));
 		tsname.setPromptText("Name");
 		tsid.setPromptText("ID");
 		tsmail.setPromptText("Email");
@@ -140,7 +141,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		autog.setOnAction(arg -> {
 			Departments.dprtList.forEach((key, val) -> {
 				if (val == tsdprt.getValue()) {
-					tsid.setText(key + tsyear.getValue() + tsclass.getValue() + tsrno.getValue());
+					tsid.setText(key + tssem.getValue() + tsclass.getValue() + tsrno.getValue());
 
 				}
 			});
@@ -248,7 +249,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 			dpImgView.setImage(new Image(tmp.getAbsolutePath()));
 		});
 
-		Label year = new Label("Current Year");
+		Label year = new Label("Current Semester");
 		GridPane.setHalignment(year, HPos.RIGHT);
 		dPane.add(new Label("Name"), 0, 0);
 		dPane.add(tsname, 1, 0);
@@ -275,7 +276,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		dPane.add(dpImgView, 4, 1, 1, 5);
 
 		dPane.add(year, 1, 5);
-		dPane.add(tsyear, 2, 5);
+		dPane.add(tssem, 2, 5);
 		addEdit(dPane);
 
 		upload.setPrefWidth(dpImgView.getFitWidth());
@@ -295,7 +296,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 			tsclass.getSelectionModel().select(sc);
 			tsbatch.getSelectionModel().select(sb);
 			tsdprt.getSelectionModel().select(dp);
-			tsyear.getSelectionModel().select(yr);
+			tssem.getSelectionModel().select(semester);
 			tsrno.getSelectionModel().select(srno);
 			disableAll(true);
 
@@ -306,7 +307,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 			tsclass.getSelectionModel().selectFirst();
 			tsbatch.getSelectionModel().selectFirst();
 			tsdprt.getSelectionModel().selectFirst();
-			tsyear.getSelectionModel().selectFirst();
+			tssem.getSelectionModel().selectFirst();
 			tsrno.getSelectionModel().selectFirst();
 		}
 
@@ -382,7 +383,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		tsaddr.setEditable(!flag);
 		tsphone.setEditable(!flag);
 		tpphone.setEditable(!flag);
-		tsyear.setDisable(flag);
+		tssem.setDisable(flag);
 		dpImgView.setDisable(flag);
 		upload.setDisable(flag);
 		if(!isFirst)
@@ -409,7 +410,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 				.append("department", tsdprt.getValue()).append("batch", tsbatch.getValue())
 				.append("class", tsclass.getValue()).append("email", tsmail.getText())
 				.append("address", tsaddr.getText()).append("studentPhone", tsphone.getText())
-				.append("parentPhone", tpphone.getText()).append("img", tmpString).append("year", tsyear.getValue());
+				.append("parentPhone", tpphone.getText()).append("img", tmpString).append("current_semester", tssem.getValue()).append("current_year", getYear());
 		if (isFirst) {
 			doc.append("name", tsname.getText());
 			Engine.db.getCollection("Students").insertOne(doc);
@@ -434,6 +435,29 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 			Bson query = new Document("$set", doc);
 			Engine.db.getCollection("Students").updateOne(filter, query);
 		}
+	}
+
+	private String getYear() {
+		String year = null;
+		
+		switch (tssem.getValue()) {
+		case "SEM 1":case "SEM 2":
+			year="fe";
+			break;
+		case "SEM 3":case "SEM 4":
+			year="se";
+
+			break;
+		case "SEM 5":case "SEM 6":
+			year="te";
+
+			break;
+		case "SEM 7":case "SEM 8":
+			year="be";
+
+			break;
+		}		
+		return year;
 	}
 
 	public String getStudentName() {

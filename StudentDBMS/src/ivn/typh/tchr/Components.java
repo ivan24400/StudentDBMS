@@ -62,7 +62,7 @@ public class Components {
 	public static ChoiceBox<String> tsclass;
 	public static ChoiceBox<String> tsbatch;
 	public static ChoiceBox<String> tsyear;
-	public static String tscyear;
+	public static String tscsem;
 	public static TextField tsmail;
 	public static TextField tsaddr;
 	public static TextField tsphone;

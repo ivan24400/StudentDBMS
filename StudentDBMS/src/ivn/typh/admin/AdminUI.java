@@ -366,7 +366,9 @@ public class AdminUI implements Runnable {
 
 				}
 			}
-			// Students
+			
+			// 			Students
+			
 			cursor = Engine.db.getCollection("Students").find().iterator();
 			Students.studentList = FXCollections.observableArrayList();
 
@@ -385,12 +387,12 @@ public class AdminUI implements Runnable {
 				String tpphone = Integer.toString(json.getInt("parentPhone"));
 				String tsdprt = json.getString("department");
 				String img = json.getString("img");
-				String y = json.getString("year");
+				String csemester = json.getString("current_semester");
 				Students.studentList.add(tsname);
 
 				Button tmp = new Button(tsname);
 				tmp.setOnAction(new Students(Components.stage, Components.studGrid, tsname, tsid, tsrno, tsclass, tsbatch, tsmail, tsaddr,
-						tsphone, tpphone, tsdprt, img, y));
+						tsphone, tpphone, tsdprt, img, csemester));
 				if (Students.x < 6) {
 					Students.x++;
 					Components.studGrid.add(tmp, Students.x - 1, Students.y);

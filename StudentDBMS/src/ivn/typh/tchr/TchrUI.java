@@ -1209,21 +1209,27 @@ public class TchrUI implements Runnable {
 		Components.tsphone.setText(jsonData.getString("studentPhone"));
 		Components.tpphone.setText(jsonData.getString("parentPhone"));
 		
-		Components.tscyear = jsonData.getString("year");
+		Components.tscsem = jsonData.getString("current_semester");
 		
 		Components.tsyear.getItems().clear();
-		switch(Components.tscyear){
-		case "BE":
+		String tsyear_t=null;
+		
+		switch(Components.tscsem){
+		case "SEM 7" : case "SEM 8":
 			Components.tsyear.getItems().add("BE");
-		case "TE":
+			tsyear_t = "BE";
+		case "SEM 5" : case "SEM 6":
+			tsyear_t = "TE";
 			Components.tsyear.getItems().add("TE");
-		case "SE":
+		case "SEM 3" : case "SEM 4":
+			tsyear_t = "SE";
 			Components.tsyear.getItems().add("SE");
-		case "FE":
+		case "SEM 1" : case "SEM 2":
+			tsyear_t = "FE";
 			Components.tsyear.getItems().add("FE");
 		}
 		
-		Components.tsyear.getSelectionModel().select(Components.tscyear);
+		Components.tsyear.getSelectionModel().select(tsyear_t);
 		
 		
 		
