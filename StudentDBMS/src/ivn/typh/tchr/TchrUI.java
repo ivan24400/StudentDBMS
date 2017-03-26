@@ -34,23 +34,28 @@ import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
-import ivn.typh.admin.Components;
+import ivn.typh.tchr.Components;
 import ivn.typh.admin.SideBar;
 import ivn.typh.main.BasicUI;
 import ivn.typh.main.Engine;
 import ivn.typh.main.Notification;
+import javafx.animation.RotateTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.geometry.Point3D;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.geometry.VPos;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
@@ -100,10 +105,15 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.SVGPath;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
@@ -114,11 +124,11 @@ public class TchrUI implements Runnable {
 	private static ComboBox<String> yrlst;
 
 	public TchrUI(Stage s, BorderPane p, Scene scen, ToolBar tb) {
-		
+
 		studList = FXCollections.observableArrayList();
 		dprtList = FXCollections.observableHashMap();
 		Engine.gfs = GridFSBuckets.create(Engine.db, "projects");
-		
+
 		Components.mb = tb;
 		Components.pane = p;
 		Components.stage = s;
@@ -140,7 +150,7 @@ public class TchrUI implements Runnable {
 		HBox top = new HBox();
 		HBox topL = new HBox();
 		HBox aboveAcc = new HBox();
-		
+
 		tgpane.setId("home");
 		center.setId("center");
 		left.setId("leftP");
@@ -152,10 +162,9 @@ public class TchrUI implements Runnable {
 		Button logout = new Button("Log Out");
 		ToggleButton editable = new ToggleButton("Edit");
 
-	
 		Pane dummy = new Pane();
 
-		SideBar side = new SideBar(dummy,Components.menu);
+		SideBar side = new SideBar(dummy, Components.menu);
 		side.setMenuWidth(300);
 		side.getStyleClass().add(".sideBarButton");
 		Components.menu.setGraphic(new ImageView(new Image("/ivn/typh/main/icons/menu.png")));
@@ -167,11 +176,11 @@ public class TchrUI implements Runnable {
 		Components.pcls = new Label();
 		Components.tstuds = new Label("Total Students:");
 		Components.nstuds = new Label();
-		
+
 		Components.pdprt.setId("logInfo");
 		Components.pcls.setId("logInfo");
 		Components.nstuds.setId("logInfo");
-		
+
 		Components.reps = new ListView<>();
 		Components.slist = new ComboBox<>();
 		Components.srch = new Label("Search");
@@ -193,16 +202,16 @@ public class TchrUI implements Runnable {
 			loadProjectData(n);
 			loadAssignmentData(n);
 		});
-		
+
 		Components.tsyear.getItems().addAll(yrlst.getItems());
 
-		//		Start the heartbeat
-		
+		// Start the heartbeat
+
 		Thread pulse = new Thread(new HeartBeat());
 		pulse.start();
-		
-		//		Logout Action
-		
+
+		// Logout Action
+
 		logout.setOnAction(arg -> {
 			logoutApplication();
 		});
@@ -211,12 +220,10 @@ public class TchrUI implements Runnable {
 			uploadData(Components.tsid.getText());
 		});
 
-		
 		editable.selectedProperty().addListener((arg, o, n) -> {
 			disableAll(!n);
 		});
 
-		
 		int scrollCount = cat.length;
 		ScrollPane[] scroll = new ScrollPane[scrollCount];
 
@@ -224,21 +231,21 @@ public class TchrUI implements Runnable {
 			loadStudentProfile(n.split(":")[1]);
 		});
 
-		// 		Search Box 
-		
+		// Search Box
+
 		Components.srch.setId("search");
 		Components.searchBox.setId("searchBox");
-		
-		//		Export Data
-		
+
+		// Export Data
+
 		Components.export = new Button("Export");
-		Components.export.setOnAction(arg->{
+		Components.export.setOnAction(arg -> {
 			Export.export();
 		});
-		
-		aboveAcc.getChildren().addAll(Components.student, Components.slist, new Label("Select Year"), yrlst, editable, Components.update, Components.report, Components.export);
 
-		
+		aboveAcc.getChildren().addAll(Components.student, Components.slist, new Label("Select Year"), yrlst, editable,
+				Components.update, Components.report, Components.export);
+
 		//
 		// Personal
 		//
@@ -246,7 +253,7 @@ public class TchrUI implements Runnable {
 		scroll[cat.length - (scrollCount)] = new ScrollPane();
 		GridPane personal = new GridPane();
 		personal.setId("personalP");
-		
+
 		Label sname = new Label("Name:");
 		Label sid = new Label("ID:");
 		Label srno = new Label("Roll No:");
@@ -257,7 +264,6 @@ public class TchrUI implements Runnable {
 		Label saddr = new Label("Address:");
 		Label sphone = new Label("Phone:");
 		Label pphone = new Label("Parent Phone:");
-
 
 		Components.dpImgView = new ImageView(new Image(getClass().getResourceAsStream("/ivn/typh/main/raw/pic.jpg")));
 		Components.dpImgView.setId("dpImgView");
@@ -278,7 +284,6 @@ public class TchrUI implements Runnable {
 		Components.tsaddr.setPromptText("Address");
 		Components.tsphone.setPromptText("Phone");
 		Components.tpphone.setPromptText("Parent Phone");
-
 
 		Components.dpImgView.setFitHeight(128);
 		Components.dpImgView.setFitWidth(128);
@@ -312,7 +317,8 @@ public class TchrUI implements Runnable {
 			if (!n.matches("\\D*")) {
 				tool.setText("Enter alphabets only");
 				Point2D p = Components.tsname.localToScene(0.0, 0.0);
-				tool.show(Components.tsname, p.getX() + Components.tsname.getCaretPosition(), p.getY() + Components.tsname.getHeight());
+				tool.show(Components.tsname, p.getX() + Components.tsname.getCaretPosition(),
+						p.getY() + Components.tsname.getHeight());
 				Components.tsname.setText(n.replaceAll("[\\d]", ""));
 			}
 		});
@@ -322,7 +328,8 @@ public class TchrUI implements Runnable {
 				System.out.println(obs.getValue() + "\t" + o + "\t" + n);
 				Point2D p = Components.tsphone.localToScene(0.0, 0.0);
 				tool.setText("Enter numbers only");
-				tool.show(Components.tsphone, p.getX() + Components.tsphone.getCaretPosition(), p.getY() + Components.tsphone.getHeight());
+				tool.show(Components.tsphone, p.getX() + Components.tsphone.getCaretPosition(),
+						p.getY() + Components.tsphone.getHeight());
 				Components.tsphone.setText(n.replaceAll("[^\\d]", ""));
 			}
 		});
@@ -332,7 +339,8 @@ public class TchrUI implements Runnable {
 				Point2D p = Components.tpphone.localToScene(0.0, 0.0);
 				tool.setText("Enter numbers only");
 
-				tool.show(Components.tpphone, p.getX() + Components.tpphone.getCaretPosition(), p.getY() + Components.tpphone.getHeight());
+				tool.show(Components.tpphone, p.getX() + Components.tpphone.getCaretPosition(),
+						p.getY() + Components.tpphone.getHeight());
 				Components.tpphone.setText(n.replaceAll("[^\\d]", ""));
 			}
 		});
@@ -341,7 +349,7 @@ public class TchrUI implements Runnable {
 		MenuItem tsida = new MenuItem("Generate ID");
 		tsida.setOnAction(arg -> {
 
-					Components.tsid.setText(getSId());
+			Components.tsid.setText(getSId());
 		});
 		ScrollPane spReport = new ScrollPane();
 		ContextMenu repcm = new ContextMenu();
@@ -377,12 +385,13 @@ public class TchrUI implements Runnable {
 			vb.setId("reportDialog");
 			TextArea ta = new TextArea();
 			ComboBox<String> sem = new ComboBox<>();
-			sem.getItems().addAll("Semester 1","Semester 2", "Semester 3","Semester 4","Semester 5","Semester 6","Semester 7","Semester 8");
+			sem.getItems().addAll("Semester 1", "Semester 2", "Semester 3", "Semester 4", "Semester 5", "Semester 6",
+					"Semester 7", "Semester 8");
 			sem.getSelectionModel().selectFirst();
 			ta.setPromptText(Components.tsname.getText());
 			ta.setPromptText("Enter your report details ...");
-			
-			vb.getChildren().addAll(sem,ta);
+
+			vb.getChildren().addAll(sem, ta);
 			dialog.getDialogPane().setContent(vb);
 			dialog.initOwner(Components.stage);
 			dialog.getDialogPane().getButtonTypes().add(reportb);
@@ -401,7 +410,7 @@ public class TchrUI implements Runnable {
 
 			dialog.show();
 		});
-		
+
 		tsidcm.getItems().add(tsida);
 		Components.tsid.setContextMenu(tsidcm);
 		GridPane.setMargin(Components.dpImgView, new Insets(40));
@@ -442,7 +451,6 @@ public class TchrUI implements Runnable {
 
 		loadData();
 
-
 		//
 		// Academic
 		//
@@ -450,17 +458,17 @@ public class TchrUI implements Runnable {
 		scroll[cat.length - (scrollCount)] = new ScrollPane();
 		GridPane academic = new GridPane();
 		academic.setId("academicP");
-			ObservableList<Marks> subjects1 = FXCollections.observableArrayList();
+		ObservableList<Marks> subjects1 = FXCollections.observableArrayList();
 		ObservableList<Marks> subjects2 = FXCollections.observableArrayList();
 		ColumnConstraints accc0 = new ColumnConstraints();
 		accc0.setHalignment(HPos.RIGHT);
-		
+
 		academic.getColumnConstraints().add(accc0);
 
 		// Semester 1
 
 		Components.tsem1 = new TableView<>();
-		
+
 		TableColumn<Marks, String> sub = new TableColumn<>("Subject");
 		TableColumn<Marks, Integer> th = new TableColumn<>("Theory");
 		TableColumn<Marks, Integer> oral = new TableColumn<>("Oral");
@@ -475,21 +483,21 @@ public class TchrUI implements Runnable {
 		TableColumn<Marks, Integer> scr3 = new TableColumn<>("Scored");
 		TableColumn<Marks, Integer> total3 = new TableColumn<>("Total");
 		TableColumn<Marks, Boolean> back = new TableColumn<>("BackLog");
-		
-		sub.setResizable(false); 
-		 th.setResizable(false);
-		 oral.setResizable(false);
-		 prac.setResizable(false); 
-		 tw.setResizable(false); 
-		 scr0.setResizable(false); 
-		 total0.setResizable(false);
-		 scr1.setResizable(false); 
-		 total1.setResizable(false);
-		 scr2.setResizable(false); 
-		 total2.setResizable(false);
-		 scr3.setResizable(false); 
-		 total3.setResizable(false);
-		 back.setResizable(false); 
+
+		sub.setResizable(false);
+		th.setResizable(false);
+		oral.setResizable(false);
+		prac.setResizable(false);
+		tw.setResizable(false);
+		scr0.setResizable(false);
+		total0.setResizable(false);
+		scr1.setResizable(false);
+		total1.setResizable(false);
+		scr2.setResizable(false);
+		total2.setResizable(false);
+		scr3.setResizable(false);
+		total3.setResizable(false);
+		back.setResizable(false);
 
 		sub.setCellValueFactory(new PropertyValueFactory<Marks, String>("subject"));
 		scr0.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("theoryScored"));
@@ -565,7 +573,7 @@ public class TchrUI implements Runnable {
 
 		Components.tsem1.getColumns().addAll(sub, th, oral, prac, tw, back);
 		Components.tsem1.setTooltip(new Tooltip("Semester 1"));
-		
+
 		Components.tsem1.setItems(subjects1);
 		GridPane.setFillWidth(Components.tsem1, true);
 
@@ -587,20 +595,20 @@ public class TchrUI implements Runnable {
 		TableColumn<Marks, Integer> total31 = new TableColumn<Marks, Integer>("Total");
 		TableColumn<Marks, Boolean> back1 = new TableColumn<>("BackLog");
 
-		sub1.setResizable(false); 
-		 th1.setResizable(false);
-		 oral1.setResizable(false);
-		 prac1.setResizable(false); 
-		 tw1.setResizable(false); 
-		 scr01.setResizable(false); 
-		 total01.setResizable(false);
-		 scr11.setResizable(false); 
-		 total11.setResizable(false);
-		 scr21.setResizable(false); 
-		 total21.setResizable(false);
-		 scr31.setResizable(false); 
-		 total31.setResizable(false);
-		 back1.setResizable(false); 
+		sub1.setResizable(false);
+		th1.setResizable(false);
+		oral1.setResizable(false);
+		prac1.setResizable(false);
+		tw1.setResizable(false);
+		scr01.setResizable(false);
+		total01.setResizable(false);
+		scr11.setResizable(false);
+		total11.setResizable(false);
+		scr21.setResizable(false);
+		total21.setResizable(false);
+		scr31.setResizable(false);
+		total31.setResizable(false);
+		back1.setResizable(false);
 
 		th1.getColumns().addAll(scr01, total01);
 		oral1.getColumns().addAll(scr11, total11);
@@ -610,7 +618,7 @@ public class TchrUI implements Runnable {
 		Components.tsem2.setTooltip(new Tooltip("Semester 2"));
 		Components.tsem2.setItems(subjects2);
 		GridPane.setFillWidth(Components.tsem2, true);
-		
+
 		sub1.setCellValueFactory(new PropertyValueFactory<Marks, String>("subject"));
 
 		scr01.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("theoryScored"));
@@ -721,10 +729,10 @@ public class TchrUI implements Runnable {
 		academic.add(Components.rbsem1, 3, 0);
 		academic.add(Components.rbsem2, 4, 0);
 		academic.add(Components.studProgress, 0, 7, 5, 1);
-		
+
 		scroll[cat.length - (scrollCount)].setHbarPolicy(ScrollBarPolicy.NEVER);
 		scroll[cat.length - (scrollCount--)].setContent(academic);
-		
+
 		//
 		// Attendance
 		//
@@ -735,7 +743,6 @@ public class TchrUI implements Runnable {
 
 		Components.addat = new Button("Add Record");
 		ObservableList<Attendance> atsem1Data = FXCollections.observableArrayList();
-
 
 		Components.atrbsem1 = new RadioButton("Semester 1");
 		Components.atrbsem1.setUserData(1);
@@ -831,7 +838,7 @@ public class TchrUI implements Runnable {
 			}
 		});
 
-		GridPane.setHalignment(Components.addat,HPos.RIGHT);
+		GridPane.setHalignment(Components.addat, HPos.RIGHT);
 		attendance.add(Components.atsem1, 0, 1, 3, 1);
 		attendance.add(Components.atsem2, 4, 1, 3, 1);
 		attendance.add(Components.addat, 2, 2);
@@ -851,12 +858,29 @@ public class TchrUI implements Runnable {
 		scroll[cat.length - (scrollCount)] = new ScrollPane();
 		Components.prtmp = new HashMap<>();
 		Button upload = new Button("Upload");
+		Group recycle = new Group();
+		SVGPath bin = new SVGPath();
+		SVGPath bin_t = new SVGPath();
+		SVGPath bin_tt = new SVGPath();
 
-		Rectangle bin = new Rectangle(150,150);
-		ImagePattern binIcon = new ImagePattern(new Image("/ivn/typh/tchr/icons/recycle_empty.png"));
-		bin.setFill(binIcon);
-
+		String box = "M 0 50 H 300 V 220 H 0 z";
+		String lid = "M 0 20 H 300 V 40 H 0 Z";
+		String lid_handle = "M 120 20 L 130 0 L 160 0 L 170 20";
+		
+		bin.setContent(box);
+		bin.setFill(Color.valueOf("#ff9900"));
 		bin.setEffect(new DropShadow());
+		
+		bin_t.setContent(lid);
+		bin_t.setFill(Color.valueOf("#ff9900"));
+		bin_t.setEffect(new DropShadow());
+		
+		bin_tt.setContent(lid_handle);
+		bin_tt.setEffect(new DropShadow());
+		bin_tt.setStrokeWidth(5);
+		bin_tt.setFill(Color.IVORY);
+		bin_tt.setStroke(Color.valueOf("#ff9900"));
+		
 		Components.prList = new ListView<>();
 		Components.prList.setPrefWidth(600);
 		Components.prList.setTooltip(new Tooltip("Drag and Drop Files Over Here"));
@@ -877,23 +901,54 @@ public class TchrUI implements Runnable {
 			return (new Project(Components.scene));
 
 		});
-		
+
 		Tooltip tip = new Tooltip();
 
 		bin.setOnMouseEntered(value -> {
 			tip.hide();
-
-			Point2D p = bin.localToScene(0.0, 0.0);
 			tip.setText("Drag projects to delete");
-			tip.show(bin, p.getX(), p.getY() + bin.getWidth());
+			tip.show(bin, value.getScreenX(), value.getScreenY());
 		});
 
 		bin.setOnMouseExited(value -> {
 			tip.hide();
 		});
 
+		bin.setOnDragEntered(event->{
+			Platform.runLater(()->{
+				TranslateTransition tt = new TranslateTransition();
+				TranslateTransition ttt = new TranslateTransition();
+
+				tt.setByY(-10.0);
+				tt.setNode(bin_t);
+				tt.setDuration(Duration.millis(500));
+				ttt.setByY(-10.0);
+				ttt.setNode(bin_tt);
+				ttt.setDuration(Duration.millis(500));
+				tt.play();
+				ttt.play();
+			});
+
+		});
+		
+		bin.setOnDragExited(event->{
+			Platform.runLater(()->{
+				TranslateTransition tt = new TranslateTransition();
+				TranslateTransition ttt = new TranslateTransition();
+
+				tt.setByY(10.0);
+				tt.setNode(bin_t);
+				tt.setDuration(Duration.millis(500));
+				ttt.setByY(10.0);
+				ttt.setNode(bin_tt);
+				ttt.setDuration(Duration.millis(500));
+				tt.play();
+				ttt.play();
+			});
+		});
+		
 		bin.setOnDragOver(value -> {
-			if (value.getGestureSource() != null){
+			if (value.getGestureSource() != null) {
 				value.acceptTransferModes(TransferMode.MOVE);
 			}
 		});
@@ -935,9 +990,10 @@ public class TchrUI implements Runnable {
 			arg0.consume();
 		});
 
-		projects.add(upload, 1, 0);
-		projects.add(Components.prList, 0, 0, 1, 2);
-		projects.add(bin, 1, 1);
+		recycle.getChildren().addAll(bin_tt,bin_t,bin);
+		projects.add(upload, 0, 0);
+		projects.add(Components.prList, 1, 0, 1, 2);
+		projects.add(recycle, 0, 1);
 
 		scroll[cat.length - (scrollCount--)].setContent(projects);
 
@@ -946,9 +1002,9 @@ public class TchrUI implements Runnable {
 		scroll[cat.length - (scrollCount)] = new ScrollPane();
 		GridPane assignment = new GridPane();
 		assignment.setId("assignmentP");
-		
+
 		ScrollPane spAssignment = new ScrollPane();
-		
+
 		Components.addAssignment = new Button("Add an Assignment");
 		Components.removeAssignment = new Button("Remove selected item");
 		Components.asList = new ListView<>();
@@ -1031,33 +1087,32 @@ public class TchrUI implements Runnable {
 		// Adding all titled panes to the accordion
 		//
 
-		
 		for (int i = 0; i < cat.length; i++) {
 			scroll[i].setId("homeScrollPane");
 			Components.tp[i] = new TitledPane(cat[i], scroll[i]);
 		}
-		
-		
+
 		Components.accord.getPanes().addAll(Components.tp);
 		Components.accord.setExpandedPane(Components.tp[0]);
 
 		Components.slist.setPrefWidth(150);
-		
+
 		GridPane.setHgrow(Components.accord, Priority.ALWAYS);
 
 		top.getChildren().addAll(Components.srch, Components.searchBox);
-			
+
 		topL.getChildren().add(Components.pname);
 
-		left.getChildren().addAll(Components.dprt, Components.pdprt, Components.cls, Components.pcls, Components.tstuds, Components.nstuds);
-		side.addNodes(topL,left,Components.mb.getItems().get(2),Components.mb.getItems().get(3),Components.mb.getItems().get(5));
-		
+		left.getChildren().addAll(Components.dprt, Components.pdprt, Components.cls, Components.pcls, Components.tstuds,
+				Components.nstuds);
+		side.addNodes(topL, left, Components.mb.getItems().get(2), Components.mb.getItems().get(3),
+				Components.mb.getItems().get(5));
+
 		Components.mb.getItems().remove(7);
 		Components.mb.getItems().add(7, logout);
 		Components.mb.getItems().remove(0, 4);
-		Components.mb.getItems().add(0,Components.menu);
+		Components.mb.getItems().add(0, Components.menu);
 		Components.mb.getItems().get(2).setId("fullscreen");
-		
 
 		GridPane.setValignment(left, VPos.CENTER);
 		StackPane.setAlignment(side, Pos.CENTER_LEFT);
@@ -1065,7 +1120,7 @@ public class TchrUI implements Runnable {
 		tgpane.add(top, 0, 0);
 		tgpane.add(aboveAcc, 0, 1);
 		tgpane.add(Components.accord, 0, 2);
-		
+
 		tgpane.setMaxSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
 				Toolkit.getDefaultToolkit().getScreenSize().getHeight());
 		tgpane.setMinSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
@@ -1075,23 +1130,23 @@ public class TchrUI implements Runnable {
 		sctgpane.setContent(tgpane);
 		Components.stage.getScene().getStylesheets().remove(0);
 		Components.stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
-		
-		spMain.getChildren().addAll(sctgpane,dummy,side);
+
+		spMain.getChildren().addAll(sctgpane, dummy, side);
 		Components.pane.setCenter(spMain);
 
 		disableAll(true);
 		Components.slist.getSelectionModel().selectFirst();
 		yrlst.getSelectionModel().selectFirst();
-	
-	}
 
+	}
 
 	private void uploadData(String sid) {
 		Bson filter = new Document("sid", sid);
-		Document newValue = new Document("name", Components.tsname.getText().trim()).append("rno", Components.tsrno.getValue())
-				.append("batch", Components.tsbatch.getValue()).append("class", Components.tsclass.getValue())
-				.append("email", Components.tsmail.getText()).append("address", Components.tsaddr.getText())
-				.append("studentPhone", Components.tsphone.getText()).append("parentPhone", Components.tpphone.getText())
+		Document newValue = new Document("name", Components.tsname.getText().trim())
+				.append("rno", Components.tsrno.getValue()).append("batch", Components.tsbatch.getValue())
+				.append("class", Components.tsclass.getValue()).append("email", Components.tsmail.getText())
+				.append("address", Components.tsaddr.getText()).append("studentPhone", Components.tsphone.getText())
+				.append("parentPhone", Components.tpphone.getText())
 				.append("department", Components.tsdprt.getSelectionModel().getSelectedItem());
 
 		int[] sem = null;
@@ -1146,26 +1201,30 @@ public class TchrUI implements Runnable {
 						.append("attended", Components.atsem2.getItems().get(i - 6).getAttended())
 						.append("attendedTotal", Components.atsem2.getItems().get(i - 6).getTotal())
 						.append("twScored", Components.tsem2.getItems().get(i - 6).getTermworkScored())
-						.append("twTotal", Components.tsem2.getItems().get(i - 6).getTermworkTotal()).append("sem", sem[1]);
+						.append("twTotal", Components.tsem2.getItems().get(i - 6).getTermworkTotal())
+						.append("sem", sem[1]);
 				acData.add(tmp);
 			}
 
 		}
 
 		List<Document> asData = new LinkedList<>();
-		for(int i =0 ;i<Components.asList.getItems().size();i++){
-			Document tmp = new Document("title",Components.asList.getItems().get(i).getTitle()).append("sem", Components.asList.getItems().get(i).getSem()).append("completed",Components.asList.getItems().get(i).getCompleted());
+		for (int i = 0; i < Components.asList.getItems().size(); i++) {
+			Document tmp = new Document("title", Components.asList.getItems().get(i).getTitle())
+					.append("sem", Components.asList.getItems().get(i).getSem())
+					.append("completed", Components.asList.getItems().get(i).getCompleted());
 			asData.add(tmp);
 		}
-		
-		
+
 		List<Document> repData = new LinkedList<>();
-		for(int i=0; i<Components.reps.getItems().size();i++){
-			Document tmp = new Document("sem",Components.reps.getItems().get(i).getSem()).append("seen",Components.reps.getItems().get(i).getSeen()).append("report", Components.reps.getItems().get(i).getReport());
+		for (int i = 0; i < Components.reps.getItems().size(); i++) {
+			Document tmp = new Document("sem", Components.reps.getItems().get(i).getSem())
+					.append("seen", Components.reps.getItems().get(i).getSeen())
+					.append("report", Components.reps.getItems().get(i).getReport());
 			repData.add(tmp);
 		}
-		
-		newValue.append(yr, acData).append(yr+"Assignments", asData).append("reports", repData);
+
+		newValue.append(yr, acData).append(yr + "Assignments", asData).append("reports", repData);
 
 		Bson query = new Document("$set", newValue);
 		Engine.db.getCollection("Students").updateOne(filter, query);
@@ -1208,38 +1267,42 @@ public class TchrUI implements Runnable {
 		Components.tsaddr.setText(jsonData.getString("address"));
 		Components.tsphone.setText(jsonData.getString("studentPhone"));
 		Components.tpphone.setText(jsonData.getString("parentPhone"));
-		
+
 		Components.tscsem = jsonData.getString("current_semester");
-		
+
 		Components.tsyear.getItems().clear();
-		String tsyear_t=null;
-		
-		switch(Components.tscsem){
-		case "SEM 7" : case "SEM 8":
+		String tsyear_t = null;
+
+		switch (Components.tscsem) {
+		case "SEM 7":
+		case "SEM 8":
 			Components.tsyear.getItems().add("BE");
 			tsyear_t = "BE";
-		case "SEM 5" : case "SEM 6":
+		case "SEM 5":
+		case "SEM 6":
 			tsyear_t = "TE";
 			Components.tsyear.getItems().add("TE");
-		case "SEM 3" : case "SEM 4":
+		case "SEM 3":
+		case "SEM 4":
 			tsyear_t = "SE";
 			Components.tsyear.getItems().add("SE");
-		case "SEM 1" : case "SEM 2":
+		case "SEM 1":
+		case "SEM 2":
 			tsyear_t = "FE";
 			Components.tsyear.getItems().add("FE");
 		}
-		
+
 		Components.tsyear.getSelectionModel().select(tsyear_t);
-		
-		
-		
+
 		// Academic
 
 		Components.studProgress.getData().clear();
 		Components.tsem1.setFixedCellSize(24);
-		Components.tsem1.prefHeightProperty().bind(Bindings.size(Components.tsem1.getItems()).multiply(Components.tsem1.getFixedCellSize()).add(90));
+		Components.tsem1.prefHeightProperty()
+				.bind(Bindings.size(Components.tsem1.getItems()).multiply(Components.tsem1.getFixedCellSize()).add(90));
 		Components.tsem2.setFixedCellSize(24);
-		Components.tsem2.prefHeightProperty().bind(Bindings.size(Components.tsem2.getItems()).multiply(Components.tsem2.getFixedCellSize()).add(90));
+		Components.tsem2.prefHeightProperty()
+				.bind(Bindings.size(Components.tsem2.getItems()).multiply(Components.tsem2.getFixedCellSize()).add(90));
 		XYChart.Series<String, Number> data = new XYChart.Series<>();
 		for (int j = 1; j <= 8; j++) {
 			float p = getSemesterPercent(j);
@@ -1255,8 +1318,11 @@ public class TchrUI implements Runnable {
 	}
 
 	private String getSId() {
-		String id = dprtList.entrySet().stream().filter(a -> a.getValue().equals(Components.tsdprt.getSelectionModel().getSelectedItem())).map(map->map.getKey()).collect(Collectors.joining());
-		return (id + String.format("%02d", sMatchesY(0, yrlst.getValue())) + Components.tsclass.getValue() + Components.tsrno.getValue());
+		String id = dprtList.entrySet().stream()
+				.filter(a -> a.getValue().equals(Components.tsdprt.getSelectionModel().getSelectedItem()))
+				.map(map -> map.getKey()).collect(Collectors.joining());
+		return (id + String.format("%02d", sMatchesY(0, yrlst.getValue())) + Components.tsclass.getValue()
+				+ Components.tsrno.getValue());
 	}
 
 	private void loadReport(String n) {
@@ -1388,7 +1454,8 @@ public class TchrUI implements Runnable {
 	private void loadAssignmentData(String n) {
 		JSONArray jsona = null;
 		try {
-			String data = Engine.db.getCollection("Students").find(eq("sid", Components.tsid.getText())).first().toJson();
+			String data = Engine.db.getCollection("Students").find(eq("sid", Components.tsid.getText())).first()
+					.toJson();
 			jsona = new JSONObject(data).getJSONArray(n.toLowerCase() + "Assignments");
 
 			Components.asList.getItems().clear();
@@ -1407,7 +1474,8 @@ public class TchrUI implements Runnable {
 	private void loadAttendanceData(String n) {
 		JSONArray jsona = null;
 		try {
-			String data = Engine.db.getCollection("Students").find(eq("sid", Components.tsid.getText())).first().toJson();
+			String data = Engine.db.getCollection("Students").find(eq("sid", Components.tsid.getText())).first()
+					.toJson();
 			jsona = new JSONObject(data).getJSONArray(n.toLowerCase());
 		} catch (JSONException e) {
 		}
@@ -1436,7 +1504,8 @@ public class TchrUI implements Runnable {
 	private void loadAcademicData(String year) {
 		JSONArray jsona = null;
 		try {
-			String data = Engine.db.getCollection("Students").find(eq("sid", Components.tsid.getText())).first().toJson();
+			String data = Engine.db.getCollection("Students").find(eq("sid", Components.tsid.getText())).first()
+					.toJson();
 			jsona = new JSONObject(data).getJSONArray(year.toLowerCase());
 		} catch (JSONException e) {
 		}
@@ -1520,7 +1589,6 @@ public class TchrUI implements Runnable {
 			dprtList.put(json.getString("dprtID"), json.getString("department"));
 		}
 
-		
 		Engine.db.getCollection("Users").updateOne(eq("user", BasicUI.user), new Document("$set", new Document(
 				"lastLogin",
 				LocalDateTime.now().getDayOfMonth() + "-" + LocalDateTime.now().getMonthValue() + "-"
@@ -1540,25 +1608,24 @@ public class TchrUI implements Runnable {
 			Components.tsbatch.getItems().add(Character.toString((char) ('A' + i)));
 			Components.tsbatch.getItems().add(Character.toString((char) ('a' + i)));
 		}
-		
+
 		List<String> name = new ArrayList<>();
 
 		studList.forEach(student -> {
 			name.add(student.split(": ")[1]);
-		
-			int i=0;
+
+			int i = 0;
 			String tmp = student.split("]")[0].substring(1);
-			if (Components.classIncharge.equals(tmp)){
+			if (Components.classIncharge.equals(tmp)) {
 				Components.slist.getItems().add(student);
 				i++;
 			}
 			Components.nstuds.setText(Integer.toString(i));
 		});
-		
+
 		Components.searchBox.setItems(name);
 	}
 
-	
 	private void disableAll(boolean flag) {
 		Components.update.setDisable(flag);
 		Components.report.setDisable(flag);
@@ -1585,7 +1652,7 @@ public class TchrUI implements Runnable {
 		Components.addEntry.setDisable(flag);
 		Components.rbsem1.setDisable(flag);
 		Components.rbsem2.setDisable(flag);
-		
+
 		// Attendance Pane
 
 		Components.atsem1.setEditable(!flag);
@@ -1593,7 +1660,7 @@ public class TchrUI implements Runnable {
 		Components.addat.setDisable(flag);
 
 		// Projects Pane
-		
+
 		Components.prList.setDisable(flag);
 
 		// Assignments Pane
@@ -1603,23 +1670,25 @@ public class TchrUI implements Runnable {
 		Components.removeAssignment.setDisable(flag);
 
 	}
+
 	private void logoutApplication() {
 		Alert ex = new Alert(AlertType.CONFIRMATION);
-		ex.setHeaderText("LogOut "+BasicUI.user+" - Typh™ ? ");
+		ex.setHeaderText("LogOut " + BasicUI.user + " - Typh™ ? ");
 		ex.setTitle("Exit - Typh™");
 		ex.initOwner(Components.stage);
-		ex.getButtonTypes().setAll(ButtonType.OK,ButtonType.CANCEL);
+		ex.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
 
 		Optional<ButtonType> result = ex.showAndWait();
-		result.ifPresent(arg->{
-			if(arg.equals(ButtonType.OK)){
-			if(!(Engine.mongo== null))
+		result.ifPresent(arg -> {
+			if (arg.equals(ButtonType.OK)) {
+				if (!(Engine.mongo == null))
 					Engine.mongo.close();
-			HeartBeat.heartAttack=true;
+				HeartBeat.heartAttack = true;
 				Platform.exit();
 			}
 		});
 	}
+
 	@Override
 	public void run() {
 		Platform.runLater(() -> {
