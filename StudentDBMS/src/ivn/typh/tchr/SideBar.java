@@ -3,12 +3,11 @@ package ivn.typh.tchr;
 
 import javafx.animation.Animation;
 import javafx.animation.Transition;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -17,6 +16,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+
 
 public class SideBar extends VBox {
 
@@ -30,19 +30,10 @@ public class SideBar extends VBox {
 		menu = m;
 		home.setVisible(false);
 		setVisible(false);
-	}
-
-	public void setMenuWidth(double w){
-		setMinWidth(w);
-		setMaxWidth(w);
-		width = w;
-	}
-	public void addNodes(Node... nodes) {
-		
 		home.setBackground(new Background(new BackgroundFill(Color.rgb(0, 0, 0, 0.2),CornerRadii.EMPTY,Insets.EMPTY)));
+		
 		setId("sideBar");
-		getChildren().addAll(nodes);
-		getChildren().forEach(node->VBox.setVgrow(node, Priority.ALWAYS));;
+
 
 		menu.setOnAction(arg -> {
 
@@ -92,5 +83,20 @@ public class SideBar extends VBox {
 			}
 		});
 
+	}
+
+	public void setMenuWidth(double w){
+		setMinWidth(w);
+		setMaxWidth(w);
+		width = w;
+	}
+	public void addNodes(Node... nodes) {
+		getChildren().addAll(nodes);
+		getChildren().forEach(node->VBox.setVgrow(node, Priority.ALWAYS));;
+		
+	}
+	
+	public ObservableList<Node> getChildren(){
+		return getChildren();
 	}
 }

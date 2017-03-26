@@ -15,7 +15,6 @@ import ivn.typh.tchr.TchrUI;
 
 import static com.mongodb.client.model.Filters.*;
 
-import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
@@ -32,7 +31,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 public class LogIn implements Runnable {
 
@@ -107,12 +105,13 @@ public class LogIn implements Runnable {
 				}
 			} catch (Exception e) {
 				System.out.println("No db running");
+				e.printStackTrace();
 			}
 		});
 
 		loginTask.setOnSucceeded(value -> {
 
-			loadBar.hideProgress();
+			loadBar.stopTask();
 			if (!loginTask.getValue())
 				Notification.message(stage, AlertType.ERROR, "Invalid credentials - Typh™",
 						"Either username or password is incorrect !!!");
@@ -162,7 +161,6 @@ public class LogIn implements Runnable {
 	private int verifyCredential() {
 		String pass, dbPass = null, dbUser = null;
 		pass = encryptedPassword(BasicUI.password);
-		Engine.db = Engine.mongo.getDatabase("Students");
 		if (Engine.db == null)
 			return 3;
 

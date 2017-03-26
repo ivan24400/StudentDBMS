@@ -1,5 +1,8 @@
 package ivn.typh.main;
 
+import static com.mongodb.client.model.Filters.eq;
+
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -8,17 +11,18 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.bson.Document;
+
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
-import com.mongodb.MongoException;
-
 import javafx.animation.FillTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -35,11 +39,11 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.control.Dialog;
@@ -50,8 +54,11 @@ public class BasicUI extends Application implements Runnable {
 	public static String user;
 	public static String password;
 	public static BorderPane pane;
+	public static Label institute;
 	public static String ipAddr;
 	public static Stage stage;
+	public static double screenWidth;
+	public static double screenHeight;
 	public Circle login;
 
 	public Scene basic;
@@ -65,14 +72,14 @@ public class BasicUI extends Application implements Runnable {
 
 				pane = new BorderPane();
 				ToolBar tool = new ToolBar();
-				
-				
-				Pane dummy = new Pane();
+								
+				HBox dummy = new HBox();
 				HBox.setHgrow(dummy, Priority.ALWAYS);
 				exit = new Button("Exit");
 				about = new Button("About");
 				help = new Button("Help");
 				cnct = new Button("Connect");
+				institute = new Label();
 				fulls = new ToggleButton();
 
 				exit.setId("logout");
@@ -80,7 +87,6 @@ public class BasicUI extends Application implements Runnable {
 				help.setId("help");
 				cnct.setId("connect");
 				fulls.setId("fullscreen");
-
 				
 				exit.setOnAction(event -> {
 					exitApplication();
@@ -103,8 +109,7 @@ public class BasicUI extends Application implements Runnable {
 					TextField tf4 = new TextField("1");
 					Tooltip tt = new Tooltip();
 
-
-					
+				
 					tf1.textProperty().addListener((obs, o, n) -> {
 						if (!n.matches("\\d*")) {
 							tt.setText("Enter numbers only");
@@ -223,11 +228,17 @@ public class BasicUI extends Application implements Runnable {
 					});
 
 					cm.setOnSucceeded(value -> {
-						load.hideProgress();
-						if (cm.getValue())
+						load.stopTask();
+						if (cm.getValue()){
 							Notification.message(stage, AlertType.INFORMATION, "Connection  - Typh™",
 									"Connected to Server");
-						else
+							try{
+								Document doc = Engine.db.getCollection("Users").find(eq("user","admin")).first();
+								institute.setText(doc.getString("instituteName"));
+							}catch(NullPointerException e){
+								institute.setText("");
+							}
+						}else
 							Notification.message(stage, AlertType.ERROR, "Connection - Typh™", "Server not found!");
 					});
 
@@ -274,11 +285,12 @@ public class BasicUI extends Application implements Runnable {
 				Label lLabel = new Label("Login");
 				lLabel.setOnMouseClicked(login.getOnMouseClicked());
 				sp.getChildren().addAll(login, lLabel);
+				dummy.getChildren().add(institute);
+				institute.setFont(Font.font(16));
+				dummy.setAlignment(Pos.CENTER);
 				tool.getItems().addAll(cnct, new Separator(), help, about, new Separator(), fulls, dummy, exit);
-
 				pane.setTop(tool);
 				pane.setCenter(sp);
-
 				basic = new Scene(pane, 1360, 768);
 
 				basic.getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
@@ -323,6 +335,8 @@ public class BasicUI extends Application implements Runnable {
 					MongoClientURI connectionString = new MongoClientURI(
 							"mongodb://typh:typhpass@" + ipAddr + ":24000/?authSource=Students", options);
 					Engine.mongo = new MongoClient(connectionString);
+					Engine.db = Engine.mongo.getDatabase("Students");
+
 					result=true;
 
 					Engine.mongo.getAddress();
@@ -360,6 +374,8 @@ public class BasicUI extends Application implements Runnable {
 
 	@Override
 	public void run() {
+		screenWidth=Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+		screenHeight=Toolkit.getDefaultToolkit().getScreenSize().getHeight();
 		launch();
 	}
 

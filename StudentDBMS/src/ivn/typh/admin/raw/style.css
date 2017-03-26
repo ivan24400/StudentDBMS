@@ -109,6 +109,11 @@
 #searchBox:focused{
 	-fx-background-color:  derive(-fx-base,95.0%);
 }
+
+#institute_dialog{
+	-fx-padding: 40;
+	-fx-spacing: 30;
+}
 /*
  * 	Grids inside tab pane
  */

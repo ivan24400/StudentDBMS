@@ -63,6 +63,25 @@
     -fx-text-fill: #000000
 }
 
+
+
+.border-titled-pane {
+  -fx-content-display: top;
+  -fx-border-insets: 15.0 15.0 15.0 15.0;
+  -fx-background-color: -fx-base,-10.0%;
+  -fx-border-color: black;
+  -fx-border-width: 2.0;
+}
+
+.border-titled-pane-title {
+  -fx-background-color: -fx-base,40.0%;
+  -fx-translate-y: -14.0;
+}
+
+.border-titled-pane-content {
+  -fx-padding: 26.0 10.0 10.0 10.0;
+}
+
 #logInfo{
 	-fx-text-fill: -fx-base
 }
@@ -103,8 +122,7 @@
 }
 
 #acP {
-		-fx-alignment: center;
-	
+	-fx-alignment: center;
 	-fx-spacing: 30.0;
 	-fx-padding: 30.0
 }
@@ -114,11 +132,10 @@
 }
 
 #personalP,#academicP, #attendanceP, #projectsP, #assignmentP, #center{
-		-fx-alignment: center;
-		-fx-padding: 30.0;
+	-fx-alignment: center;
+	-fx-padding: 30.0;
 	-fx-hgap: 20.0;
-	-fx-vgap: 20.0;
-	
+	-fx-vgap: 20.0;	
 	-fx-background-color: derive(-fx-base,80.0%)
 }
 
@@ -137,8 +154,8 @@
 	-fx-alignment: center
 }
 #home{
-		-fx-background-color: white;
-		-fx-padding: 30.0
+	-fx-background-color: white;
+	-fx-padding: 30.0
 }
 #reportDialog{
 	-fx-spacing: 20.0;
@@ -146,9 +163,18 @@
 }
 
 #bin{
-	-fx-pref-width: 200;
-	-fx-pref-height: 200;
-	-fx-max-width: 200;
-	-fx-max-height: 200;
+	-fx-fill: #ff9900;
+	-fx-effect: dropshadow(three-pass-box,black ,10.0,0.0,0.0,0.0)
+}
 
+#bin_lid{
+	-fx-fill: #ff9900;
+	-fx-effect: dropshadow(three-pass-box,black ,10.0,0.0,0.0,0.0)
+}
+
+#bin_handle{
+	-fx-fill: #fffff0;
+	-fx-stroke: #ff9900;
+	-fx-stroke-width: 5.0;
+	-fx-effect: dropshadow(three-pass-box,black ,10.0,0.0,0.0,0.0)
 }

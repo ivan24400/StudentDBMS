@@ -2,7 +2,6 @@ package ivn.typh.tchr;
 
 import static com.mongodb.client.model.Filters.eq;
 
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -39,19 +38,16 @@ import ivn.typh.admin.SideBar;
 import ivn.typh.main.BasicUI;
 import ivn.typh.main.Engine;
 import ivn.typh.main.Notification;
-import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
-import javafx.geometry.Point3D;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.geometry.VPos;
@@ -96,7 +92,6 @@ import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Dragboard;
@@ -105,12 +100,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -141,32 +131,28 @@ public class TchrUI implements Runnable {
 	@SuppressWarnings("unchecked")
 	public void startUI() {
 
-		GridPane tgpane = new GridPane();
-		ScrollPane sctgpane = new ScrollPane();
-		StackPane spMain = new StackPane();
+		 Components.tgpane = new GridPane();
+		 Components.sctgpane = new ScrollPane();
+		 Components.spMain = new StackPane();
 
-		GridPane center = new GridPane();
-		VBox left = new VBox();
-		HBox top = new HBox();
-		HBox topL = new HBox();
-		HBox aboveAcc = new HBox();
+		 Components.center = new GridPane();
+		 Components.left = new VBox();
+		 Components.top = new HBox();
+		 Components.topL = new HBox();
+		 Components.aboveAcc = new HBox();
 
-		tgpane.setId("home");
-		center.setId("center");
-		left.setId("leftP");
-		top.setId("topP");
-		topL.setId("toplP");
-		aboveAcc.setId("acP");
+		
 
 		String[] cat = new String[] { "Personal", "Academic", "Attendance", "Projects", "Assignments" };
 		Button logout = new Button("Log Out");
-		ToggleButton editable = new ToggleButton("Edit");
+		Components.editable = new ToggleButton("Edit");
+		BorderTitledPane btp = new BorderTitledPane();
 
 		Pane dummy = new Pane();
 
-		SideBar side = new SideBar(dummy, Components.menu);
-		side.setMenuWidth(300);
-		side.getStyleClass().add(".sideBarButton");
+		Components.side = new SideBar(dummy, Components.menu);
+		Components.side.setMenuWidth(300);
+		Components.side.getStyleClass().add(".sideBarButton");
 		Components.menu.setGraphic(new ImageView(new Image("/ivn/typh/main/icons/menu.png")));
 
 		Components.pname = new Label();
@@ -176,11 +162,6 @@ public class TchrUI implements Runnable {
 		Components.pcls = new Label();
 		Components.tstuds = new Label("Total Students:");
 		Components.nstuds = new Label();
-
-		Components.pdprt.setId("logInfo");
-		Components.pcls.setId("logInfo");
-		Components.nstuds.setId("logInfo");
-
 		Components.reps = new ListView<>();
 		Components.slist = new ComboBox<>();
 		Components.srch = new Label("Search");
@@ -205,7 +186,7 @@ public class TchrUI implements Runnable {
 
 		Components.tsyear.getItems().addAll(yrlst.getItems());
 
-		// Start the heartbeat
+		// Start the heart beat
 
 		Thread pulse = new Thread(new HeartBeat());
 		pulse.start();
@@ -220,7 +201,7 @@ public class TchrUI implements Runnable {
 			uploadData(Components.tsid.getText());
 		});
 
-		editable.selectedProperty().addListener((arg, o, n) -> {
+		Components.editable.selectedProperty().addListener((arg, o, n) -> {
 			disableAll(!n);
 		});
 
@@ -243,7 +224,7 @@ public class TchrUI implements Runnable {
 			Export.export();
 		});
 
-		aboveAcc.getChildren().addAll(Components.student, Components.slist, new Label("Select Year"), yrlst, editable,
+		Components.aboveAcc.getChildren().addAll(Components.student, Components.slist, new Label("Select Year"), yrlst, Components.editable,
 				Components.update, Components.report, Components.export);
 
 		//
@@ -251,9 +232,7 @@ public class TchrUI implements Runnable {
 		//
 
 		scroll[cat.length - (scrollCount)] = new ScrollPane();
-		GridPane personal = new GridPane();
-		personal.setId("personalP");
-
+		Components.personal = new GridPane();
 		Label sname = new Label("Name:");
 		Label sid = new Label("ID:");
 		Label srno = new Label("Roll No:");
@@ -266,7 +245,6 @@ public class TchrUI implements Runnable {
 		Label pphone = new Label("Parent Phone:");
 
 		Components.dpImgView = new ImageView(new Image(getClass().getResourceAsStream("/ivn/typh/main/raw/pic.jpg")));
-		Components.dpImgView.setId("dpImgView");
 		Components.tsname = new TextField();
 		Components.tsid = new TextField();
 		Components.tsrno = new ChoiceBox<>();
@@ -360,7 +338,6 @@ public class TchrUI implements Runnable {
 		repcm.getItems().add(del);
 
 		Components.reps.setContextMenu(repcm);
-
 		Components.reps.getSelectionModel().selectLast();
 
 		StringConverter<Report> rconvertor = new StringConverter<Report>() {
@@ -421,33 +398,33 @@ public class TchrUI implements Runnable {
 		spReport.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		spReport.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 
-		personal.add(sname, 0, 1);
-		personal.add(Components.tsname, 1, 1);
-		personal.add(sid, 0, 2);
-		personal.add(Components.tsid, 1, 2);
-		personal.add(srno, 0, 3);
-		personal.add(Components.tsrno, 1, 3);
-		personal.add(sdprt, 0, 4);
-		personal.add(Components.tsdprt, 1, 4);
-		personal.add(sclass, 2, 2);
-		personal.add(Components.tsclass, 3, 2);
-		personal.add(sbatch, 2, 1);
-		personal.add(Components.tsbatch, 3, 1);
-		personal.add(smail, 0, 5);
-		personal.add(Components.tsmail, 1, 5);
-		personal.add(saddr, 2, 3);
-		personal.add(Components.tsaddr, 3, 3);
-		personal.add(sphone, 2, 4);
-		personal.add(Components.tsphone, 3, 4);
-		personal.add(pphone, 2, 5);
-		personal.add(Components.tpphone, 3, 5);
-		personal.add(Components.dpImgView, 4, 1, 1, 5);
-		personal.add(Components.reports, 0, 6);
-		personal.add(spReport, 0, 7, 5, 1);
-		personal.setAlignment(Pos.CENTER);
+		Components.personal.add(sname, 0, 1);
+		Components.personal.add(Components.tsname, 1, 1);
+		Components.personal.add(sid, 0, 2);
+		Components.personal.add(Components.tsid, 1, 2);
+		Components.personal.add(srno, 0, 3);
+		Components.personal.add(Components.tsrno, 1, 3);
+		Components.personal.add(sdprt, 0, 4);
+		Components.personal.add(Components.tsdprt, 1, 4);
+		Components.personal.add(sclass, 2, 2);
+		Components.personal.add(Components.tsclass, 3, 2);
+		Components.personal.add(sbatch, 2, 1);
+		Components.personal.add(Components.tsbatch, 3, 1);
+		Components.personal.add(smail, 0, 5);
+		Components.personal.add(Components.tsmail, 1, 5);
+		Components.personal.add(saddr, 2, 3);
+		Components.personal.add(Components.tsaddr, 3, 3);
+		Components.personal.add(sphone, 2, 4);
+		Components.personal.add(Components.tsphone, 3, 4);
+		Components.personal.add(pphone, 2, 5);
+		Components.personal.add(Components.tpphone, 3, 5);
+		Components.personal.add(Components.dpImgView, 4, 1, 1, 5);
+		Components.personal.add(Components.reports, 0, 6);
+		Components.personal.add(spReport, 0, 7, 5, 1);
+		Components.personal.setAlignment(Pos.CENTER);
 
 		scroll[cat.length - (scrollCount)].setHbarPolicy(ScrollBarPolicy.NEVER);
-		scroll[cat.length - (scrollCount--)].setContent(personal);
+		scroll[cat.length - (scrollCount--)].setContent(Components.personal);
 
 		loadData();
 
@@ -456,14 +433,13 @@ public class TchrUI implements Runnable {
 		//
 
 		scroll[cat.length - (scrollCount)] = new ScrollPane();
-		GridPane academic = new GridPane();
-		academic.setId("academicP");
+		Components.academic = new GridPane();
 		ObservableList<Marks> subjects1 = FXCollections.observableArrayList();
 		ObservableList<Marks> subjects2 = FXCollections.observableArrayList();
 		ColumnConstraints accc0 = new ColumnConstraints();
 		accc0.setHalignment(HPos.RIGHT);
 
-		academic.getColumnConstraints().add(accc0);
+		Components.academic.getColumnConstraints().add(accc0);
 
 		// Semester 1
 
@@ -723,22 +699,22 @@ public class TchrUI implements Runnable {
 		Components.studProgress.setTitleSide(Side.TOP);
 		Components.studProgress.setLegendVisible(false);
 
-		academic.add(Components.tsem1, 0, 1, 5, 1);
-		academic.add(Components.tsem2, 0, 2, 5, 1);
-		academic.add(Components.addEntry, 2, 0);
-		academic.add(Components.rbsem1, 3, 0);
-		academic.add(Components.rbsem2, 4, 0);
-		academic.add(Components.studProgress, 0, 7, 5, 1);
+
+		Components.academic.add(btp.addTitle("Semester 1", Components.tsem1), 0, 1, 5, 1);
+		Components.academic.add(btp.addTitle("Semester 2", Components.tsem2), 0, 2, 5, 1);
+		Components.academic.add(Components.addEntry, 2, 0);
+		Components.academic.add(Components.rbsem1, 3, 0);
+		Components.academic.add(Components.rbsem2, 4, 0);
+		Components.academic.add(Components.studProgress, 0, 7, 5, 1);
 
 		scroll[cat.length - (scrollCount)].setHbarPolicy(ScrollBarPolicy.NEVER);
-		scroll[cat.length - (scrollCount--)].setContent(academic);
+		scroll[cat.length - (scrollCount--)].setContent(Components.academic);
 
 		//
 		// Attendance
 		//
 
-		GridPane attendance = new GridPane();
-		attendance.setId("attendanceP");
+		Components.attendance = new GridPane();
 		scroll[cat.length - (scrollCount)] = new ScrollPane();
 
 		Components.addat = new Button("Add Record");
@@ -839,52 +815,47 @@ public class TchrUI implements Runnable {
 		});
 
 		GridPane.setHalignment(Components.addat, HPos.RIGHT);
-		attendance.add(Components.atsem1, 0, 1, 3, 1);
-		attendance.add(Components.atsem2, 4, 1, 3, 1);
-		attendance.add(Components.addat, 2, 2);
-		attendance.add(Components.atrbsem1, 3, 2);
-		attendance.add(Components.atrbsem2, 4, 2);
-		attendance.add(Components.atBarChart, 0, 4, 8, 1);
+		Components.attendance.add(btp.addTitle("Semester 1", Components.atsem1), 0, 1, 3, 1);
+		Components.attendance.add(btp.addTitle("Semester 2", Components.atsem2), 4, 1, 3, 1);
+		Components.attendance.add(Components.addat, 2, 2);
+		Components.attendance.add(Components.atrbsem1, 3, 2);
+		Components.attendance.add(Components.atrbsem2, 4, 2);
+		Components.attendance.add(Components.atBarChart, 0, 4, 8, 1);
 
-		scroll[cat.length - (scrollCount)].setContent(attendance);
+		scroll[cat.length - (scrollCount)].setContent(Components.attendance);
 		scroll[cat.length - (scrollCount--)].setHbarPolicy(ScrollBarPolicy.NEVER);
 
 		//
 		// Projects
 		//
 
-		GridPane projects = new GridPane();
-		projects.setId("projectsP");
+		Components.projects = new GridPane();
 		scroll[cat.length - (scrollCount)] = new ScrollPane();
 		Components.prtmp = new HashMap<>();
 		Button upload = new Button("Upload");
-		Group recycle = new Group();
+		Components.recycle = new Group();
 		SVGPath bin = new SVGPath();
-		SVGPath bin_t = new SVGPath();
-		SVGPath bin_tt = new SVGPath();
+		SVGPath bin_lid = new SVGPath();
+		SVGPath bin_handle = new SVGPath();
 
 		String box = "M 0 50 H 300 V 220 H 0 z";
 		String lid = "M 0 20 H 300 V 40 H 0 Z";
 		String lid_handle = "M 120 20 L 130 0 L 160 0 L 170 20";
 		
 		bin.setContent(box);
-		bin.setFill(Color.valueOf("#ff9900"));
-		bin.setEffect(new DropShadow());
+		bin_lid.setContent(lid);
+		bin_handle.setContent(lid_handle);
+
 		
-		bin_t.setContent(lid);
-		bin_t.setFill(Color.valueOf("#ff9900"));
-		bin_t.setEffect(new DropShadow());
-		
-		bin_tt.setContent(lid_handle);
-		bin_tt.setEffect(new DropShadow());
-		bin_tt.setStrokeWidth(5);
-		bin_tt.setFill(Color.IVORY);
-		bin_tt.setStroke(Color.valueOf("#ff9900"));
+		bin.setId("bin");
+		bin_lid.setId("bin_lid");
+		bin_handle.setId("bin_handle");
 		
 		Components.prList = new ListView<>();
 		Components.prList.setPrefWidth(600);
 		Components.prList.setTooltip(new Tooltip("Drag and Drop Files Over Here"));
 
+		upload.setMaxWidth(Double.MAX_VALUE);
 		upload.setOnAction(event -> {
 			FileChooser fc = new FileChooser();
 			fc.setTitle("Upload a Project - Typh™");
@@ -920,10 +891,10 @@ public class TchrUI implements Runnable {
 				TranslateTransition ttt = new TranslateTransition();
 
 				tt.setByY(-10.0);
-				tt.setNode(bin_t);
+				tt.setNode(bin_lid);
 				tt.setDuration(Duration.millis(500));
 				ttt.setByY(-10.0);
-				ttt.setNode(bin_tt);
+				ttt.setNode(bin_handle);
 				ttt.setDuration(Duration.millis(500));
 				tt.play();
 				ttt.play();
@@ -937,10 +908,10 @@ public class TchrUI implements Runnable {
 				TranslateTransition ttt = new TranslateTransition();
 
 				tt.setByY(10.0);
-				tt.setNode(bin_t);
+				tt.setNode(bin_lid);
 				tt.setDuration(Duration.millis(500));
 				ttt.setByY(10.0);
-				ttt.setNode(bin_tt);
+				ttt.setNode(bin_handle);
 				ttt.setDuration(Duration.millis(500));
 				tt.play();
 				ttt.play();
@@ -990,18 +961,17 @@ public class TchrUI implements Runnable {
 			arg0.consume();
 		});
 
-		recycle.getChildren().addAll(bin_tt,bin_t,bin);
-		projects.add(upload, 0, 0);
-		projects.add(Components.prList, 1, 0, 1, 2);
-		projects.add(recycle, 0, 1);
+		Components.recycle.getChildren().addAll(bin_handle,bin_lid,bin);
+		Components.projects.add(upload, 0, 0);
+		Components.projects.add(Components.prList, 1, 0, 1, 2);
+		Components.projects.add(Components.recycle, 0, 1);
 
-		scroll[cat.length - (scrollCount--)].setContent(projects);
+		scroll[cat.length - (scrollCount--)].setContent(Components.projects);
 
 		// Assignments
 
 		scroll[cat.length - (scrollCount)] = new ScrollPane();
-		GridPane assignment = new GridPane();
-		assignment.setId("assignmentP");
+		Components.assignment = new GridPane();
 
 		ScrollPane spAssignment = new ScrollPane();
 
@@ -1076,11 +1046,11 @@ public class TchrUI implements Runnable {
 
 		});
 
-		assignment.add(Components.addAssignment, 2, 0);
-		assignment.add(Components.removeAssignment, 3, 0);
-		assignment.add(spAssignment, 0, 1, 4, 1);
+		Components.assignment.add(Components.addAssignment, 2, 0);
+		Components.assignment.add(Components.removeAssignment, 3, 0);
+		Components.assignment.add(spAssignment, 0, 1, 4, 1);
 
-		scroll[cat.length - (scrollCount)].setContent(assignment);
+		scroll[cat.length - (scrollCount)].setContent(Components.assignment);
 		scroll[cat.length - (scrollCount--)].setHbarPolicy(ScrollBarPolicy.NEVER);
 
 		//
@@ -1099,13 +1069,12 @@ public class TchrUI implements Runnable {
 
 		GridPane.setHgrow(Components.accord, Priority.ALWAYS);
 
-		top.getChildren().addAll(Components.srch, Components.searchBox);
+		Components.top.getChildren().addAll(Components.srch, Components.searchBox);
+		Components.topL.getChildren().add(Components.pname);
 
-		topL.getChildren().add(Components.pname);
-
-		left.getChildren().addAll(Components.dprt, Components.pdprt, Components.cls, Components.pcls, Components.tstuds,
+		Components.left.getChildren().addAll(Components.dprt, Components.pdprt, Components.cls, Components.pcls, Components.tstuds,
 				Components.nstuds);
-		side.addNodes(topL, left, Components.mb.getItems().get(2), Components.mb.getItems().get(3),
+		Components.side.addNodes(Components.topL, Components.left, Components.mb.getItems().get(2), Components.mb.getItems().get(3),
 				Components.mb.getItems().get(5));
 
 		Components.mb.getItems().remove(7);
@@ -1114,27 +1083,26 @@ public class TchrUI implements Runnable {
 		Components.mb.getItems().add(0, Components.menu);
 		Components.mb.getItems().get(2).setId("fullscreen");
 
-		GridPane.setValignment(left, VPos.CENTER);
-		StackPane.setAlignment(side, Pos.CENTER_LEFT);
+		GridPane.setValignment(Components.left, VPos.CENTER);
+		StackPane.setAlignment(Components.side, Pos.CENTER_LEFT);
 
-		tgpane.add(top, 0, 0);
-		tgpane.add(aboveAcc, 0, 1);
-		tgpane.add(Components.accord, 0, 2);
+		Components.tgpane.add(Components.top, 0, 0);
+		Components.tgpane.add(Components.aboveAcc, 0, 1);
+		Components.tgpane.add(Components.accord, 0, 2);
 
-		tgpane.setMaxSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
-				Toolkit.getDefaultToolkit().getScreenSize().getHeight());
-		tgpane.setMinSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
-				Toolkit.getDefaultToolkit().getScreenSize().getHeight());
-		sctgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
-		sctgpane.setVbarPolicy(ScrollBarPolicy.NEVER);
-		sctgpane.setContent(tgpane);
+		Components.tgpane.setMaxSize(BasicUI.screenWidth,BasicUI.screenHeight);
+		Components.tgpane.setMinSize(BasicUI.screenWidth,BasicUI.screenHeight);
+		Components.sctgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		Components.sctgpane.setVbarPolicy(ScrollBarPolicy.NEVER);
+		Components.sctgpane.setContent(Components.tgpane);
 		Components.stage.getScene().getStylesheets().remove(0);
 		Components.stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
 
-		spMain.getChildren().addAll(sctgpane, dummy, side);
-		Components.pane.setCenter(spMain);
+		Components.spMain.getChildren().addAll(Components.sctgpane, dummy, Components.side);
+		Components.pane.setCenter(Components.spMain);
 
 		disableAll(true);
+		Components.setIdAll();
 		Components.slist.getSelectionModel().selectFirst();
 		yrlst.getSelectionModel().selectFirst();
 
@@ -1661,6 +1629,7 @@ public class TchrUI implements Runnable {
 
 		// Projects Pane
 
+		Components.recycle.setDisable(flag);
 		Components.prList.setDisable(flag);
 
 		// Assignments Pane

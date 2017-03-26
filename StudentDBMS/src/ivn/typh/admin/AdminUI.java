@@ -2,18 +2,17 @@ package ivn.typh.admin;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Side;
-
-import java.awt.Toolkit;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.mongodb.client.MongoCursor;
 
+import ivn.typh.main.BasicUI;
 import ivn.typh.main.Engine;
 import ivn.typh.main.Notification;
 import ivn.typh.admin.Components;
@@ -35,7 +34,6 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
@@ -61,9 +59,9 @@ public class AdminUI implements Runnable {
 		Components.stage = s;
 		Components.pane = p;
 		Components.menu = new Button("Menu");
-		Components.rts = new Label();
-		Components.rtu = new Label();
-		Components.rll = new Label();
+		Components.rTotalStudents = new Label();
+		Components.rTotalUsers = new Label();
+		Components.rLastLogin = new Label();
 	}
 
 	public void startUI() {
@@ -72,29 +70,29 @@ public class AdminUI implements Runnable {
 		Pane dummy = new Pane();
 		ScrollPane sgpane = new ScrollPane();
 
-		VBox topL = new VBox();
-		VBox left = new VBox();
-		VBox right = new VBox();
-		HBox center = new HBox();
-		HBox top = new HBox();
+		Components.topL = new VBox();
+		Components.left = new VBox();
+		Components.right = new VBox();
+		Components.center = new HBox();
+		Components.top = new HBox();
 
 		Thread pulse = new Thread(new HeartBeat());
 		pulse.start();
 
 		gpane.setId("TheGrid");
-		Components.rts.setId("logInfo");
-		Components.rtu.setId("logInfo");
-		Components.rll.setId("logInfo");
+		Components.rTotalStudents.setId("logInfo");
+		Components.rTotalUsers.setId("logInfo");
+		Components.rLastLogin.setId("logInfo");
 
 		ColumnConstraints cc0 = new ColumnConstraints();
 		ColumnConstraints cc1 = new ColumnConstraints();
 		RowConstraints rc0 = new RowConstraints();
 		RowConstraints rc1 = new RowConstraints();
 
-		Label admin = new Label("Administrator");
-		Label ts = new Label("Total Students:");
-		Label tu = new Label("Total Users:");
-		Label ll = new Label("Last Login:");
+		Components.admin = new Label("Administrator");
+		Components.totalStudents = new Label("Total Students:");
+		Components.totalUsers = new Label("Total Users:");
+		Components.lastLogin = new Label("Last Login:");
 
 		Label search = new Label("Search");
 		Label au = new Label("Online Users");
@@ -105,8 +103,8 @@ public class AdminUI implements Runnable {
 		search.setId("search");
 		Components.srch.setId("searchBox");
 
-		SideBar side = new SideBar(dummy, Components.menu);
-		side.setMenuWidth(300);
+		Components.side = new SideBar(dummy, Components.menu);
+		Components.side.setMenuWidth(300);
 
 		Components.onlineUser = new ListView<>();
 		Components.onlineUser.getItems().add("No User is online !");
@@ -184,8 +182,6 @@ public class AdminUI implements Runnable {
 		Components.addAcc.setTooltip(tabtipu);
 		Components.addStudent.setTooltip(tabtips);
 
-		loadProfiles();
-
 		Components.addAcc.setOnAction((arg0) -> {
 			if (Departments.dprtList != null) {
 				UserAccounts dialog = new UserAccounts(Components.stage, Components.userGrid, Components.addAcc);
@@ -224,31 +220,29 @@ public class AdminUI implements Runnable {
 
 		tabPane.getTabs().addAll(user, stud, dprt);
 
-		center.setId("center");
-		topL.setId("topL");
-		left.setId("left");
-		right.setId("right");
-		top.setId("top");
+		Components.center.setId("center");
+		Components.topL.setId("topL");
+		Components.left.setId("left");
+		Components.right.setId("right");
+		Components.top.setId("top");
 
 		HBox.setHgrow(tabPane, Priority.ALWAYS);
 		VBox.setVgrow(Components.onlineUser, Priority.ALWAYS);
-		StackPane.setAlignment(side, Pos.CENTER_LEFT);
+		StackPane.setAlignment(Components.side, Pos.CENTER_LEFT);
 
-		center.getChildren().add(tabPane);
+		Components.center.getChildren().add(tabPane);
 
-		topL.getChildren().add(admin);
-		left.getChildren().addAll(topL, ts, Components.rts, tu, Components.rtu, ll, Components.rll);
-		right.getChildren().addAll(au, Components.onlineUser);
-		top.getChildren().addAll(search, Components.srch);
+		Components.topL.getChildren().add(Components.admin);
+		Components.left.getChildren().addAll(Components.topL, Components.totalStudents, Components.rTotalStudents, Components.totalUsers, Components.rTotalUsers,Components.lastLogin, Components.rLastLogin);
+		Components.right.getChildren().addAll(au, Components.onlineUser);
+		Components.top.getChildren().addAll(search, Components.srch);
 
 		Button tmp0 = ((Button)Components.mb.getItems().get(3));
 		Button tmp1 = ((Button)Components.mb.getItems().get(2));
 		tmp0.setMinWidth(280);
 		tmp1.setMinWidth(280);
-		side.addNodes(topL, left, tmp0, tmp1);
-		ToggleButton ttb =  (ToggleButton) Components.mb.getItems().get(5);
-		side.addNodes(ttb);
-		side.setPrefWidth(300);
+		Components.side.addNodes(Components.topL, Components.left, tmp0, tmp1);
+		Components.side.setPrefWidth(300);
 
 		Components.mb.getItems().remove(7);
 		Components.mb.getItems().add(7, logout);
@@ -256,16 +250,15 @@ public class AdminUI implements Runnable {
 		Components.mb.getItems().add(0, Components.menu);
 		Components.mb.getItems().get(2).setId("fullscreen");
 
+		loadProfiles();
 
 		gpane.getColumnConstraints().addAll(cc0, cc1);
 		gpane.getRowConstraints().addAll(rc0, rc1);
-		gpane.add(top, 0, 0);
-		gpane.add(center, 0, 1);
-		gpane.add(right, 1, 0, 1, 2);
-		gpane.setMaxSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
-				Toolkit.getDefaultToolkit().getScreenSize().getHeight());
-		gpane.setMinSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
-				Toolkit.getDefaultToolkit().getScreenSize().getHeight());
+		gpane.add(Components.top, 0, 0);
+		gpane.add(Components.center, 0, 1);
+		gpane.add(Components.right, 1, 0, 1, 2);
+		gpane.setMaxSize(BasicUI.screenWidth,BasicUI.screenHeight);
+		gpane.setMinSize(BasicUI.screenWidth,BasicUI.screenHeight);
 		sgpane.setContent(gpane);
 
 		gpane.applyCss();
@@ -273,7 +266,7 @@ public class AdminUI implements Runnable {
 
 		sgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		sgpane.setVbarPolicy(ScrollBarPolicy.NEVER);
-		spMain.getChildren().addAll(sgpane, dummy, side);
+		spMain.getChildren().addAll(sgpane, dummy, Components.side);
 
 		Components.stage.getScene().getStylesheets().remove(0);
 		Components.stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
@@ -284,7 +277,6 @@ public class AdminUI implements Runnable {
 		Components.pane.requestLayout();
 		tabPane.setTabMinWidth(tabPane.getHeight() / 3 - 17);
 		tabPane.setTabMaxWidth(tabPane.getHeight() / 3 - 17);
-
 	}
 
 	private void sendData() {
@@ -321,11 +313,49 @@ public class AdminUI implements Runnable {
 	}
 
 	private void loadProfiles() {
+		Button instituteName = new Button("Change Institute Name");
+		instituteName.setMaxWidth(Double.MAX_VALUE);
+		instituteName.setOnAction(event->{
+			Dialog<?> dialog = new Dialog<Object>();
+			VBox pane = new VBox();
+			pane.setId("institute_dialog");
+			Label label = new Label("Enter new name:-");
+			TextField tf = new TextField();
+			tf.setPromptText(">");
+			pane.getChildren().addAll(label,tf);
+			ButtonType apply = new ButtonType("Apply",ButtonData.APPLY);
+			
+			dialog.setTitle("Institute Name - Typh™");
+			dialog.initOwner(Components.stage);
+			dialog.getDialogPane().getButtonTypes().addAll(apply,ButtonType.CANCEL);
+			dialog.getDialogPane().setContent(pane);
+			
+			Node apply_t =  dialog.getDialogPane().lookupButton(apply);
+			apply_t.setDisable(true);
+			tf.textProperty().addListener((obs,o,n)->{
+				apply_t.setDisable((n.trim().isEmpty()));
+			});
 
+			dialog.setResultConverter(button->{
+				ButtonType tmp = button;
+				if(tmp.getButtonData().equals(ButtonData.APPLY)){
+					BasicUI.institute.setText(tf.getText());
+					Bson newv = new Document("instituteName", BasicUI.institute.getText());
+					Bson query = new Document("user","admin");
+					Engine.db.getCollection("Users").updateOne(query,new Document("$set",newv));
+				}
+				return null;
+			});
+			dialog.show();
+		});
+		
+		Components.side.getChildren().add(Components.side.getChildren().size()-2,instituteName);
+		
+		
 		Document tmpdoc = Engine.db.getCollection("Users").find(eq("user", "admin")).first();
-		Components.rll.setText(tmpdoc.getString("lastLogin"));
-
-		Components.rtu.setText(Long.toString(Engine.db.getCollection("Users").count() - 1));
+		Components.rLastLogin.setText(tmpdoc.getString("lastLogin"));
+		
+		Components.rTotalUsers.setText(Long.toString(Engine.db.getCollection("Users").count() - 1));
 		Engine.db.getCollection("Users").updateOne(eq("user", "admin"),
 				new Document("$set", new Document("lastLogin",
 						LocalDateTime.now().getDayOfMonth() + "-" + LocalDateTime.now().getMonthValue() + "-"
@@ -333,8 +363,10 @@ public class AdminUI implements Runnable {
 								+ LocalDateTime.now().getMinute() + "m:" + LocalDateTime.now().getSecond() + "s")));
 		MongoCursor<Document> cursor;
 
-		// Department
-
+		//
+		//			 Department
+		//
+		
 		cursor = Engine.db.getCollection("Departments").find().iterator();
 		Departments.dprtList = FXCollections.observableHashMap();
 		try {
@@ -368,7 +400,9 @@ public class AdminUI implements Runnable {
 				}
 			}
 			
+			//
 			// 			Students
+			//
 			
 			cursor = Engine.db.getCollection("Students").find().iterator();
 			Students.studentList = FXCollections.observableArrayList();
@@ -410,8 +444,12 @@ public class AdminUI implements Runnable {
 				}
 			}
 
-			Components.rts.setText(Integer.toString(Students.studentList.size()));
-			// UserAccounts
+			Components.rTotalStudents.setText(Integer.toString(Students.studentList.size()));
+		
+			//
+			// 			UserAccounts
+			//
+			
 			cursor = Engine.db.getCollection("Users").find().iterator();
 			UserAccounts.userList = FXCollections.observableArrayList();
 

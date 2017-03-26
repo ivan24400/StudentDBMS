@@ -38,7 +38,7 @@ public class Loading{
 	}
 
 	
-	public void hideProgress(){
+	public void stopTask(){
 		alert.setResult(ButtonType.CLOSE);
 	}
 }
