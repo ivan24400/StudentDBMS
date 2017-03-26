@@ -23,11 +23,6 @@
 .button:hover{
 	-fx-background: derive(-fx-base,-10.0%)
 }
-.progress-indicator {
-    -fx-progress-color: #008080;
-}
-
-
 
 /*
  * 	Tab Panes 
@@ -72,7 +67,7 @@
 
 .scroll-pane {
     -fx-fit-to-width: true;
-    -fx-fit-to-height:true
+    -fx-fit-to-height:false;
 }
 
 #logInfo{
@@ -112,7 +107,7 @@
 
 #institute_dialog{
 	-fx-padding: 40;
-	-fx-spacing: 30;
+	-fx-spacing: 35;
 }
 /*
  * 	Grids inside tab pane
@@ -129,7 +124,7 @@
 }
 
 #sideBar {
-	-fx-effect: dropshadow(gaussian,black,20.0,-20.0,5.0,0.0);
+	-fx-effect: dropshadow(gaussian,black,20.0,0.0,5.0,0.0);
 	-fx-alignment: center;
 	-fx-padding: 20.0;
 	-fx-background-color: white;

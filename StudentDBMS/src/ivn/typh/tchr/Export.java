@@ -58,7 +58,7 @@ public class Export {
 		task.setOnSucceeded(arg -> {
 			load.stopTask();
 			if (task.getValue())
-				Notification.message(Components.stage, "File Exported  !");
+				Notification.message(Components.stage, "File Exported  to :- \n "+path.getAbsolutePath());
 			else
 				Notification.message(Components.stage, AlertType.ERROR, "Error - Typh™",
 						"Error while writing data to file !\nClose other programs using it");
@@ -86,32 +86,32 @@ public class Export {
 				book.setSheetName(0, Components.tsname.getText() + "\'s Data");
 
 				cell_font.setBold(true);
-				cell_font.setFontHeight(24);
-
+	
 				CellStyle cell_style = book.createCellStyle();
-				cell_style.setFont(cell_font);
-				cell_style.setAlignment(HorizontalAlignment.CENTER);
+				CellStyle inst_style = book.createCellStyle();
+				inst_style.setFont(cell_font);
+				inst_style.setAlignment(HorizontalAlignment.CENTER);
 
 				Row row = sheet.createRow(row_index++);
-				Cell cell = row.createCell(0);
+				Cell cell = row.createCell(col_index);
 				cell.setCellValue(institute);
-				cell.setCellStyle(cell_style);
-				sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 12));
-
-				row_index+=2;
-
+				cell.setCellStyle(inst_style);
+				sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 13));
+				row_index++;
+				
 				// Name & Batch
-
-				cell_font.setFontHeight(11);
-				cell = row.createCell(0);
+				
+				cell_style.setFont(cell_font);
+				row = sheet.createRow(row_index++);
+				cell = row.createCell(col_index);
 				cell.setCellValue("Name");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(2);
+				cell = row.createCell(col_index+=2);
 				cell.setCellValue(Components.tsname.getText());
-				cell = row.createCell(4);
+				cell = row.createCell(col_index+=2);
 				cell.setCellValue("Batch");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(6);
+				cell = row.createCell(col_index+=2);
 				cell.setCellValue(Components.tsbatch.getSelectionModel().getSelectedItem());
 
 				sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 1)); // Name
@@ -121,16 +121,17 @@ public class Export {
 
 				// ID & Class
 
+				col_index=0;
 				row = sheet.createRow(row_index++);
-				cell = row.createCell(0);
+				cell = row.createCell(col_index);
 				cell.setCellValue("ID");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(2);
+				cell = row.createCell(col_index+=2);
 				cell.setCellValue(Components.tsid.getText());
-				cell = row.createCell(4);
+				cell = row.createCell(col_index+=2);
 				cell.setCellValue("Class");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(6);
+				cell = row.createCell(col_index+=2);
 				cell.setCellValue(Components.tsclass.getSelectionModel().getSelectedItem());
 
 				sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 1)); // ID
@@ -140,16 +141,17 @@ public class Export {
 
 				// Roll No & Department
 
+				col_index=0;
 				row = sheet.createRow(row_index++);
-				cell = row.createCell(0);
+				cell = row.createCell(col_index);
 				cell.setCellValue("Roll No");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(2);
+				cell = row.createCell(col_index+=2);
 				cell.setCellValue(Components.tsrno.getSelectionModel().getSelectedItem());
-				cell = row.createCell(4);
+				cell = row.createCell(col_index+=2);
 				cell.setCellValue("Department");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(6);
+				cell = row.createCell(col_index+=2);
 				cell.setCellValue(Components.tsdprt.getSelectionModel().getSelectedItem());
 
 				sheet.addMergedRegion(new CellRangeAddress(4, 4, 0, 1)); // Roll
@@ -159,17 +161,18 @@ public class Export {
 
 				// Phone No & Parent Phone No
 
+				col_index=0;
 				row = sheet.createRow(row_index++);
 
-				cell = row.createCell(0);
+				cell = row.createCell(col_index);
 				cell.setCellValue("Student Contact");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(2);
+				cell = row.createCell(col_index+=2);
 				cell.setCellValue(Components.tsphone.getText());
-				cell = row.createCell(4);
+				cell = row.createCell(col_index+=2);
 				cell.setCellValue("Parent Contact");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(6);
+				cell = row.createCell(col_index+=2);
 				cell.setCellValue(Components.tpphone.getText());
 
 				sheet.addMergedRegion(new CellRangeAddress(5, 5, 0, 1)); // sphone
@@ -179,17 +182,18 @@ public class Export {
 
 				// Email & Address
 
+				col_index=0;
 				row = sheet.createRow(row_index++);
 
-				cell = row.createCell(0);
+				cell = row.createCell(col_index);
 				cell.setCellValue("Email");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(2);
+				cell = row.createCell(col_index+=2);
 				cell.setCellValue(Components.tsmail.getText());
-				cell = row.createCell(4);
+				cell = row.createCell(col_index+=2);
 				cell.setCellValue("Address");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(6);
+				cell = row.createCell(col_index+=2);
 				cell.setCellValue(Components.tsaddr.getText());
 
 				sheet.addMergedRegion(new CellRangeAddress(6, 6, 0, 1)); // email
@@ -236,12 +240,12 @@ public class Export {
 				try {
 					data = Engine.db.getCollection("Students").find(eq("sid", Components.tsid.getText())).first()
 							.toJson();
-				} catch (JSONException e) {
-				}
+				} catch (JSONException e) {	}
 
 				for (int i = 1; i <= sem_count; i++) {
 					List<Map<String, String>> sem_tl = new ArrayList<>();
 					jsona = new JSONObject(data).getJSONArray(getYear(i));
+					
 					Iterator<?> it = jsona.iterator();
 					while (it.hasNext()) {
 						JSONObject json = (JSONObject) it.next();
@@ -261,7 +265,6 @@ public class Export {
 							sem_t.put("name", json.getString("name"));
 							sem_t.put("back", Boolean.toString(json.getBoolean("back")));
 							sem_t.put("sem", Integer.toString(sem));
-
 							sem_tl.add(sem_t);
 						}
 					}
@@ -274,26 +277,29 @@ public class Export {
 					// Semester title
 
 					col_index = 0;
-					cell_font.setFontHeight(20);
-					cell_font.setBold(false);
-					cell_style.setAlignment(HorizontalAlignment.LEFT);
-
+					XSSFFont sem_font = book.createFont();
+					CellStyle sem_style = book.createCellStyle();
+					sem_font.setFontHeight(20);
+					sem_style.setAlignment(HorizontalAlignment.LEFT);
+					sem_style.setFont(sem_font);
 					row = sheet.createRow(row_index++);
 					cell = row.createCell(col_index++);
 					cell.setCellValue("Semester");
-					cell.setCellStyle(cell_style);
-					cell = row.createCell(++col_index); // To skip column
+					cell.setCellStyle(sem_style);
+					cell = row.createCell(++col_index); 
 					cell.setCellValue(i);
-					cell.setCellStyle(cell_style);
+					cell.setCellStyle(sem_style);
 					sheet.addMergedRegion(
 							new CellRangeAddress(row_index - 1, row_index - 1, col_index - 2, col_index - 1));
 
-					// Table data
+					// 			Table data
+					
 					col_index = 0;
 					CellStyle cells = book.createCellStyle();
-					cells.setFont(cell_font);
 					cells.setVerticalAlignment(VerticalAlignment.CENTER);
 					cells.setAlignment(HorizontalAlignment.CENTER);
+					cells.setFont(cell_font);
+					
 					row = sheet.createRow(row_index++);
 					cell = row.createCell(col_index++);
 					cell.setCellValue("Subject");
@@ -389,12 +395,16 @@ public class Export {
 
 					row = sheet.createRow(row_index++);
 					cell = row.createCell(10);
+					cell.setCellStyle(cell_style);
 					cell.setCellFormula("SUM(K" + (total_counter - sem_t.size()) + ":K" + (total_counter - 1) + ")");
 					cell = row.createCell(11);
+					cell.setCellStyle(cell_style);
 					cell.setCellFormula("SUM(L" + (total_counter - sem_t.size()) + ":L" + (total_counter - 1) + ")");
 					cell = row.createCell(12);
+					cell.setCellStyle(cell_style);
 					cell.setCellFormula("SUM(M" + (total_counter - sem_t.size()) + ":M" + (total_counter - 1) + ")");
 					cell = row.createCell(13);
+					cell.setCellStyle(cell_style);
 					cell.setCellFormula("SUM(N" + (total_counter - sem_t.size()) + ":N" + (total_counter - 1) + ")");
 
 					total_counter += 4;
