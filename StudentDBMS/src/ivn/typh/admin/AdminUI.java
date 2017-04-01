@@ -65,10 +65,9 @@ public class AdminUI implements Runnable {
 	}
 
 	public void startUI() {
-		StackPane spMain = new StackPane();
-		GridPane gpane = new GridPane();
-		Pane dummy = new Pane();
-		ScrollPane sgpane = new ScrollPane();
+		Components.spMain = new StackPane();
+		Components.gpane = new GridPane();
+		Components.sgpane = new ScrollPane();
 
 		Components.topL = new VBox();
 		Components.left = new VBox();
@@ -78,11 +77,6 @@ public class AdminUI implements Runnable {
 
 		Thread pulse = new Thread(new HeartBeat());
 		pulse.start();
-
-		gpane.setId("TheGrid");
-		Components.rTotalStudents.setId("logInfo");
-		Components.rTotalUsers.setId("logInfo");
-		Components.rLastLogin.setId("logInfo");
 
 		ColumnConstraints cc0 = new ColumnConstraints();
 		ColumnConstraints cc1 = new ColumnConstraints();
@@ -98,10 +92,11 @@ public class AdminUI implements Runnable {
 		Label au = new Label("Online Users");
 		Button logout = new Button("Log Out");
 		Components.srch = new Search();
-		
+
 		logout.setId("logout");
 		search.setId("search");
-		Components.srch.setId("searchBox");
+
+		Pane dummy = new Pane();
 
 		Components.side = new SideBar(dummy, Components.menu);
 		Components.side.setMenuWidth(300);
@@ -121,22 +116,19 @@ public class AdminUI implements Runnable {
 		cc0.setPercentWidth(70);
 		cc1.setPercentWidth(30);
 		rc0.setPercentHeight(15);
-		rc1.setPercentHeight(85);
+		rc1.setPercentHeight(75);
 
 		TabPane tabPane = new TabPane();
 		tabPane.getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
 
-		Tab user = new Tab("Users");
-		Tab stud = new Tab("Students");
-		Tab dprt = new Tab("Departments");
+		Components.user = new Tab("Users");
+		Components.stud = new Tab("Students");
+		Components.dprt = new Tab("Departments");
 
-		user.setId("tabU");
-		stud.setId("tabS");
-		dprt.setId("tabD");
 
-		user.setClosable(false);
-		stud.setClosable(false);
-		dprt.setClosable(false);
+		Components.user.setClosable(false);
+		Components.stud.setClosable(false);
+		Components.dprt.setClosable(false);
 
 		tabPane.setEffect(new DropShadow());
 
@@ -148,21 +140,17 @@ public class AdminUI implements Runnable {
 		Components.studGrid = new GridPane();
 		Components.dprtGrid = new GridPane();
 
-		Components.userGrid.setId("uGrid");
-		Components.studGrid.setId("sGrid");
-		Components.dprtGrid.setId("dGrid");
 
 		ScrollPane scrollStud = new ScrollPane();
 		ScrollPane scrollUser = new ScrollPane();
 		ScrollPane scrollDprt = new ScrollPane();
 
 		scrollStud.setContent(Components.studGrid);
-		scrollStud.setHbarPolicy(ScrollBarPolicy.NEVER);
-
 		scrollUser.setContent(Components.userGrid);
-		scrollUser.setHbarPolicy(ScrollBarPolicy.NEVER);
-
 		scrollDprt.setContent(Components.dprtGrid);
+		
+		scrollUser.setHbarPolicy(ScrollBarPolicy.NEVER);
+		scrollStud.setHbarPolicy(ScrollBarPolicy.NEVER);
 		scrollDprt.setHbarPolicy(ScrollBarPolicy.NEVER);
 
 		Components.addAcc = new Button("+");
@@ -170,12 +158,11 @@ public class AdminUI implements Runnable {
 		Components.addStudent = new Button("+");
 
 		Tooltip tabtipd = new Tooltip("Add a Department");
-		tabtipd.setFont(new Font(12));
-
 		Tooltip tabtipu = new Tooltip("Add a User account");
-		tabtipu.setFont(new Font(12));
-
 		Tooltip tabtips = new Tooltip("Add a Student");
+		
+		tabtipd.setFont(new Font(12));
+		tabtipu.setFont(new Font(12));
 		tabtips.setFont(new Font(12));
 
 		Components.addDepartment.setTooltip(tabtipd);
@@ -214,17 +201,12 @@ public class AdminUI implements Runnable {
 		Components.studGrid.add(Components.addStudent, Students.x, Students.y);
 		Components.dprtGrid.add(Components.addDepartment, Departments.x, Departments.y);
 
-		user.setContent(scrollUser);
-		stud.setContent(scrollStud);
-		dprt.setContent(scrollDprt);
+		Components.user.setContent(scrollUser);
+		Components.stud.setContent(scrollStud);
+		Components.dprt.setContent(scrollDprt);
 
-		tabPane.getTabs().addAll(user, stud, dprt);
+		tabPane.getTabs().addAll(Components.user, Components.stud, Components.dprt);
 
-		Components.center.setId("center");
-		Components.topL.setId("topL");
-		Components.left.setId("left");
-		Components.right.setId("right");
-		Components.top.setId("top");
 
 		HBox.setHgrow(tabPane, Priority.ALWAYS);
 		VBox.setVgrow(Components.onlineUser, Priority.ALWAYS);
@@ -233,15 +215,18 @@ public class AdminUI implements Runnable {
 		Components.center.getChildren().add(tabPane);
 
 		Components.topL.getChildren().add(Components.admin);
-		Components.left.getChildren().addAll(Components.topL, Components.totalStudents, Components.rTotalStudents, Components.totalUsers, Components.rTotalUsers,Components.lastLogin, Components.rLastLogin);
+		Components.left.getChildren().addAll(Components.topL, Components.totalStudents, Components.rTotalStudents,
+		Components.totalUsers, Components.rTotalUsers, Components.lastLogin, Components.rLastLogin);
 		Components.right.getChildren().addAll(au, Components.onlineUser);
 		Components.top.getChildren().addAll(search, Components.srch);
 
-		Button tmp0 = ((Button)Components.mb.getItems().get(3));
-		Button tmp1 = ((Button)Components.mb.getItems().get(2));
-		tmp0.setMinWidth(280);
-		tmp1.setMinWidth(280);
-		Components.side.addNodes(Components.topL, Components.left, tmp0, tmp1);
+		Button about = ((Button) Components.mb.getItems().get(3));
+		Button help = ((Button) Components.mb.getItems().get(2));
+
+		about.setId("side-menu-button");
+		help.setId("side-menu-button");
+
+		Components.side.addNodes(Components.topL, Components.left, help, about);
 		Components.side.setPrefWidth(300);
 
 		Components.mb.getItems().remove(7);
@@ -252,29 +237,28 @@ public class AdminUI implements Runnable {
 
 		loadProfiles();
 
-		gpane.getColumnConstraints().addAll(cc0, cc1);
-		gpane.getRowConstraints().addAll(rc0, rc1);
-		gpane.add(Components.top, 0, 0);
-		gpane.add(Components.center, 0, 1);
-		gpane.add(Components.right, 1, 0, 1, 2);
-		gpane.setMaxSize(BasicUI.screenWidth,BasicUI.screenHeight);
-		gpane.setMinSize(BasicUI.screenWidth,BasicUI.screenHeight);
-		sgpane.setContent(gpane);
+		Components.gpane.getColumnConstraints().addAll(cc0, cc1);
+		Components.gpane.getRowConstraints().addAll(rc0, rc1);
+		Components.gpane.add(Components.top, 0, 0);
+		Components.gpane.add(Components.center, 0, 1);
+		Components.gpane.add(Components.right, 1, 0, 1, 2);
+		Components.gpane.setMaxSize(BasicUI.screenWidth, BasicUI.screenHeight);
+		Components.gpane.setMinSize(BasicUI.screenWidth, BasicUI.screenHeight);
 
-		gpane.applyCss();
-		gpane.layout();
-
-		sgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
-		sgpane.setVbarPolicy(ScrollBarPolicy.NEVER);
-		spMain.getChildren().addAll(sgpane, dummy, Components.side);
+		Components.sgpane.setContent(Components.gpane);
+		Components.sgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		Components.sgpane.setVbarPolicy(ScrollBarPolicy.NEVER);
+		Components.spMain.getChildren().addAll(Components.sgpane, dummy, Components.side);
 
 		Components.stage.getScene().getStylesheets().remove(0);
 		Components.stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
-		Components.pane.setCenter(spMain);
+		Components.pane.setCenter(Components.spMain);
 
+		Components.setIdAll();
 		Components.pane.applyCss();
 		Components.pane.layout();
 		Components.pane.requestLayout();
+
 		tabPane.setTabMinWidth(tabPane.getHeight() / 3 - 17);
 		tabPane.setTabMaxWidth(tabPane.getHeight() / 3 - 17);
 	}
@@ -283,7 +267,8 @@ public class AdminUI implements Runnable {
 		String item = Components.onlineUser.getSelectionModel().getSelectedItem();
 		if (item == null || item.equals("No User is online !")) {
 			Platform.runLater(() -> {
-				Notification.message(Components.stage, AlertType.ERROR, "Invalid User - Typh™", "First select a valid user.");
+				Notification.message(Components.stage, AlertType.ERROR, "Invalid User - Typh™",
+						"First select a valid user.");
 			});
 			return;
 		}
@@ -314,47 +299,46 @@ public class AdminUI implements Runnable {
 
 	private void loadProfiles() {
 		Button instituteName = new Button("Change Institute Name");
-		instituteName.setMaxWidth(Double.MAX_VALUE);
-		instituteName.setOnAction(event->{
+		instituteName.setId("side-menu-button");
+		instituteName.setOnAction(event -> {
 			Dialog<?> dialog = new Dialog<Object>();
 			VBox pane = new VBox();
 			pane.setId("institute_dialog");
 			Label label = new Label("Enter new name:-");
 			TextField tf = new TextField();
 			tf.setPromptText(">");
-			pane.getChildren().addAll(label,tf);
-			ButtonType apply = new ButtonType("Apply",ButtonData.APPLY);
-			
+			pane.getChildren().addAll(label, tf);
+			ButtonType apply = new ButtonType("Apply", ButtonData.APPLY);
+
 			dialog.setTitle("Institute Name - Typh™");
 			dialog.initOwner(Components.stage);
-			dialog.getDialogPane().getButtonTypes().addAll(apply,ButtonType.CANCEL);
+			dialog.getDialogPane().getButtonTypes().addAll(apply, ButtonType.CANCEL);
 			dialog.getDialogPane().setContent(pane);
-			
-			Node apply_t =  dialog.getDialogPane().lookupButton(apply);
+
+			Node apply_t = dialog.getDialogPane().lookupButton(apply);
 			apply_t.setDisable(true);
-			tf.textProperty().addListener((obs,o,n)->{
+			tf.textProperty().addListener((obs, o, n) -> {
 				apply_t.setDisable((n.trim().isEmpty()));
 			});
 
-			dialog.setResultConverter(button->{
+			dialog.setResultConverter(button -> {
 				ButtonType tmp = button;
-				if(tmp.getButtonData().equals(ButtonData.APPLY)){
+				if (tmp.getButtonData().equals(ButtonData.APPLY)) {
 					BasicUI.institute.setText(tf.getText());
 					Bson newv = new Document("instituteName", BasicUI.institute.getText());
-					Bson query = new Document("user","admin");
-					Engine.db.getCollection("Users").updateOne(query,new Document("$set",newv));
+					Bson query = new Document("user", "admin");
+					Engine.db.getCollection("Users").updateOne(query, new Document("$set", newv));
 				}
 				return null;
 			});
 			dialog.show();
 		});
-		
-		Components.side.getChildren().add(Components.side.getChildren().size()-2,instituteName);
-		
-		
+
+		Components.side.getChildren().add(Components.side.getChildren().size() - 2, instituteName);
+
 		Document tmpdoc = Engine.db.getCollection("Users").find(eq("user", "admin")).first();
 		Components.rLastLogin.setText(tmpdoc.getString("lastLogin"));
-		
+
 		Components.rTotalUsers.setText(Long.toString(Engine.db.getCollection("Users").count() - 1));
 		Engine.db.getCollection("Users").updateOne(eq("user", "admin"),
 				new Document("$set", new Document("lastLogin",
@@ -364,9 +348,9 @@ public class AdminUI implements Runnable {
 		MongoCursor<Document> cursor;
 
 		//
-		//			 Department
+		// Department
 		//
-		
+
 		cursor = Engine.db.getCollection("Departments").find().iterator();
 		Departments.dprtList = FXCollections.observableHashMap();
 		try {
@@ -383,7 +367,8 @@ public class AdminUI implements Runnable {
 				Departments.dprtList.put(id, name);
 
 				Button tmp = new Button(name);
-				tmp.setOnAction(new Departments(Components.stage, Components.dprtGrid, name, head, crooms, labs, srooms, id, lib));
+				tmp.setOnAction(new Departments(Components.stage, Components.dprtGrid, name, head, crooms, labs, srooms,
+						id, lib));
 				if (Departments.x < 6) {
 					Departments.x++;
 					Components.dprtGrid.add(tmp, Departments.x - 1, Departments.y);
@@ -399,11 +384,11 @@ public class AdminUI implements Runnable {
 
 				}
 			}
-			
+
 			//
-			// 			Students
+			// Students
 			//
-			
+
 			cursor = Engine.db.getCollection("Students").find().iterator();
 			Students.studentList = FXCollections.observableArrayList();
 
@@ -426,8 +411,8 @@ public class AdminUI implements Runnable {
 				Students.studentList.add(tsname);
 
 				Button tmp = new Button(tsname);
-				tmp.setOnAction(new Students(Components.stage, Components.studGrid, tsname, tsid, tsrno, tsclass, tsbatch, tsmail, tsaddr,
-						tsphone, tpphone, tsdprt, img, csemester));
+				tmp.setOnAction(new Students(Components.stage, Components.studGrid, tsname, tsid, tsrno, tsclass,
+						tsbatch, tsmail, tsaddr, tsphone, tpphone, tsdprt, img, csemester));
 				if (Students.x < 6) {
 					Students.x++;
 					Components.studGrid.add(tmp, Students.x - 1, Students.y);
@@ -445,11 +430,11 @@ public class AdminUI implements Runnable {
 			}
 
 			Components.rTotalStudents.setText(Integer.toString(Students.studentList.size()));
-		
+
 			//
-			// 			UserAccounts
+			// UserAccounts
 			//
-			
+
 			cursor = Engine.db.getCollection("Users").find().iterator();
 			UserAccounts.userList = FXCollections.observableArrayList();
 
@@ -473,8 +458,8 @@ public class AdminUI implements Runnable {
 					}
 					UserAccounts.userList.add(json.getString("user"));
 					Button tmp = new Button(username);
-					tmp.setOnAction(new UserAccounts(Components.stage, Components.userGrid, username, full, password, email, dprt, cli, yin,
-							ll, stat));
+					tmp.setOnAction(new UserAccounts(Components.stage, Components.userGrid, username, full, password,
+							email, dprt, cli, yin, ll, stat));
 					if (UserAccounts.x < 6) {
 						UserAccounts.x++;
 						Components.userGrid.add(tmp, UserAccounts.x - 1, UserAccounts.y);

@@ -114,7 +114,7 @@ public class LogIn implements Runnable {
 			loadBar.stopTask();
 			if (!loginTask.getValue())
 				Notification.message(stage, AlertType.ERROR, "Invalid credentials - Typh™",
-						"Either username or password is incorrect !!!");
+						"Either username or password is incorrect !");
 		});
 
 	}
@@ -159,12 +159,17 @@ public class LogIn implements Runnable {
 	}
 
 	private int verifyCredential() {
-		String pass, dbPass = null, dbUser = null;
-		pass = encryptedPassword(BasicUI.password);
 		if (Engine.db == null)
 			return 3;
+		
+		String pass, dbPass = null, dbUser = null;
+		pass = encryptedPassword(BasicUI.password);
 
 		MongoCollection<Document> coll = Engine.db.getCollection("Users");
+		
+		if(!(coll.count(new Document("user", BasicUI.user)) > 0))
+			return 2;
+			
 		Document doc = coll.find(eq("user", BasicUI.user)).first();
 		dbPass = doc.getString("passwd");
 		dbUser = doc.getString("user");
@@ -192,7 +197,7 @@ public class LogIn implements Runnable {
 
 			} else
 				Notification.message(stage, AlertType.ERROR, "User Accounts - Typh™",
-						"Your account has been marked inactive !\nContact system administrators");
+						"Your account has been locked !\nContact system administrators");
 		}
 
 	}

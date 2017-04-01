@@ -69,17 +69,29 @@
   -fx-content-display: top;
   -fx-border-insets: 15.0 15.0 15.0 15.0;
   -fx-background-color: -fx-base,-10.0%;
-  -fx-border-color: black;
+  -fx-border-color: -fx-base;
   -fx-border-width: 2.0;
 }
 
 .border-titled-pane-title {
-  -fx-background-color: -fx-base,40.0%;
+  -fx-background-color: -fx-base;
+  -fx-background-radius: 10;
+  -fx-padding: 10;
   -fx-translate-y: -14.0;
 }
 
 .border-titled-pane-content {
   -fx-padding: 26.0 10.0 10.0 10.0;
+}
+
+#side-menu-button {
+	-fx-background-color: derive(-fx-base,50%);
+	-fx-min-width: 280;
+	-fx-background-radius: 20
+}
+
+#side-menu-button:hover{
+	-fx-background-color: -fx-base;
 }
 
 #logInfo{

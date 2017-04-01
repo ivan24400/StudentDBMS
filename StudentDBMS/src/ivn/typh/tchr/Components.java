@@ -76,6 +76,8 @@ public class Components {
 	public static Label tstuds;
 	public static Label nstuds;
 	
+	public static ComboBox<String> yrlst;
+	
 	//	Personal 
 	
 	public static GridPane personal;
@@ -107,6 +109,8 @@ public class Components {
 	//	Attendance
 	
 	public static GridPane attendance;
+	public static ObservableList<Attendance> atsem1Data;
+	public static ObservableList<Attendance> atsem2Data;
 	
 	//	Assignments
 	

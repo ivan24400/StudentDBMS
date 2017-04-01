@@ -67,7 +67,17 @@
 
 .scroll-pane {
     -fx-fit-to-width: true;
-    -fx-fit-to-height:false;
+    -fx-fit-to-height: true ;
+}
+
+#side-menu-button {
+	-fx-background-color: derive(-fx-base,50%);
+	-fx-min-width: 280;
+	-fx-background-radius: 20
+}
+
+#side-menu-button:hover{
+	-fx-background-color: -fx-base
 }
 
 #logInfo{
@@ -76,11 +86,11 @@
 
 
 #TheGrid{
-	    -fx-background-color: white;
+	    -fx-background-color: white
 }
 
 #search{
-		-fx-graphic: url('/ivn/typh/admin/icons/search.png');
+		-fx-graphic: url('/ivn/typh/admin/icons/search.png')
 	
 }
 #logout{
