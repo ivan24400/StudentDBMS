@@ -13,9 +13,10 @@
     -fx-font-family: "Comfortaa";
     -fx-control-inner-background: derive(-fx-base,80.0%);
     -fx-base: #ff9900;
-    -fx-accent: #cc7a00
+    -fx-accent: #cc7a00;
+    -fx-background-color: white
 }
-.button {
+.button, .toggle-button, .combo-box, .choice-box{
 	-fx-background-insets: 0.0;
 	-fx-background-radius: 0.0;
 	-fx-faint-focus-color: transparent;
@@ -68,7 +69,6 @@
 .border-titled-pane {
   -fx-content-display: top;
   -fx-border-insets: 15.0 15.0 15.0 15.0;
-  -fx-background-color: -fx-base,-10.0%;
   -fx-border-color: -fx-base;
   -fx-border-width: 2.0;
 }
@@ -100,8 +100,9 @@
 
 #search{
 		-fx-graphic: url('/ivn/typh/tchr/main/search.png');
-	
 }
+
+
 #searchBox{
 	-fx-text-box-border: transparent;
 	-fx-background-color: white;
@@ -189,4 +190,8 @@
 	-fx-stroke: #ff9900;
 	-fx-stroke-width: 5.0;
 	-fx-effect: dropshadow(three-pass-box,black ,10.0,0.0,0.0,0.0)
+}
+
+#logout{
+	-fx-graphic: url('/ivn/typh/main/icons/logout.png')
 }

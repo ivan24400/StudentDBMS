@@ -36,6 +36,8 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 
 	public static ObservableMap<String, String> dprtList;
 	static int x, y;
+	
+	private int counter;
 
 	private boolean isFirst;
 	private int saveAdded;
@@ -48,10 +50,10 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 	private ChoiceBox<String> tlabs;
 	private ChoiceBox<String> tcrooms;
 	private ChoiceBox<String> tsrooms;
-	private ChoiceBox<String> did;
+	private ChoiceBox<String> departmentId;
 	private String slab;
 	private String scroom;
-	private String ssroom, d;
+	private String ssroom, did;
 	private CheckBox library;
 	private ToggleButton edit;
 
@@ -65,7 +67,8 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 		slab = labs;
 		scroom = crooms;
 		ssroom = srooms;
-		d = id;
+		did = id;
+		dprtList.put(id,name);
 	}
 
 	public Departments(Stage arg) {
@@ -76,7 +79,7 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 		tlabs = new ChoiceBox<>();
 		tcrooms = new ChoiceBox<>();
 		tsrooms = new ChoiceBox<>();
-		did = new ChoiceBox<>();
+		departmentId = new ChoiceBox<>();
 		library = new CheckBox();
 	}
 
@@ -128,7 +131,7 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 		dPane.add(new Label("Department Name"), 0, 0);
 		dPane.add(dname, 1, 0);
 		dPane.add(new Label("Department ID"), 0, 1);
-		dPane.add(did, 1, 1);
+		dPane.add(departmentId, 1, 1);
 		dPane.add(new Label("Head of the Deapartment"), 0, 2);
 		dPane.add(dhead, 1, 2);
 		dPane.add(new Label("Total number of labs"), 0, 3);
@@ -154,7 +157,7 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 			tlabs.getSelectionModel().select(slab);
 			tcrooms.getSelectionModel().select(scroom);
 			tsrooms.getSelectionModel().select(ssroom);
-			did.getSelectionModel().select(d);
+			departmentId.getSelectionModel().select(did);
 			disableAll(true);
 		} else if (isFirst) {
 			setHeaderText("Fill in required fields to add a Department");
@@ -162,7 +165,7 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 			tlabs.getSelectionModel().selectFirst();
 			tsrooms.getSelectionModel().selectFirst();
 			tcrooms.getSelectionModel().selectFirst();
-			did.getSelectionModel().selectFirst();
+			departmentId.getSelectionModel().selectFirst();
 			getDialogPane().getButtonTypes().clear();
 			getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
@@ -170,7 +173,7 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 
 		setResultConverter((arg) -> {
 			if ((arg.equals(ButtonType.OK) || arg.getButtonData().equals(ButtonData.OK_DONE)) && (!areFieldsEmpty())) {
-				dprtList.put(did.getValue(), dname.getText());
+				dprtList.put(departmentId.getValue(), dname.getText());
 				addDepartment();
 			} else if ((arg.equals(ButtonType.OK) || arg.getButtonData().equals(ButtonData.OK_DONE))
 					&& (areFieldsEmpty()))
@@ -184,12 +187,13 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 	}
 
 	private void initRoom() {
-		for (int i = 1; i <= 99; i++) {
-			tlabs.getItems().add(String.format("%02d", i));
-			tsrooms.getItems().add(String.format("%02d", i));
-			tcrooms.getItems().add(String.format("%02d", i));
-			did.getItems().add(String.format("%02d", i));
-		}
+		for ( counter = 1; counter <= 99; counter++) {
+			tlabs.getItems().add(String.format("%02d", counter));
+			tsrooms.getItems().add(String.format("%02d", counter));
+			tcrooms.getItems().add(String.format("%02d", counter));
+			if(!dprtList.keySet().contains(String.format("%02d", counter)))
+				departmentId.getItems().add(String.format("%02d", counter));
+			}
 	}
 
 	private boolean areFieldsEmpty() {
@@ -244,7 +248,7 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 
 		tsrooms.setDisable(flag);
 
-		did.setDisable(flag);
+		departmentId.setDisable(flag);
 		library.setDisable(flag);
 		if(!isFirst)
 			del.setDisable(flag);

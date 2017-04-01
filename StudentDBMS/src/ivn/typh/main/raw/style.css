@@ -24,6 +24,7 @@
 
 .text-field{
 	-fx-text-box-border: transparent;
+	-fx-alignment: center;
 	-fx-background-color: white;
     -fx-border-width: 2px;
     -fx-border-color:transparent transparent derive(-fx-base,-5%) transparent
@@ -36,6 +37,9 @@
     -fx-progress-color: -fx-base;
 }
 
+#user, #password {
+	-fx-alignment: baseline-left
+}
 #fullscreen{
 	-fx-graphic: url('/ivn/typh/main/icons/fullscreen.png')
 }

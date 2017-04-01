@@ -39,11 +39,8 @@ public class Project extends ListCell<String>{
 		dummy = new Pane();
 		label = new Label();
 		download = new Button("Download");
-		download.setOnAction(value->{
-			System.out.print("Downloaded file");
-		});
+	
 		HBox.setHgrow(dummy,Priority.ALWAYS);
-
 		pane.getChildren().addAll(label,dummy,download);
 		download.setId("project_download");
 		download.setOnAction(value->{

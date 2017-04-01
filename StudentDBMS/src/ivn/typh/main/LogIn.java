@@ -54,6 +54,9 @@ public class LogIn implements Runnable {
 		Label pass = new Label("Password:");
 		TextField userText = new TextField();
 		PasswordField passText = new PasswordField();
+		
+		userText.setId("user");
+		passText.setId("password");
 
 		Dialog<LoginData> dialog = new Dialog<>();
 		dialog.setTitle("Typh™ Login");

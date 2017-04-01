@@ -44,7 +44,6 @@ public class SideBar extends VBox {
 
 		menu.setOnAction(arg -> {
 
-			System.out.println(width);
 			final Animation show = new Transition() {
 				{
 					setCycleDuration(Duration.millis(240));
@@ -57,10 +56,6 @@ public class SideBar extends VBox {
 				}
 
 			};
-
-			show.setOnFinished(value->{
-				System.out.println(" show");
-			});
 
 			final Animation hide = new Transition() {
 				{
@@ -76,8 +71,6 @@ public class SideBar extends VBox {
 			
 			hide.setOnFinished(value->{
 				setVisible(false);
-				System.out.println(" hide");
-
 			});
 			
 			if(show.statusProperty().get() == Animation.Status.STOPPED && hide.statusProperty().get() == Animation.Status.STOPPED){

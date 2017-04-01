@@ -173,7 +173,6 @@ public class AdminUI implements Runnable {
 			if (Departments.dprtList != null) {
 				UserAccounts dialog = new UserAccounts(Components.stage, Components.userGrid, Components.addAcc);
 				dialog.begin();
-
 			} else
 				Notification.message(Components.stage, AlertType.ERROR, "Error - Empty List - Typh™",
 						"First add at least one department before adding an account !");
@@ -255,6 +254,7 @@ public class AdminUI implements Runnable {
 		Components.pane.setCenter(Components.spMain);
 
 		Components.setIdAll();
+		Components.setCacheAll();
 		Components.pane.applyCss();
 		Components.pane.layout();
 		Components.pane.requestLayout();

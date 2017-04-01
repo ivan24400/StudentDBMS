@@ -1,9 +1,11 @@
 package ivn.typh.tchr;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import ivn.typh.admin.SideBar;
 import javafx.collections.ObservableList;
+import javafx.scene.CacheHint;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
@@ -29,6 +31,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.SVGPath;
 import javafx.stage.Stage;
 
 public class Components {
@@ -36,7 +39,6 @@ public class Components {
 	public static Stage stage;
 	public static Scene scene;
 	
-
 	public static GridPane tgpane;
 	public static ScrollPane sctgpane;
 	public static StackPane spMain;
@@ -57,6 +59,8 @@ public class Components {
 	public static ToolBar mb;
 	public static TitledPane[] tp;
 	public static Accordion accord;
+	
+	public static Button logout;
 	
 	public static ComboBox<String> slist;
 	public static ToggleButton editable;
@@ -111,15 +115,12 @@ public class Components {
 	public static GridPane attendance;
 	public static ObservableList<Attendance> atsem1Data;
 	public static ObservableList<Attendance> atsem2Data;
-	
-	//	Assignments
-	
+	public static BarChart<String, Number> atBarChart;
 	public static TableView<Attendance> atsem1;
 	public static TableView<Attendance> atsem2;
 	public static Button addat;
 	public static RadioButton atrbsem1;
 	public static RadioButton atrbsem2;
-	public static BarChart<String, Number> atBarChart;
 	public static CategoryAxis atXaxis;
 	public static NumberAxis atYaxis;
 	
@@ -128,7 +129,10 @@ public class Components {
 	public static Group recycle;
 	public static GridPane projects;
 	public static ListView<String> prList;
-	public static Map<String, String> prtmp;
+	public static Map<String, String> prPath;
+	public static SVGPath bin;
+	public static SVGPath bin_lid;
+	public static SVGPath bin_handle; 
 
 	//	Assignments
 	
@@ -139,6 +143,8 @@ public class Components {
 
 
 	public static void setIdAll(){
+		
+		logout.setId("logout");
 		
 		tgpane.setId("home");
 		center.setId("center");
@@ -175,4 +181,60 @@ public class Components {
 
 		
 	}
+	
+	public static void setCacheAll(){
+		
+		tgpane.setCache(true);
+		tgpane.setCacheShape(true);
+		tgpane.setCacheHint(CacheHint.SPEED);
+		
+		sctgpane.setCache(true);               
+		sctgpane.setCacheShape(true);          
+		sctgpane.setCacheHint(CacheHint.SPEED);
+		
+		spMain.setCache(true);                
+		spMain.setCacheShape(true);           
+		spMain.setCacheHint(CacheHint.SPEED); 
+		
+		pane.setCache(true);               
+		pane.setCacheShape(true);          
+		pane.setCacheHint(CacheHint.SPEED);
+		
+		Arrays.stream(tp).forEach(item-> {
+			item.setCache(true);                
+			item.setCacheShape(true);           
+			item.setCacheHint(CacheHint.SPEED); 
+		});
+	
+		accord.setCache(true);               
+		accord.setCacheShape(true);          
+		accord.setCacheHint(CacheHint.SPEED);
+		
+		side.setCache(true);               
+		side.setCacheShape(true);          
+		side.setCacheHint(CacheHint.SPEED);
+		
+		studProgress.setCache(true);               
+		studProgress.setCacheShape(true);          
+		studProgress.setCacheHint(CacheHint.SPEED);
+		
+		atBarChart.setCache(true);               
+		atBarChart.setCacheShape(true);          
+		atBarChart.setCacheHint(CacheHint.SPEED);
+		
+		prList.setCache(true);               
+		prList.setCacheShape(true);          
+		prList.setCacheHint(CacheHint.SPEED);
+		
+		asList.setCache(true);               
+		asList.setCacheShape(true);          
+		asList.setCacheHint(CacheHint.SPEED);
+		
+		bin.setCache(true);                
+		bin.setCacheHint(CacheHint.SPEED); 
+		bin_lid.setCache(true);                
+		bin_lid.setCacheHint(CacheHint.SPEED); 
+		bin_handle.setCache(true);                
+	   bin_handle.setCacheHint(CacheHint.SPEED); 
+	}   
 }

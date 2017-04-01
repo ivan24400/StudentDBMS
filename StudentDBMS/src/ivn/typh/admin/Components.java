@@ -1,5 +1,6 @@
 package ivn.typh.admin;
 
+import javafx.scene.CacheHint;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -76,7 +77,13 @@ public class Components {
 		Components.right.setId("right");
 		Components.top.setId("top");
 
-
+		
+	}
+	
+	public static void setCacheAll(){
+		side.setCache(true);                
+		side.setCacheShape(true);           
+		side.setCacheHint(CacheHint.SPEED); 
 	}
 }
 
