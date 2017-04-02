@@ -208,12 +208,7 @@ public class TchrUI implements Runnable {
 			loadStudentProfile(n.split(":")[1]);
 		});
 
-		// Search Box
-
-		Components.srch.setId("search");
-		Components.searchBox.setId("searchBox");
-
-		// Export Data
+			// Export Data
 
 		Components.export = new Button("Export");
 		Components.export.setOnAction(arg -> {
@@ -300,7 +295,7 @@ public class TchrUI implements Runnable {
 		
 		Components.tsaddr.textProperty().addListener((obs,o,n)->{
 			tool.hide();
-			if(!n.isEmpty()){
+			if(!n.isEmpty() && !Components.tsaddr.isDisabled()){
 				tool.setText(Components.tsaddr.getText());
 				Point2D p = Components.tsaddr.localToScene(0.0, 0.0);
 				tool.show(Components.tsaddr, p.getX() + 
@@ -1233,15 +1228,18 @@ public class TchrUI implements Runnable {
 		JSONObject jsonData = new JSONObject(json);
 
 		// Personal
-
-		byte[] deci = Base64.getDecoder().decode(jsonData.getString("img"));
+		byte[] deci;
 		BufferedImage bf = null;
-		try {
+try {
+		deci = Base64.getDecoder().decode(jsonData.getString("img"));
+		
 			bf = ImageIO.read(new ByteArrayInputStream(deci));
-		} catch (IOException e) {
+			Components.dpImgView.setImage(SwingFXUtils.toFXImage(bf, null));
+
+		} catch (IOException |JSONException e) {
+			Components.dpImgView.setImage(new Image(getClass().getResourceAsStream("/ivn/typh/main/raw/pic.jpg")));
 			e.printStackTrace();
 		}
-		Components.dpImgView.setImage(SwingFXUtils.toFXImage(bf, null));
 		Components.tsname.setText(jsonData.getString("name"));
 		Components.tsid.setText(jsonData.getString("sid"));
 		Components.tsrno.getSelectionModel().select(jsonData.getString("rno"));
@@ -1312,7 +1310,7 @@ public class TchrUI implements Runnable {
 				+ Components.tsrno.getValue());
 	}
 
-	private void loadReport(String n) {
+	private void loadReport(String year) {
 
 		Components.reps.getItems().clear();
 		String data = Engine.db.getCollection("Students").find(eq("sid", Components.tsid.getText())).first().toJson();
@@ -1323,7 +1321,7 @@ public class TchrUI implements Runnable {
 			boolean b = j.getBoolean("seen");
 			int sem = j.getInt("sem");
 			String r = j.getString("report");
-			if (sMatchesY(sem, n) == 1)
+			if (sMatchesY(sem, year) == 1)
 				Components.reps.getItems().add(new Report(b, sem, r));
 		}
 	}
@@ -1600,18 +1598,19 @@ public class TchrUI implements Runnable {
 			Components.tsbatch.getItems().add(Character.toString((char) ('a' + i)));
 		}
 
+		//	Add students to teacher list
+		
 		List<String> name = new ArrayList<>();
-
+		Components.counter=0;
+		
 		studList.forEach(student -> {
 			name.add(student.split(": ")[1]);
-
-			int i = 0;
 			String tmp = student.split("]")[0].substring(1);
 			if (Components.classIncharge.equals(tmp)) {
 				Components.slist.getItems().add(student);
-				i++;
+				Components.counter++;
 			}
-			Components.nstuds.setText(Integer.toString(i));
+			Components.nstuds.setText(Integer.toString(Components.counter));
 		});
 
 		Components.searchBox.setItems(name);
@@ -1625,11 +1624,11 @@ public class TchrUI implements Runnable {
 		// Personal Pane
 
 		Components.dpImgView.setDisable(flag);
-		Components.tsname.setEditable(false);
+		Components.tsname.setEditable(flag);
 		Components.tsid.setEditable(false);
 		Components.tsrno.setDisable(false);
 		Components.tsdprt.setDisable(false);
-		Components.tsclass.setDisable(flag);
+		Components.tsclass.setDisable(false);
 		Components.tsbatch.setDisable(flag);
 		Components.tsmail.setEditable(!flag);
 		Components.tsaddr.setEditable(!flag);

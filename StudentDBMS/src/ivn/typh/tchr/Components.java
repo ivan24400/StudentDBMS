@@ -81,6 +81,7 @@ public class Components {
 	public static Label nstuds;
 	
 	public static ComboBox<String> yrlst;
+	public static int counter;
 	
 	//	Personal 
 	
@@ -152,6 +153,9 @@ public class Components {
 		top.setId("topP");
 		topL.setId("toplP");
 		aboveAcc.setId("acP");
+		
+		srch.setId("search");
+		searchBox.setId("searchBox");
 		
 		//	Side Menu
 		

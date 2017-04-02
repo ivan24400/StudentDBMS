@@ -1,5 +1,6 @@
 package ivn.typh.tchr;
 
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -57,12 +58,12 @@ public class Search extends TextField {
 	private Label sem2;
 	private ComboBox<String> yrlst;
 	private float percent = 0, scored, total;
-
+	private JSONObject data;
+	
 	
 	public Search() {
 		super();
 		yrlst = new ComboBox<>();
-		yrlst.getItems().addAll(FXCollections.observableArrayList("FE", "SE", "TE", "BE"));
 		year = new Label("Select Year");
 		sem1 = new Label("Semester 1");
 		sem2 = new Label("Semester 2");
@@ -88,6 +89,7 @@ public class Search extends TextField {
 		focusedProperty().addListener((obs,o,n)-> {
 				resultList.hide();
 		});
+		
 		
 		yrlst.getSelectionModel().selectedItemProperty().addListener((obs,o,n)->{
 			loadAcademicData();
@@ -129,19 +131,36 @@ public class Search extends TextField {
 		ScrollPane spAcad = new ScrollPane();
 		GridPane academic = new GridPane();
 		
-		
-		
-
 		ScrollPane sp1 = new ScrollPane();
 		ScrollPane sp2 = new ScrollPane();
 		ObservableList<Marks> subjects1 = FXCollections.observableArrayList();
 		ObservableList<Marks> subjects2 = FXCollections.observableArrayList();
 		ColumnConstraints accc0 = new ColumnConstraints();
 		accc0.setHalignment(HPos.RIGHT);
-		academic.setPadding(new Insets(30));
-		academic.setHgap(20);
-		academic.setVgap(20);
+
+		academic.setId("searchResultAcademic");
+		report.getDialogPane().setId("searchResultPane");
+		
 		academic.getColumnConstraints().add(accc0);
+
+		yrlst.getItems().clear();
+
+		data = new JSONObject(Engine.db.getCollection("Students").find(eq("name", result)).first().toJson());
+
+		switch (data.getString("current_semester")) {
+		case "SEM 7":
+		case "SEM 8":
+			yrlst.getItems().add("BE");
+		case "SEM 5":
+		case "SEM 6":
+			yrlst.getItems().add("TE");
+		case "SEM 3":
+		case "SEM 4":
+			yrlst.getItems().add("SE");
+		case "SEM 1":
+		case "SEM 2":
+			yrlst.getItems().add("FE");
+		}
 
 		// Semester 1
 
@@ -337,6 +356,12 @@ public class Search extends TextField {
 		tsem2.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		sp1.setContent(tsem1);
 		sp2.setContent(tsem2);
+		tsem1.setFixedCellSize(24);
+		tsem1.prefHeightProperty()
+				.bind(Bindings.size(Components.tsem2.getItems()).multiply(Components.tsem2.getFixedCellSize()).add(90));
+		tsem2.setFixedCellSize(24);
+		tsem2.prefHeightProperty()
+				.bind(Bindings.size(Components.tsem2.getItems()).multiply(Components.tsem2.getFixedCellSize()).add(90));
 
 		// Student Progress
 
@@ -389,10 +414,9 @@ public class Search extends TextField {
 	private void loadAcademicData() {
 		JSONArray jsona = null;
 		try {
-			String data = Engine.db.getCollection("Students").find(eq("name", result)).first().toJson();
-			jsona = new JSONObject(data).getJSONArray(yrlst.getSelectionModel().getSelectedItem().toLowerCase());
-		} catch (JSONException e) {
-		}
+			jsona = data.getJSONArray(yrlst.getSelectionModel().getSelectedItem().toLowerCase());
+		} catch (JSONException e) {	}
+		
 		Iterator<?> it = jsona.iterator();
 
 		tsem1.getItems().clear();

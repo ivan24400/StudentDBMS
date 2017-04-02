@@ -84,6 +84,22 @@
   -fx-padding: 26.0 10.0 10.0 10.0;
 }
 
+#project_download{
+	-fx-graphic: url('/ivn/typh/tchr/icons/project_download.png')
+}
+
+#dpImgView {
+	-fx-effect: dropshadow(gaussian,black,10.0,0.0,0.0,0.0)
+}
+
+#personalP,#academicP, #attendanceP, #projectsP, #assignmentP, #center{
+	-fx-alignment: center;
+	-fx-padding: 30.0;
+	-fx-hgap: 20.0;
+	-fx-vgap: 20.0;	
+	-fx-background-color: derive(-fx-base,80.0%)
+}
+
 #side-menu-button {
 	-fx-background-color: derive(-fx-base,50%);
 	-fx-min-width: 280;
@@ -114,6 +130,18 @@
 	-fx-background-color:  derive(-fx-base,95.0%)
 }
 
+#searchResultAcademic{
+	-fx-padding: 30;
+	-fx-hgap: 20;
+	-fx-vgap: 20;
+	-fx-background-color: white
+}
+
+#searchResultPane {
+	-fx-background-color: white;
+	-fx-border-color: white;
+}
+
 #fullscreen{
 	-fx-graphic: url('/ivn/typh/main/icons/fullscreen.png')
 }
@@ -122,9 +150,7 @@
 	-fx-graphic: url('/ivn/typh/main/icons/fullscreen_exit.png')
 }
 
-#project_download{
-	-fx-graphic: url('/ivn/typh/tchr/icons/project_download.png')
-}
+
 #sideBar {
 	-fx-effect: dropshadow(gaussian,black,20.0,-20.0,5.0,0.0);
 	-fx-alignment: center;
@@ -140,17 +166,6 @@
 	-fx-padding: 30.0
 }
 
-#dpImgView {
-	-fx-effect: dropshadow(gaussian,black,10.0,0.0,0.0,0.0)
-}
-
-#personalP,#academicP, #attendanceP, #projectsP, #assignmentP, #center{
-	-fx-alignment: center;
-	-fx-padding: 30.0;
-	-fx-hgap: 20.0;
-	-fx-vgap: 20.0;	
-	-fx-background-color: derive(-fx-base,80.0%)
-}
 
 #topP {
 	-fx-alignment: center;

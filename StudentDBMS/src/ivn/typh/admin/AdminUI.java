@@ -59,9 +59,9 @@ public class AdminUI implements Runnable {
 		Components.stage = s;
 		Components.pane = p;
 		Components.menu = new Button("Menu");
-		Components.rTotalStudents = new Label();
-		Components.rTotalUsers = new Label();
-		Components.rLastLogin = new Label();
+		Components.rTotalStudents = new Label("0");
+		Components.rTotalUsers = new Label("0");
+		Components.rLastLogin = new Label("No last Login");
 	}
 
 	public void startUI() {
@@ -340,6 +340,7 @@ public class AdminUI implements Runnable {
 		Components.rLastLogin.setText(tmpdoc.getString("lastLogin"));
 
 		Components.rTotalUsers.setText(Long.toString(Engine.db.getCollection("Users").count() - 1));
+		
 		Engine.db.getCollection("Users").updateOne(eq("user", "admin"),
 				new Document("$set", new Document("lastLogin",
 						LocalDateTime.now().getDayOfMonth() + "-" + LocalDateTime.now().getMonthValue() + "-"
@@ -415,16 +416,18 @@ public class AdminUI implements Runnable {
 						tsbatch, tsmail, tsaddr, tsphone, tpphone, tsdprt, img, csemester));
 				if (Students.x < 6) {
 					Students.x++;
-					Components.studGrid.add(tmp, Students.x - 1, Students.y);
 					GridPane.setColumnIndex(Components.addStudent, Students.x);
 					GridPane.setRowIndex(Components.addStudent, Students.y);
+					Components.studGrid.add(tmp, Students.x - 1, Students.y);
+
 
 				} else {
 					Students.x = 1;
 					Students.y++;
-					Components.studGrid.add(tmp, Students.x - 1, Students.y);
 					GridPane.setColumnIndex(Components.addStudent, Students.x);
 					GridPane.setRowIndex(Components.addStudent, Students.y);
+					Components.studGrid.add(tmp, Students.x - 1, Students.y);
+
 
 				}
 			}
@@ -435,12 +438,13 @@ public class AdminUI implements Runnable {
 			// UserAccounts
 			//
 
-			cursor = Engine.db.getCollection("Users").find().iterator();
+			MongoCursor<Document> cursorUser = Engine.db.getCollection("Users").find().iterator();
 			UserAccounts.userList = FXCollections.observableArrayList();
 
-			while (cursor.hasNext()) {
+			while (cursorUser.hasNext()) {
 
-				JSONObject json = new JSONObject(cursor.next().toJson());
+				JSONObject json = new JSONObject(cursorUser.next().toJson());
+				System.out.println(json);
 				String username = json.getString("user");
 				if (!username.equals("admin")) {
 					String password = null, email = null, dprt = null, full = null, cli = null, yin = null, ll = null;
@@ -455,6 +459,7 @@ public class AdminUI implements Runnable {
 						ll = json.getString("lastLogin");
 						stat = json.getBoolean("status");
 					} catch (JSONException e) {
+						e.printStackTrace();
 					}
 					UserAccounts.userList.add(json.getString("user"));
 					Button tmp = new Button(username);
@@ -462,21 +467,24 @@ public class AdminUI implements Runnable {
 							email, dprt, cli, yin, ll, stat));
 					if (UserAccounts.x < 6) {
 						UserAccounts.x++;
-						Components.userGrid.add(tmp, UserAccounts.x - 1, UserAccounts.y);
 						GridPane.setColumnIndex(Components.addAcc, UserAccounts.x);
 						GridPane.setRowIndex(Components.addAcc, UserAccounts.y);
+						Components.userGrid.add(tmp, UserAccounts.x - 1, UserAccounts.y);
+		
 
 					} else {
 						UserAccounts.x = 1;
 						UserAccounts.y++;
-						Components.userGrid.add(tmp, UserAccounts.x - 1, UserAccounts.y);
 						GridPane.setColumnIndex(Components.addAcc, UserAccounts.x);
 						GridPane.setRowIndex(Components.addAcc, UserAccounts.y);
+						Components.userGrid.add(tmp, UserAccounts.x - 1, UserAccounts.y);
+
 
 					}
 				}
 			}
-		} catch (JSONException e) {
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		Components.srch.setItems(Students.studentList);
 	}
