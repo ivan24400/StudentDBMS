@@ -175,3 +175,8 @@
 	-fx-spacing: 20.0;
 	-fx-alignment: center;
 }
+
+#message_pane {
+	-fx-padding: 20;
+	-fx-spacing: 20
+}

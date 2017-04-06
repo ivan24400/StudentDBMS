@@ -21,11 +21,14 @@ public class HeartBeat implements Runnable {
 	@Override
 	public void run() {
 		heartAttack = false;
-		message = "__NO__TEXT__";
+		message = "__BEAT__";
+
 		try {
 			socket = new Socket(BasicUI.ipAddr, 61001);
+			System.out.println(socket.getRemoteSocketAddress());
 			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+
 			ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
 
 			Runnable users = new Runnable() {
@@ -35,6 +38,7 @@ public class HeartBeat implements Runnable {
 						try {
 							@SuppressWarnings("unchecked")
 							List<String> u = (List<String>) in.readObject();
+							System.out.println("pulse: admin\t"+u.toString());
 							Platform.runLater(() -> {
 								Components.onlineUser.getItems().clear();
 								u.forEach(item -> {
@@ -44,14 +48,14 @@ public class HeartBeat implements Runnable {
 								if (Components.onlineUser.getItems().isEmpty())
 									Components.onlineUser.getItems().add("No User is online !");
 							});
-							out.reset();
 							out.writeObject(message);
+							out.reset();
 							out.flush();
 
 						} catch (ClassNotFoundException | IOException e) {
 							e.printStackTrace();
 						}
-						message = "__NO__TEXT__";
+						message = "__BEAT__";
 					} else {
 						service.shutdown();
 						try {
@@ -64,7 +68,7 @@ public class HeartBeat implements Runnable {
 
 			service.scheduleAtFixedRate(users, 0, 5, TimeUnit.SECONDS);
 		} catch (IOException e) {
-			System.out.println("Server not found");
+			System.out.println("heart: Server not found");
 		}
 	}
 

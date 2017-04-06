@@ -1,9 +1,15 @@
 package ivn.typh.admin;
 
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.Optional;
+
+import javax.imageio.ImageIO;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -18,6 +24,7 @@ import ivn.typh.main.Notification;
 import ivn.typh.admin.Components;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.Node;
@@ -33,6 +40,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
@@ -107,7 +115,14 @@ public class AdminUI implements Runnable {
 		MenuItem sText = new MenuItem("Send a message");
 		oucm.getItems().add(sText);
 		sText.setOnAction(event -> {
-			sendData();
+			String item = Components.onlineUser.getSelectionModel().getSelectedItem();
+			if (item == null || item.equals("No User is online !")) {
+				Platform.runLater(() -> {
+					Notification.message(Components.stage, AlertType.ERROR, "Invalid User - Typh™",
+							"First select a valid user.");
+				});
+			}else
+			sendData(item);
 		});
 
 		Components.onlineUser.setContextMenu(oucm);
@@ -263,24 +278,33 @@ public class AdminUI implements Runnable {
 		tabPane.setTabMaxWidth(tabPane.getHeight() / 3 - 17);
 	}
 
-	private void sendData() {
-		String item = Components.onlineUser.getSelectionModel().getSelectedItem();
-		if (item == null || item.equals("No User is online !")) {
-			Platform.runLater(() -> {
-				Notification.message(Components.stage, AlertType.ERROR, "Invalid User - Typh™",
-						"First select a valid user.");
-			});
-			return;
-		}
+	private void sendData(String user) {
+	
 		Dialog<String> dialog = new Dialog<>();
-		dialog.setHeaderText("Enter message for " + item);
 		dialog.setTitle("Messenger - Typh™");
-		dialog.getDialogPane().setPadding(new Insets(50));
 		dialog.initOwner(Components.stage);
-		TextField text = new TextField();
+		
+		VBox mpane = new VBox();
+		HBox hpane = new HBox();
+		hpane.setSpacing(20);
+		mpane.setId("message_pane");
+		
+		Label characterLimit = new Label("255");
+		TextArea text = new TextArea();
+		Pane dummy = new Pane();
 		text.setPromptText("Enter message ...");
+		text.setPrefRowCount(8);
+		text.setPrefColumnCount(50);
+		text.setWrapText(true);
+		text.textProperty().addListener((obs,o,n)->{
+			characterLimit.setText(Integer.toString(255 - text.getText().length()));
+		});
+		
+		HBox.setHgrow(dummy, Priority.ALWAYS);
+		hpane.getChildren().addAll(dummy,characterLimit);
+		mpane.getChildren().addAll(new Label("Enter a message for [ "+user+" ]"),text,hpane);
 		ButtonType send = new ButtonType("Send", ButtonData.OK_DONE);
-		dialog.getDialogPane().setContent(text);
+		dialog.getDialogPane().setContent(mpane);
 		dialog.getDialogPane().getButtonTypes().addAll(send, ButtonType.CANCEL);
 		dialog.setResultConverter(value -> {
 			if (value.getButtonData().equals(ButtonData.OK_DONE))
@@ -289,7 +313,12 @@ public class AdminUI implements Runnable {
 		});
 		Node snode = dialog.getDialogPane().lookupButton(send);
 		text.textProperty().addListener((observable, oldv, newv) -> {
-			snode.setDisable(newv.trim().isEmpty());
+			snode.setDisable(newv.trim().isEmpty() || (newv.length()>255));
+			if(newv.length()>255)
+				characterLimit.setStyle("-fx-text-color: red");
+			else
+				characterLimit.setStyle("-fx-text-color: black");
+
 		});
 
 		Optional<String> result = dialog.showAndWait();
@@ -407,7 +436,12 @@ public class AdminUI implements Runnable {
 				String tsphone = Integer.toString(json.getInt("studentPhone"));
 				String tpphone = Integer.toString(json.getInt("parentPhone"));
 				String tsdprt = json.getString("department");
-				String img = json.getString("img");
+				String img = null;
+				try{
+					img = json.getString("img");
+				}catch(JSONException e){
+					img = getDefaultImage();
+				}
 				String csemester = json.getString("current_semester");
 				Students.studentList.add(tsname);
 
@@ -444,7 +478,6 @@ public class AdminUI implements Runnable {
 			while (cursorUser.hasNext()) {
 
 				JSONObject json = new JSONObject(cursorUser.next().toJson());
-				System.out.println(json);
 				String username = json.getString("user");
 				if (!username.equals("admin")) {
 					String password = null, email = null, dprt = null, full = null, cli = null, yin = null, ll = null;
@@ -489,12 +522,25 @@ public class AdminUI implements Runnable {
 		Components.srch.setItems(Students.studentList);
 	}
 
+	private String getDefaultImage() {
+		BufferedImage bf = SwingFXUtils.fromFXImage(new Image(getClass().getResourceAsStream("/ivn/typh/main/raw/pic.jpg")), null);
+		ByteArrayOutputStream array = new ByteArrayOutputStream();
+		try {
+			ImageIO.write(bf, "jpg", array);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return  Base64.getEncoder().encodeToString(array.toByteArray());
+	}
+
 	private void logoutApplication() {
 		Alert ex = new Alert(AlertType.CONFIRMATION);
 		ex.setHeaderText("LogOut Typh™ ? ");
 		ex.setTitle("Exit - Typh™");
 		ex.initOwner(Components.stage);
-		ex.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+		ex.getDialogPane().getButtonTypes().clear();
+		ex.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
 		Optional<ButtonType> result = ex.showAndWait();
 		result.ifPresent(arg -> {

@@ -36,14 +36,21 @@ public class HeartBeat implements Runnable {
 				public void run() {
 					if(!heartAttack){
 					try {
+						System.out.println("pulse: user");
+
 						String text = in.readLine();
-						if(!text.equals("beat") && !(text.equals("__NO__TEXT__"))){
+						if(!(text.equals("__BEAT__"))){
 							Platform.runLater(()->{
 								Notification.message(Components.stage, AlertType.INFORMATION, "Message from admin - Typh™", text);
 							});
 						}
 					} catch (IOException e) {
-						e.printStackTrace();
+						Notification.message(Components.stage, AlertType.ERROR,"Connection - Typh™","You are disconnected from the server");
+						service.shutdown();
+						try {
+							socket.close();
+						} catch (IOException k) {}
+						Platform.exit();
 					}
 					}else{
 						service.shutdown();
@@ -55,7 +62,9 @@ public class HeartBeat implements Runnable {
 				
 			};
 			service.scheduleAtFixedRate(beat, 0, 5, TimeUnit.SECONDS);
-		} catch (IOException e) {}
+		} catch (IOException e) {
+			System.out.println("heart: Server not found");
+		}
 	}
 
 }

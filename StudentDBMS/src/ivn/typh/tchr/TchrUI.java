@@ -113,7 +113,6 @@ public class TchrUI implements Runnable {
 	private static ObservableList<String> studList;
 	private static ObservableMap<String, String> dprtList;
 
-
 	public TchrUI(Stage s, BorderPane p, Scene scen, ToolBar tb) {
 
 		studList = FXCollections.observableArrayList();
@@ -132,15 +131,15 @@ public class TchrUI implements Runnable {
 	@SuppressWarnings("unchecked")
 	public void startUI() {
 
-		 Components.tgpane = new GridPane();
-		 Components.sctgpane = new ScrollPane();
-		 Components.spMain = new StackPane();
+		Components.tgpane = new GridPane();
+		Components.sctgpane = new ScrollPane();
+		Components.spMain = new StackPane();
 
-		 Components.center = new GridPane();
-		 Components.left = new VBox();
-		 Components.top = new HBox();
-		 Components.topL = new HBox();
-		 Components.aboveAcc = new HBox();
+		Components.center = new GridPane();
+		Components.left = new VBox();
+		Components.top = new HBox();
+		Components.topL = new HBox();
+		Components.aboveAcc = new HBox();
 
 		Components.logout = new Button("Log Out");
 		Components.editable = new ToggleButton("Edit");
@@ -208,15 +207,15 @@ public class TchrUI implements Runnable {
 			loadStudentProfile(n.split(":")[1]);
 		});
 
-			// Export Data
+		// Export Data
 
 		Components.export = new Button("Export");
 		Components.export.setOnAction(arg -> {
 			Export.export();
 		});
 
-		Components.aboveAcc.getChildren().addAll(Components.student, Components.slist, new Label("Select Year"), Components.yrlst, Components.editable,
-				Components.update, Components.report, Components.export);
+		Components.aboveAcc.getChildren().addAll(Components.student, Components.slist, new Label("Select Year"),
+				Components.yrlst, Components.editable, Components.update, Components.report, Components.export);
 
 		//
 		// Personal
@@ -282,7 +281,6 @@ public class TchrUI implements Runnable {
 		Tooltip tool = new Tooltip();
 		tool.setAutoHide(true);
 
-
 		Components.tsname.textProperty().addListener((obs, o, n) -> {
 			if (!n.matches("\\D*")) {
 				tool.setText("Enter alphabets only");
@@ -292,23 +290,21 @@ public class TchrUI implements Runnable {
 				Components.tsname.setText(n.replaceAll("[\\d]", ""));
 			}
 		});
-		
-		Components.tsaddr.textProperty().addListener((obs,o,n)->{
+
+		 Components.tsaddr.setOnMouseEntered(value->{
+		 tool.hide();
+		 if(!Components.tsaddr.getText().isEmpty() && !Components.tsaddr.isDisabled()){
+		 tool.setText(Components.tsaddr.getText());
+		 Point2D p = Components.tsaddr.localToScene(0.0, 0.0);
+		 tool.show(Components.tsaddr, p.getX() +
+		 Components.tsaddr.getWidth()/2,
+		 p.getY() + Components.tsaddr.getHeight()+4);
+		 }
+		 });
+
+		Components.tsaddr.setOnMouseExited(value -> {
 			tool.hide();
-			if(!n.isEmpty() && !Components.tsaddr.isDisabled()){
-				tool.setText(Components.tsaddr.getText());
-				Point2D p = Components.tsaddr.localToScene(0.0, 0.0);
-				tool.show(Components.tsaddr, p.getX() + 
-						Components.tsaddr.getWidth()/2,
-						p.getY() + Components.tsaddr.getHeight()+4);
-			}
 		});
-		
-		Components.tsaddr.setOnMouseExited(value->{
-			tool.hide();
-		});
-		
-		
 
 		Components.tsphone.textProperty().addListener((obs, o, n) -> {
 			if (!n.matches("\\d*")) {
@@ -712,7 +708,6 @@ public class TchrUI implements Runnable {
 		Components.studProgress.setTitleSide(Side.TOP);
 		Components.studProgress.setLegendVisible(false);
 
-
 		Components.academic.add(btp.addTitle("Semester 1", Components.tsem1), 0, 1, 5, 1);
 		Components.academic.add(btp.addTitle("Semester 2", Components.tsem2), 0, 2, 5, 1);
 		Components.academic.add(Components.addEntry, 2, 0);
@@ -782,7 +777,7 @@ public class TchrUI implements Runnable {
 		TableColumn<Attendance, Integer> atAttended1 = new TableColumn<>("Attended");
 		TableColumn<Attendance, Integer> atTotal1 = new TableColumn<>("Total");
 
-		 Components.atsem2Data = FXCollections.observableArrayList();
+		Components.atsem2Data = FXCollections.observableArrayList();
 
 		atsub1.setCellValueFactory(new PropertyValueFactory<Attendance, String>("subject"));
 		atAttended1.setCellValueFactory(new PropertyValueFactory<Attendance, Integer>("attended"));
@@ -836,23 +831,22 @@ public class TchrUI implements Runnable {
 		Components.prPath = new HashMap<>();
 		Button upload = new Button("Upload");
 		Components.recycle = new Group();
-		 Components.bin = new SVGPath();
-		 Components.bin_lid = new SVGPath();
-		 Components.bin_handle = new SVGPath();
+		Components.bin = new SVGPath();
+		Components.bin_lid = new SVGPath();
+		Components.bin_handle = new SVGPath();
 
 		String box = "M 0 50 H 300 V 220 H 0 z";
 		String lid = "M 0 20 H 300 V 40 H 0 Z";
 		String lid_handle = "M 120 20 L 130 0 L 160 0 L 170 20";
-		
+
 		Components.bin.setContent(box);
 		Components.bin_lid.setContent(lid);
 		Components.bin_handle.setContent(lid_handle);
 
-		
 		Components.bin.setId("bin");
 		Components.bin_lid.setId("bin_lid");
 		Components.bin_handle.setId("bin_handle");
-		
+
 		Components.prList = new ListView<>();
 		Components.prList.setPrefWidth(600);
 		Components.prList.setTooltip(new Tooltip("Drag and Drop Files Over Here"));
@@ -887,8 +881,8 @@ public class TchrUI implements Runnable {
 			tip.hide();
 		});
 
-		Components.bin.setOnDragEntered(event->{
-			Platform.runLater(()->{
+		Components.bin.setOnDragEntered(event -> {
+			Platform.runLater(() -> {
 				ParallelTransition pt = new ParallelTransition();
 				TranslateTransition tt = new TranslateTransition();
 				TranslateTransition ttt = new TranslateTransition();
@@ -899,14 +893,14 @@ public class TchrUI implements Runnable {
 				ttt.setByY(-10.0);
 				ttt.setNode(Components.bin_handle);
 				ttt.setDuration(Duration.millis(500));
-				pt.getChildren().addAll(tt,ttt);
+				pt.getChildren().addAll(tt, ttt);
 				pt.play();
 			});
 
 		});
-		
-		Components.bin.setOnDragExited(event->{
-			Platform.runLater(()->{
+
+		Components.bin.setOnDragExited(event -> {
+			Platform.runLater(() -> {
 				ParallelTransition pt = new ParallelTransition();
 				TranslateTransition tt = new TranslateTransition();
 				TranslateTransition ttt = new TranslateTransition();
@@ -917,11 +911,11 @@ public class TchrUI implements Runnable {
 				ttt.setByY(10.0);
 				ttt.setNode(Components.bin_handle);
 				ttt.setDuration(Duration.millis(500));
-				pt.getChildren().addAll(tt,ttt);
+				pt.getChildren().addAll(tt, ttt);
 				pt.play();
 			});
 		});
-		
+
 		Components.bin.setOnDragOver(value -> {
 			if (value.getGestureSource() != null) {
 				value.acceptTransferModes(TransferMode.MOVE);
@@ -965,7 +959,7 @@ public class TchrUI implements Runnable {
 			arg0.consume();
 		});
 
-		Components.recycle.getChildren().addAll(Components.bin_handle,Components.bin_lid,Components.bin);
+		Components.recycle.getChildren().addAll(Components.bin_handle, Components.bin_lid, Components.bin);
 		Components.projects.add(upload, 0, 0);
 		Components.projects.add(Components.prList, 1, 0, 1, 2);
 		Components.projects.add(Components.recycle, 0, 1);
@@ -984,7 +978,7 @@ public class TchrUI implements Runnable {
 		Components.asList = new ListView<>();
 
 		Components.asList.setPrefWidth(600);
-		
+
 		GridPane.setFillWidth(Components.asList, true);
 		spAssignment.setContent(Components.asList);
 		spAssignment.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
@@ -1045,10 +1039,11 @@ public class TchrUI implements Runnable {
 
 		Components.removeAssignment.setTooltip(new Tooltip("Deletes last assignment by default"));
 		Components.removeAssignment.setOnAction(value -> {
-			if(Components.asList.getSelectionModel().getSelectedIndex() != -1){
+			if (Components.asList.getSelectionModel().getSelectedIndex() != -1) {
 				Components.asList.getItems().remove(Components.asList.getSelectionModel().getSelectedIndex());
-			}else{
-				Notification.message(Components.stage, AlertType.ERROR,"Assignments - Typh™","First select an assignment");
+			} else {
+				Notification.message(Components.stage, AlertType.ERROR, "Assignments - Typh™",
+						"First select an assignment");
 			}
 		});
 
@@ -1078,15 +1073,15 @@ public class TchrUI implements Runnable {
 		Components.top.getChildren().addAll(Components.srch, Components.searchBox);
 		Components.topL.getChildren().add(Components.pname);
 
-		Components.left.getChildren().addAll(Components.dprt, Components.pdprt, Components.cls, Components.pcls, Components.tstuds,
-				Components.nstuds);
-		
+		Components.left.getChildren().addAll(Components.dprt, Components.pdprt, Components.cls, Components.pcls,
+				Components.tstuds, Components.nstuds);
+
 		Button about = ((Button) Components.mb.getItems().get(3));
 		Button help = ((Button) Components.mb.getItems().get(2));
 
 		about.setId("side-menu-button");
 		help.setId("side-menu-button");
-		
+
 		Components.side.addNodes(Components.topL, Components.left, help, about);
 
 		Components.mb.getItems().remove(7);
@@ -1102,8 +1097,8 @@ public class TchrUI implements Runnable {
 		Components.tgpane.add(Components.aboveAcc, 0, 1);
 		Components.tgpane.add(Components.accord, 0, 2);
 
-		Components.tgpane.setMaxSize(BasicUI.screenWidth,BasicUI.screenHeight);
-		Components.tgpane.setMinSize(BasicUI.screenWidth,BasicUI.screenHeight);
+		Components.tgpane.setMaxSize(BasicUI.screenWidth, BasicUI.screenHeight);
+		Components.tgpane.setMinSize(BasicUI.screenWidth, BasicUI.screenHeight);
 		Components.sctgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		Components.sctgpane.setVbarPolicy(ScrollBarPolicy.NEVER);
 		Components.sctgpane.setContent(Components.tgpane);
@@ -1230,15 +1225,14 @@ public class TchrUI implements Runnable {
 		// Personal
 		byte[] deci;
 		BufferedImage bf = null;
-try {
-		deci = Base64.getDecoder().decode(jsonData.getString("img"));
-		
+		try {
+			deci = Base64.getDecoder().decode(jsonData.getString("img"));
+
 			bf = ImageIO.read(new ByteArrayInputStream(deci));
 			Components.dpImgView.setImage(SwingFXUtils.toFXImage(bf, null));
 
-		} catch (IOException |JSONException e) {
+		} catch (IOException | JSONException e) {
 			Components.dpImgView.setImage(new Image(getClass().getResourceAsStream("/ivn/typh/main/raw/pic.jpg")));
-			e.printStackTrace();
 		}
 		Components.tsname.setText(jsonData.getString("name"));
 		Components.tsid.setText(jsonData.getString("sid"));
@@ -1288,13 +1282,15 @@ try {
 				data.getData().addAll(new XYChart.Data<>("Semester " + j, p));
 		}
 		Components.studProgress.getData().add(data);
-		
+
 		// Attendance
 		Components.atsem1.setFixedCellSize(24);
 		Components.atsem2.setFixedCellSize(24);
 
-		Components.atsem1.prefHeightProperty().bind(Bindings.size(Components.atsem1.getItems()).multiply(Components.atsem1.getFixedCellSize()).add(90));
-		Components.atsem2.prefHeightProperty().bind(Bindings.size(Components.atsem2.getItems()).multiply(Components.atsem2.getFixedCellSize()).add(90));
+		Components.atsem1.prefHeightProperty().bind(
+				Bindings.size(Components.atsem1.getItems()).multiply(Components.atsem1.getFixedCellSize()).add(90));
+		Components.atsem2.prefHeightProperty().bind(
+				Bindings.size(Components.atsem2.getItems()).multiply(Components.atsem2.getFixedCellSize()).add(90));
 
 		// Projects
 
@@ -1562,11 +1558,12 @@ try {
 		Components.classIncharge = (String) Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first()
 				.get("classIncharge");
 		Components.pcls.setText(Components.classIncharge);
-		
+
 		MongoCursor<Document> cursor = Engine.db.getCollection("Students").find().iterator();
 		while (cursor.hasNext()) {
 			JSONObject json = new JSONObject(cursor.next().toJson());
-			if((Components.pdprt.getText().equals(json.getString("department"))) && (Components.pcls.getText().equals(Components.classIncharge)))
+			if ((Components.pdprt.getText().equals(json.getString("department")))
+					&& (Components.pcls.getText().equals(Components.classIncharge)))
 				studList.add("[" + json.getString("class") + "]" + ": " + json.getString("name"));
 		}
 
@@ -1576,8 +1573,8 @@ try {
 			dprtList.put(json.getString("dprtID"), json.getString("department"));
 		}
 
-		//		Update Login TimeStamp
-		
+		// Update Login TimeStamp
+
 		Engine.db.getCollection("Users").updateOne(eq("user", BasicUI.user), new Document("$set", new Document(
 				"lastLogin",
 				LocalDateTime.now().getDayOfMonth() + "-" + LocalDateTime.now().getMonthValue() + "-"
@@ -1598,11 +1595,11 @@ try {
 			Components.tsbatch.getItems().add(Character.toString((char) ('a' + i)));
 		}
 
-		//	Add students to teacher list
-		
+		// Add students to teacher list
+
 		List<String> name = new ArrayList<>();
-		Components.counter=0;
-		
+		Components.counter = 0;
+
 		studList.forEach(student -> {
 			name.add(student.split(": ")[1]);
 			String tmp = student.split("]")[0].substring(1);

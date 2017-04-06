@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import com.mongodb.client.MongoCollection;
 import ivn.typh.admin.AdminUI;
+import ivn.typh.admin.Components;
 import ivn.typh.tchr.TchrUI;
 
 import static com.mongodb.client.model.Filters.*;
@@ -183,6 +184,7 @@ public class LogIn implements Runnable {
 	}
 
 	private void loadUI() {
+
 		if (BasicUI.user.equals(new String("admin"))) {
 			 ExecutorService execsrv = Executors.newSingleThreadExecutor();
 			 execsrv.execute(new AdminUI(stage,pane,mb));

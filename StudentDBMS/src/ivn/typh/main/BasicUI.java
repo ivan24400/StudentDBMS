@@ -219,11 +219,15 @@ public class BasicUI extends Application implements Runnable {
 					Task<Boolean> cm = checkMachine(stage);
 
 					result.ifPresent(ip -> {
+						if(ip!=null){
 						ipAddr = ip;
 						load.startTask(cm);
 						pane.setDisable(true);
 						(new Thread(cm)).start();
 						pane.setDisable(false);
+						}else{
+							Notification.message(stage, AlertType.ERROR,"Network - Typh™", "Invalid network address");
+						}
 
 					});
 
