@@ -357,14 +357,6 @@ public class BasicUI extends Application implements Runnable {
 		return task;
 	}
 
-	public void loadGame() {
-		try {
-			Runtime.getRuntime().exec("java -jar " + System.getProperty("user.dir") + File.separator + "game.jar");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	@Override
 	public void start(Stage st) throws Exception {
 		stage = st;

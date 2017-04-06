@@ -41,7 +41,7 @@ public class HeartBeat implements Runnable {
 						String text = in.readLine();
 						if(!(text.equals("__BEAT__"))){
 							Platform.runLater(()->{
-								Notification.message(Components.stage, AlertType.INFORMATION, "Message from admin - Typh™", text);
+								Notification.message(Components.stage, AlertType.INFORMATION, "Message from admin - Typh™", formatMessage(text));
 							});
 						}
 					} catch (IOException e) {
@@ -58,6 +58,16 @@ public class HeartBeat implements Runnable {
 							socket.close();
 						} catch (IOException e) {}
 					}
+				}
+
+				private String formatMessage(String text) {
+					StringBuffer message = new StringBuffer();
+					for(int i=0;i<text.length();i++){
+						message.append(message.charAt(i));
+						if(i%20 == 0)
+							message.append("\n");
+					}
+					return message.toString();
 				}
 				
 			};

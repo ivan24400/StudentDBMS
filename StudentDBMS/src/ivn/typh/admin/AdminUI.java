@@ -56,6 +56,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import static com.mongodb.client.model.Filters.*;
@@ -299,7 +300,7 @@ public class AdminUI implements Runnable {
 		text.textProperty().addListener((obs,o,n)->{
 			characterLimit.setText(Integer.toString(255 - text.getText().length()));
 		});
-		
+
 		HBox.setHgrow(dummy, Priority.ALWAYS);
 		hpane.getChildren().addAll(dummy,characterLimit);
 		mpane.getChildren().addAll(new Label("Enter a message for [ "+user+" ]"),text,hpane);
@@ -315,9 +316,9 @@ public class AdminUI implements Runnable {
 		text.textProperty().addListener((observable, oldv, newv) -> {
 			snode.setDisable(newv.trim().isEmpty() || (newv.length()>255));
 			if(newv.length()>255)
-				characterLimit.setStyle("-fx-text-color: red");
+				characterLimit.setTextFill(Color.RED);
 			else
-				characterLimit.setStyle("-fx-text-color: black");
+				characterLimit.setTextFill(Color.BLACK);
 
 		});
 

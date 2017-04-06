@@ -1,5 +1,6 @@
 package ivn.typh.main;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -32,7 +33,9 @@ public class Loading{
 			alert.getDialogPane().getScene().setFill(Color.TRANSPARENT);
 			alert.initStyle(StageStyle.TRANSPARENT);
 			alert.getDialogPane().setContent(p);
-			alert.show();
+			Platform.runLater(()->{
+				alert.show();
+			});
 		}
 	}
 
