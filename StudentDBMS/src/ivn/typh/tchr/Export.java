@@ -46,7 +46,7 @@ public class Export {
 		FileChooser filechooser = new FileChooser();
 		filechooser.setTitle("Select Destination - Typh™");
 		filechooser.setInitialDirectory(new File(System.getProperty("user.home")));
-		filechooser.setInitialFileName(Components.tsid.getText() + "_" + Components.tsname.getText());
+		filechooser.setInitialFileName(Personal.tsid.getText() + "_" + Personal.tsname.getText());
 		filechooser.getExtensionFilters().add(new ExtensionFilter("Excel Workbook", "*.xlsx"));
 		path = filechooser.showSaveDialog(Components.stage);
 
@@ -78,12 +78,12 @@ public class Export {
 				POIXMLProperties property = book.getProperties();
 				POIXMLProperties.CoreProperties cproperty = property.getCoreProperties();
 				cproperty.setCreator(Components.pname.getText() + " - " + institute);
-				cproperty.setTitle(Components.tsname.getText());
+				cproperty.setTitle(Personal.tsname.getText());
 				cproperty.setCategory("Academic");
 
 				XSSFSheet sheet = book.createSheet();
 				XSSFFont cell_font = book.createFont();
-				book.setSheetName(0, Components.tsname.getText() + "\'s Data");
+				book.setSheetName(0, Personal.tsname.getText() + "\'s Data");
 
 				cell_font.setBold(true);
 	
@@ -107,12 +107,12 @@ public class Export {
 				cell.setCellValue("Name");
 				cell.setCellStyle(cell_style);
 				cell = row.createCell(col_index+=2);
-				cell.setCellValue(Components.tsname.getText());
+				cell.setCellValue(Personal.tsname.getText());
 				cell = row.createCell(col_index+=2);
 				cell.setCellValue("Batch");
 				cell.setCellStyle(cell_style);
 				cell = row.createCell(col_index+=2);
-				cell.setCellValue(Components.tsbatch.getSelectionModel().getSelectedItem());
+				cell.setCellValue(Personal.tsbatch.getSelectionModel().getSelectedItem());
 
 				sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 1)); // Name
 				sheet.addMergedRegion(new CellRangeAddress(2, 2, 2, 3)); // vName
@@ -127,12 +127,12 @@ public class Export {
 				cell.setCellValue("ID");
 				cell.setCellStyle(cell_style);
 				cell = row.createCell(col_index+=2);
-				cell.setCellValue(Components.tsid.getText());
+				cell.setCellValue(Personal.tsid.getText());
 				cell = row.createCell(col_index+=2);
 				cell.setCellValue("Class");
 				cell.setCellStyle(cell_style);
 				cell = row.createCell(col_index+=2);
-				cell.setCellValue(Components.tsclass.getSelectionModel().getSelectedItem());
+				cell.setCellValue(Personal.tsclass.getSelectionModel().getSelectedItem());
 
 				sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 1)); // ID
 				sheet.addMergedRegion(new CellRangeAddress(3, 3, 2, 3)); // vID
@@ -147,12 +147,12 @@ public class Export {
 				cell.setCellValue("Roll No");
 				cell.setCellStyle(cell_style);
 				cell = row.createCell(col_index+=2);
-				cell.setCellValue(Components.tsrno.getSelectionModel().getSelectedItem());
+				cell.setCellValue(Personal.tsrno.getSelectionModel().getSelectedItem());
 				cell = row.createCell(col_index+=2);
 				cell.setCellValue("Department");
 				cell.setCellStyle(cell_style);
 				cell = row.createCell(col_index+=2);
-				cell.setCellValue(Components.tsdprt.getSelectionModel().getSelectedItem());
+				cell.setCellValue(Personal.tsdprt.getSelectionModel().getSelectedItem());
 
 				sheet.addMergedRegion(new CellRangeAddress(4, 4, 0, 1)); // Roll
 				sheet.addMergedRegion(new CellRangeAddress(4, 4, 2, 3)); // vRoll
@@ -168,12 +168,12 @@ public class Export {
 				cell.setCellValue("Student Contact");
 				cell.setCellStyle(cell_style);
 				cell = row.createCell(col_index+=2);
-				cell.setCellValue(Components.tsphone.getText());
+				cell.setCellValue(Personal.tsphone.getText());
 				cell = row.createCell(col_index+=2);
 				cell.setCellValue("Parent Contact");
 				cell.setCellStyle(cell_style);
 				cell = row.createCell(col_index+=2);
-				cell.setCellValue(Components.tpphone.getText());
+				cell.setCellValue(Personal.tpphone.getText());
 
 				sheet.addMergedRegion(new CellRangeAddress(5, 5, 0, 1)); // sphone
 				sheet.addMergedRegion(new CellRangeAddress(5, 5, 2, 3)); // vsphone
@@ -189,12 +189,12 @@ public class Export {
 				cell.setCellValue("Email");
 				cell.setCellStyle(cell_style);
 				cell = row.createCell(col_index+=2);
-				cell.setCellValue(Components.tsmail.getText());
+				cell.setCellValue(Personal.tsmail.getText());
 				cell = row.createCell(col_index+=2);
 				cell.setCellValue("Address");
 				cell.setCellStyle(cell_style);
 				cell = row.createCell(col_index+=2);
-				cell.setCellValue(Components.tsaddr.getText());
+				cell.setCellValue(Personal.tsaddr.getText());
 
 				sheet.addMergedRegion(new CellRangeAddress(6, 6, 0, 1)); // email
 				sheet.addMergedRegion(new CellRangeAddress(6, 6, 2, 3)); // vemail
@@ -238,7 +238,7 @@ public class Export {
 				JSONArray jsona = null;
 				String data = null;
 				try {
-					data = Engine.db.getCollection("Students").find(eq("sid", Components.tsid.getText())).first()
+					data = Engine.db.getCollection("Students").find(eq("sid", Personal.tsid.getText())).first()
 							.toJson();
 				} catch (JSONException e) {	}
 

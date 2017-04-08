@@ -42,6 +42,7 @@ public class Components {
 	public static GridPane tgpane;
 	public static ScrollPane sctgpane;
 	public static StackPane spMain;
+	public static ScrollPane[] scroll;
 
 	public static GridPane center;
 	public static VBox left;
@@ -51,7 +52,8 @@ public class Components {
 	
 	public static String classIncharge;
 	public static BorderPane pane;
-	public static ObservableList<String> repList;
+	public static String[] paneList;
+	public static int paneCount;
 
 	public static SideBar side;
 	
@@ -70,7 +72,6 @@ public class Components {
 	public static Button export;
 	
 	public static Label srch;
-	public static Label reports;
 	public static Label student;
 	public static Label pname;
 	public static Label dprt;
@@ -83,66 +84,22 @@ public class Components {
 	public static ComboBox<String> yrlst;
 	public static int counter;
 	
+	public static String tscsem;
+	
 	//	Personal 
 	
-	public static GridPane personal;
-	public static ImageView dpImgView;
-	public static TextField tsname;
-	public static TextField tsid;
-	public static ListView<Report> reps;
-	public static ChoiceBox<String> tsrno;
-	public static ChoiceBox<String> tsdprt;
-	public static ChoiceBox<String> tsclass;
-	public static ChoiceBox<String> tsbatch;
-	public static ChoiceBox<String> tsyear;
-	public static String tscsem;
-	public static TextField tsmail;
-	public static TextField tsaddr;
-	public static TextField tsphone;
-	public static TextField tpphone;
+
 	
 	//	Academics
-	
-	public static GridPane academic;
-	public static TableView<AcademicData> tsem1;
-	public static TableView<AcademicData> tsem2;
-	public static Button addEntry;
-	public static RadioButton rbsem1;
-	public static RadioButton rbsem2;
-	public static LineChart<String, Number> studProgress;
 
 	//	Attendance
-	
-	public static GridPane attendance;
-	public static ObservableList<AttendanceData> atsem1Data;
-	public static ObservableList<AttendanceData> atsem2Data;
-	public static BarChart<String, Number> atBarChart;
-	public static TableView<AttendanceData> atsem1;
-	public static TableView<AttendanceData> atsem2;
-	public static Button addat;
-	public static RadioButton atrbsem1;
-	public static RadioButton atrbsem2;
-	public static CategoryAxis atXaxis;
-	public static NumberAxis atYaxis;
-	
+
 	//	Projects
 	
-	public static Group recycle;
-	public static GridPane projects;
-	public static ListView<String> prList;
-	public static Map<String, String> prPath;
-	public static SVGPath bin;
-	public static SVGPath bin_lid;
-	public static SVGPath bin_handle; 
 
 	//	Assignments
 	
-	public static GridPane assignment;
-	public static ListView<AssignmentData> asList;
-	public static Button addAssignment;
-	public static Button removeAssignment;
-
-
+	
 	public static void setIdAll(){
 		
 		logout.setId("logout");
@@ -163,27 +120,7 @@ public class Components {
 		pcls.setId("logInfo");  
 		nstuds.setId("logInfo");
 		
-		//	Personal
-		
-		personal.setId("personalP");
-		dpImgView.setId("dpImgView");
-		
-		//	Academic
-		
-		academic.setId("academicP");
-		
-		// Attendance
-		
-		attendance.setId("attendanceP");
-		
-		//	Projects
-		
-		projects.setId("projectsP");
-		           
-		//	Assignments
-		assignment.setId("assignmentP");
 
-		
 	}
 	
 	public static void setCacheAll(){
@@ -218,27 +155,13 @@ public class Components {
 		side.setCacheShape(true);          
 		side.setCacheHint(CacheHint.SPEED);
 		
-		studProgress.setCache(true);               
-		studProgress.setCacheShape(true);          
-		studProgress.setCacheHint(CacheHint.SPEED);
 		
-		atBarChart.setCache(true);               
-		atBarChart.setCacheShape(true);          
-		atBarChart.setCacheHint(CacheHint.SPEED);
 		
-		prList.setCache(true);               
-		prList.setCacheShape(true);          
-		prList.setCacheHint(CacheHint.SPEED);
+	
 		
-		asList.setCache(true);               
-		asList.setCacheShape(true);          
-		asList.setCacheHint(CacheHint.SPEED);
 		
-		bin.setCache(true);                
-		bin.setCacheHint(CacheHint.SPEED); 
-		bin_lid.setCache(true);                
-		bin_lid.setCacheHint(CacheHint.SPEED); 
-		bin_handle.setCache(true);                
-	   bin_handle.setCacheHint(CacheHint.SPEED); 
+
+		
+		
 	}   
 }

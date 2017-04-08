@@ -7,7 +7,7 @@ import javafx.scene.layout.StackPane;
 
 public class BorderTitledPane{
 	
-	public StackPane addTitle(String title,Node node){
+	public static StackPane addTitle(String title,Node node){
 		StackPane sp = new StackPane();
 		Label label = new Label(title);
 		StackPane.setAlignment(label, Pos.TOP_CENTER);

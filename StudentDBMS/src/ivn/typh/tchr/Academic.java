@@ -1,25 +1,28 @@
 package ivn.typh.tchr;
 
-import javafx.beans.binding.Bindings;
+import static com.mongodb.client.model.Filters.eq;
+
+import java.util.Iterator;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import ivn.typh.main.Engine;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Side;
+import javafx.scene.CacheHint;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.ComboBox;
-
-import javafx.scene.control.CustomMenuItem;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
+import javafx.scene.control.Button;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.cell.CheckBoxTableCell;
@@ -27,143 +30,35 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Font;
 import javafx.util.converter.IntegerStringConverter;
 
-import static com.mongodb.client.model.Filters.eq;
-
-import java.awt.Toolkit;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import ivn.typh.main.Engine;
-
-
-
-public class Search extends TextField {
-	private final SortedSet<String> list;
-	private ContextMenu resultList;
-	private TableView<AcademicData> tsem1,tsem2;
-	private String result;	
-	private Label year;
-	private Label sem1;
-	private Label sem2;
-	private ComboBox<String> yrlst;
-	private float percent = 0, scored, total;
-	private JSONObject data;
+public class Academic {
 	
 	
-	public Search() {
-		super();
-		yrlst = new ComboBox<>();
-		year = new Label("Select Year");
-		sem1 = new Label("Semester 1");
-		sem2 = new Label("Semester 2");
-		list = new TreeSet<>();
-		resultList = new ContextMenu();
-		textProperty().addListener((obs,o,n)-> {
-				if (getText().length() == 0) {
-					resultList.hide();
-				} else {
-					LinkedList<String> searchResult = new LinkedList<>();
-					searchResult.addAll(list.subSet(getText(), getText() + Character.MAX_VALUE));
-					if (list.size() > 0) {
-						populatePopup(searchResult);
-						if (!resultList.isShowing()) {
-							resultList.show(Search.this, Side.BOTTOM, 0, 0);
-						}
-					} else {
-						resultList.hide();
-					}
-				}
-		});
+	public static GridPane academic;
+	public static TableView<AcademicData> tsem1;
+	public static TableView<AcademicData> tsem2;
+	public static Button addEntry;
+	public static RadioButton rbsem1;
+	public static RadioButton rbsem2;
+	public static LineChart<String, Number> studProgress;
 
-		focusedProperty().addListener((obs,o,n)-> {
-				resultList.hide();
-		});
-		
-		
-		yrlst.getSelectionModel().selectedItemProperty().addListener((obs,o,n)->{
-			loadAcademicData();
-		});
-	}
-
-	public SortedSet<String> getEntries() {
-		return list;
-	}
-
-	public void setItems(List<String> items){
-		list.addAll(items);
-	}
-	private void populatePopup(List<String> searchResult) {
-		List<CustomMenuItem> menuItems = new LinkedList<>();
-		int maxEntries = 10;
-		int count = Math.min(searchResult.size(), maxEntries);
-		for (int i = 0; i < count; i++) {
-			result = searchResult.get(i);
-			Label entryLabel = new Label(result);
-			entryLabel.setPrefWidth(this.getWidth());
-			CustomMenuItem item = new CustomMenuItem(entryLabel, true);
-			item.setOnAction(action->{
-					resultList.hide();
-					setText(result);
-					displayReport(result);
-				});
-			menuItems.add(item);
-		}
-		resultList.getItems().clear();
-		resultList.getItems().addAll(menuItems);
-
-	}
 
 	@SuppressWarnings("unchecked")
-	private void displayReport(String result) {
-		Dialog<?> report = new Dialog<>();
-		report.initOwner(Components.stage);
-		ScrollPane spAcad = new ScrollPane();
-		GridPane academic = new GridPane();
-		
-		ScrollPane sp1 = new ScrollPane();
-		ScrollPane sp2 = new ScrollPane();
+	static void setup(){
+		Components.scroll[Components.paneList.length - (Components.paneCount)] = new ScrollPane();
+		academic = new GridPane();
 		ObservableList<AcademicData> subjects1 = FXCollections.observableArrayList();
 		ObservableList<AcademicData> subjects2 = FXCollections.observableArrayList();
 		ColumnConstraints accc0 = new ColumnConstraints();
 		accc0.setHalignment(HPos.RIGHT);
 
-		academic.setId("searchResultAcademic");
-		report.getDialogPane().setId("searchResultPane");
-		
 		academic.getColumnConstraints().add(accc0);
-
-		yrlst.getItems().clear();
-
-		data = new JSONObject(Engine.db.getCollection("Students").find(eq("name", result)).first().toJson());
-
-		switch (data.getString("current_semester")) {
-		case "SEM 7":
-		case "SEM 8":
-			yrlst.getItems().add("BE");
-		case "SEM 5":
-		case "SEM 6":
-			yrlst.getItems().add("TE");
-		case "SEM 3":
-		case "SEM 4":
-			yrlst.getItems().add("SE");
-		case "SEM 1":
-		case "SEM 2":
-			yrlst.getItems().add("FE");
-		}
 
 		// Semester 1
 
 		tsem1 = new TableView<>();
+
 		TableColumn<AcademicData, String> sub = new TableColumn<>("Subject");
 		TableColumn<AcademicData, Integer> th = new TableColumn<>("Theory");
 		TableColumn<AcademicData, Integer> oral = new TableColumn<>("Oral");
@@ -178,6 +73,21 @@ public class Search extends TextField {
 		TableColumn<AcademicData, Integer> scr3 = new TableColumn<>("Scored");
 		TableColumn<AcademicData, Integer> total3 = new TableColumn<>("Total");
 		TableColumn<AcademicData, Boolean> back = new TableColumn<>("BackLog");
+
+		sub.setResizable(false);
+		th.setResizable(false);
+		oral.setResizable(false);
+		prac.setResizable(false);
+		tw.setResizable(false);
+		scr0.setResizable(false);
+		total0.setResizable(false);
+		scr1.setResizable(false);
+		total1.setResizable(false);
+		scr2.setResizable(false);
+		total2.setResizable(false);
+		scr3.setResizable(false);
+		total3.setResizable(false);
+		back.setResizable(false);
 
 		sub.setCellValueFactory(new PropertyValueFactory<AcademicData, String>("subject"));
 		scr0.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("theoryScored"));
@@ -253,6 +163,7 @@ public class Search extends TextField {
 
 		tsem1.getColumns().addAll(sub, th, oral, prac, tw, back);
 		tsem1.setTooltip(new Tooltip("Semester 1"));
+
 		tsem1.setItems(subjects1);
 		GridPane.setFillWidth(tsem1, true);
 
@@ -272,15 +183,32 @@ public class Search extends TextField {
 		TableColumn<AcademicData, Integer> total21 = new TableColumn<>("Total");
 		TableColumn<AcademicData, Integer> scr31 = new TableColumn<>("Scored");
 		TableColumn<AcademicData, Integer> total31 = new TableColumn<AcademicData, Integer>("Total");
+		TableColumn<AcademicData, Boolean> back1 = new TableColumn<>("BackLog");
+
+		sub1.setResizable(false);
+		th1.setResizable(false);
+		oral1.setResizable(false);
+		prac1.setResizable(false);
+		tw1.setResizable(false);
+		scr01.setResizable(false);
+		total01.setResizable(false);
+		scr11.setResizable(false);
+		total11.setResizable(false);
+		scr21.setResizable(false);
+		total21.setResizable(false);
+		scr31.setResizable(false);
+		total31.setResizable(false);
+		back1.setResizable(false);
+
 		th1.getColumns().addAll(scr01, total01);
 		oral1.getColumns().addAll(scr11, total11);
 		prac1.getColumns().addAll(scr21, total21);
 		tw1.getColumns().addAll(scr31, total31);
-		TableColumn<AcademicData, Boolean> back1 = new TableColumn<>("BackLog");
 		tsem2.getColumns().addAll(sub1, th1, oral1, prac1, tw1, back1);
 		tsem2.setTooltip(new Tooltip("Semester 2"));
 		tsem2.setItems(subjects2);
 		GridPane.setFillWidth(tsem2, true);
+
 		sub1.setCellValueFactory(new PropertyValueFactory<AcademicData, String>("subject"));
 
 		scr01.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("theoryScored"));
@@ -349,18 +277,30 @@ public class Search extends TextField {
 		back1.setCellFactory(CheckBoxTableCell.forTableColumn(back1));
 		back1.setCellValueFactory(cvf -> cvf.getValue().backlogProperty());
 
-		tsem1.setEditable(false);
-		tsem2.setEditable(false);
+		addEntry = new Button("Add Subject");
+		rbsem1 = new RadioButton("Semester 1");
+		rbsem2 = new RadioButton("Semester 2");
+		ToggleGroup tg = new ToggleGroup();
+		tg.getToggles().addAll(rbsem1, rbsem2);
+		tg.selectToggle(rbsem1);
+
+		addEntry.setOnAction((arg0) -> {
+			if (rbsem1.isSelected()) {
+				subjects1.add(new AcademicData("", 0, 0, 0, 0, 0, 0, 0, 0, false));
+				Attendance.atsem1Data.add(new AttendanceData("subject", 0, 0));
+
+			} else if (rbsem2.isSelected()) {
+				subjects2.add(new AcademicData("", 0, 0, 0, 0, 0, 0, 0, 0, false));
+				Attendance.atsem2Data.add(new AttendanceData("subject", 0, 0));
+
+			}
+		});
+
+		addEntry.setMaxWidth(1000);
+		GridPane.setFillWidth(addEntry, true);
+
 		tsem1.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		tsem2.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-		sp1.setContent(tsem1);
-		sp2.setContent(tsem2);
-		tsem1.setFixedCellSize(24);
-		tsem1.prefHeightProperty()
-				.bind(Bindings.size(Academic.tsem2.getItems()).multiply(Academic.tsem2.getFixedCellSize()).add(90));
-		tsem2.setFixedCellSize(24);
-		tsem2.prefHeightProperty()
-				.bind(Bindings.size(Academic.tsem2.getItems()).multiply(Academic.tsem2.getFixedCellSize()).add(90));
 
 		// Student Progress
 
@@ -372,52 +312,37 @@ public class Search extends TextField {
 		NumberAxis yaxis = new NumberAxis(0.0, 100.0, 10.0);
 		yaxis.setLabel("Percentage");
 
-		LineChart<String,Number> studProgress = new LineChart<>(xaxis, yaxis);
+		studProgress = new LineChart<>(xaxis, yaxis);
 		studProgress.setTitle("Student Progress");
 		studProgress.setTitleSide(Side.TOP);
 		studProgress.setLegendVisible(false);
-		XYChart.Series<String, Number> data = new XYChart.Series<>();
-		for (int j = 1; j <= 8; j++) {
-			float p = getSemesterPercent(j);
-			if (p != 0)
-				data.getData().addAll(new XYChart.Data<>("Semester " + j, p));
-		}
-		studProgress.getData().add(data);
-		
 
-		academic.add(year,1,0);
-		academic.add(yrlst, 2, 0);
-		academic.add(sem1, 0, 1);
-		academic.add(sp1, 0, 2, 5, 1);
-		academic.add(sem2, 0, 3);
-		academic.add(sp2, 0, 4, 5, 1);
-		academic.add(studProgress, 0, 5, 5, 1);
+		academic.setId("academicP");
+		studProgress.setCache(true);               
+		studProgress.setCacheShape(true);          
+		studProgress.setCacheHint(CacheHint.SPEED);
 		
-		spAcad.setContent(academic);
-		spAcad.setPrefHeight(480);
-		spAcad.setVbarPolicy(ScrollBarPolicy.NEVER);
-		yrlst.getSelectionModel().selectFirst();
+		academic.add(BorderTitledPane.addTitle("Semester 1", tsem1), 0, 1, 5, 1);
+		academic.add(BorderTitledPane.addTitle("Semester 2", tsem2), 0, 2, 5, 1);
+		academic.add(addEntry, 2, 0);
+		academic.add(rbsem1, 3, 0);
+		academic.add(rbsem2, 4, 0);
+		academic.add(studProgress, 0, 7, 5, 1);
 
-		loadAcademicData();
-		report.setTitle(result.substring(0,1).toUpperCase()+result.split(" ")[0].substring(1)+result.split(" ")[1].substring(0,1).toUpperCase()+result.split(" ")[1].substring(1)+" - Academic Data - Typh™");
-		report.getDialogPane().setContent(spAcad);
-		report.setY(Toolkit.getDefaultToolkit().getScreenSize().getHeight()/2 - 240);
-		report.setX(Toolkit.getDefaultToolkit().getScreenSize().getWidth()/2 - 320);
-		report.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
-
-		report.show();
-		
+		Components.scroll[Components.paneList.length - (Components.paneCount)].setHbarPolicy(ScrollBarPolicy.NEVER);
+		Components.scroll[Components.paneList.length - (Components.paneCount--)].setContent(academic);
 
 	}
 	
-	private void loadAcademicData() {
+	static void loadAcademicData(String year) {
 		JSONArray jsona = null;
 		try {
-			jsona = data.getJSONArray(yrlst.getSelectionModel().getSelectedItem().toLowerCase());
-		} catch (JSONException e) {	}
-		
+			String data = Engine.db.getCollection("Students").find(eq("sid", Personal.tsid.getText())).first()
+					.toJson();
+			jsona = new JSONObject(data).getJSONArray(year.toLowerCase());
+		} catch (JSONException e) {
+		}
 		Iterator<?> it = jsona.iterator();
-
 		tsem1.getItems().clear();
 		tsem2.getItems().clear();
 		while (it.hasNext()) {
@@ -434,105 +359,15 @@ public class Search extends TextField {
 			boolean back = json.getBoolean("back");
 			int sem = json.getInt("sem");
 
-			Tooltip tool = new Tooltip();
-			tool.setFont(new Font("serif", 18));
 			if (sem % 2 == 1) {
 				tsem1.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
-				tool.setText("Percentage :- "+getSemesterPercent(sem));
-				sem1.setTooltip(tool);
-				sem1.setText("Semester: " + Integer.toString(sem)+"\t[ "+Float.toString(scored)+"/"+Float.toString(total)+" ]");
 				tsem1.getItems().add(new AcademicData(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
 			} else {
 				tsem2.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
-				tool.setText("Percentage :- "+getSemesterPercent(sem));
-				sem2.setTooltip(tool);
-				sem2.setText("Semester: " + Integer.toString(sem)+"\t[ "+Float.toString(scored)+"/"+Float.toString(total)+" ]");
 				tsem2.getItems().add(new AcademicData(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
 			}
 		}
 
-		
-
 	}
-	
-	private float getSemesterPercent(int i) {
-		String data = Engine.db.getCollection("Students").find(eq("name", result)).first().toJson();
-		JSONObject json = new JSONObject(data);
-		int theory = 0, oral = 0, practical = 0, termwork = 0, theoryt = 0, oralt = 0, practicalt = 0, termworkt = 0;
-		if (i == 1 || i == 2) {
-			JSONArray jsona = json.getJSONArray("fe");
-			Iterator<?> it = jsona.iterator();
-			while (it.hasNext()) {
-				JSONObject tmp = (JSONObject) it.next();
-				if (tmp.getInt("sem") == i) {
-					theory = theory + tmp.getInt("thScored");
-					theoryt = theoryt + tmp.getInt("thTotal");
-					oral = oral + tmp.getInt("orScored");
-					oralt = oralt + tmp.getInt("orTotal");
-					practical = practical + tmp.getInt("prScored");
-					practicalt = practicalt + tmp.getInt("prTotal");
-					termwork = termwork + tmp.getInt("twScored");
-					termworkt = termworkt + tmp.getInt("twTotal");
 
-				}
-			}
-		} else if (i == 3 || i == 4) {
-			JSONArray jsona = json.getJSONArray("se");
-			Iterator<?> it = jsona.iterator();
-			while (it.hasNext()) {
-				JSONObject tmp = (JSONObject) it.next();
-				if (tmp.getInt("sem") == i) {
-					theory = theory + tmp.getInt("thScored");
-					theoryt = theoryt + tmp.getInt("thTotal");
-					oral = oral + tmp.getInt("orScored");
-					oralt = oralt + tmp.getInt("orTotal");
-					practical = practical + tmp.getInt("prScored");
-					practicalt = practicalt + tmp.getInt("prTotal");
-					termwork = termwork + tmp.getInt("twScored");
-					termworkt = termworkt + tmp.getInt("twTotal");
-
-				}
-			}
-		} else if (i == 5 || i == 6) {
-			JSONArray jsona = json.getJSONArray("te");
-			Iterator<?> it = jsona.iterator();
-			while (it.hasNext()) {
-				JSONObject tmp = (JSONObject) it.next();
-				if (tmp.getInt("sem") == i) {
-					theory = theory + tmp.getInt("thScored");
-					theoryt = theoryt + tmp.getInt("thTotal");
-					oral = oral + tmp.getInt("orScored");
-					oralt = oralt + tmp.getInt("orTotal");
-					practical = practical + tmp.getInt("prScored");
-					practicalt = practicalt + tmp.getInt("prTotal");
-					termwork = termwork + tmp.getInt("twScored");
-					termworkt = termworkt + tmp.getInt("twTotal");
-
-				}
-			}
-		} else if (i == 7 || i == 8) {
-			JSONArray jsona = json.getJSONArray("be");
-			Iterator<?> it = jsona.iterator();
-			while (it.hasNext()) {
-				JSONObject tmp = (JSONObject) it.next();
-				if (tmp.getInt("sem") == i) {
-					theory = theory + tmp.getInt("thScored");
-					theoryt = theoryt + tmp.getInt("thTotal");
-					oral = oral + tmp.getInt("orScored");
-					oralt = oralt + tmp.getInt("orTotal");
-					practical = practical + tmp.getInt("prScored");
-					practicalt = practicalt + tmp.getInt("prTotal");
-					termwork = termwork + tmp.getInt("twScored");
-					termworkt = termworkt + tmp.getInt("twTotal");
-
-				}
-			}
-		}
-		scored = theory + oral + practical + termwork;
-		total = theoryt + oralt + practicalt + termworkt;
-
-		percent = (scored / total) * 100;
-
-		return percent;
-	}
 }
