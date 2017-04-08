@@ -9,8 +9,6 @@ import com.mongodb.Block;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
 import ivn.typh.main.Engine;
-import javafx.scene.Cursor;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -25,7 +23,7 @@ import javafx.scene.layout.Priority;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Window;
 
-public class Project extends ListCell<String>{
+public class ProjectData extends ListCell<String>{
 	
 	private HBox pane;
 	private Pane dummy;
@@ -33,7 +31,7 @@ public class Project extends ListCell<String>{
 	private Label label;
 	private Window w;
 	
-	public Project(Scene s){
+	public ProjectData(Scene s){
 		w =s.getWindow();
 		pane = new HBox();
 		dummy = new Pane();

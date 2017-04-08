@@ -104,8 +104,8 @@ public class Components {
 	//	Academics
 	
 	public static GridPane academic;
-	public static TableView<Marks> tsem1;
-	public static TableView<Marks> tsem2;
+	public static TableView<AcademicData> tsem1;
+	public static TableView<AcademicData> tsem2;
 	public static Button addEntry;
 	public static RadioButton rbsem1;
 	public static RadioButton rbsem2;
@@ -114,11 +114,11 @@ public class Components {
 	//	Attendance
 	
 	public static GridPane attendance;
-	public static ObservableList<Attendance> atsem1Data;
-	public static ObservableList<Attendance> atsem2Data;
+	public static ObservableList<AttendanceData> atsem1Data;
+	public static ObservableList<AttendanceData> atsem2Data;
 	public static BarChart<String, Number> atBarChart;
-	public static TableView<Attendance> atsem1;
-	public static TableView<Attendance> atsem2;
+	public static TableView<AttendanceData> atsem1;
+	public static TableView<AttendanceData> atsem2;
 	public static Button addat;
 	public static RadioButton atrbsem1;
 	public static RadioButton atrbsem2;
@@ -138,7 +138,7 @@ public class Components {
 	//	Assignments
 	
 	public static GridPane assignment;
-	public static ListView<Assignment> asList;
+	public static ListView<AssignmentData> asList;
 	public static Button addAssignment;
 	public static Button removeAssignment;
 

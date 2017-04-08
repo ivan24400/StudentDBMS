@@ -3,13 +3,13 @@ package ivn.typh.tchr;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class Attendance {
+public class AttendanceData {
 
 	private SimpleStringProperty subject;
 	private SimpleIntegerProperty attended;
 	private SimpleIntegerProperty total;
 	
-	public Attendance(String subject,Integer attended,Integer total){
+	public AttendanceData(String subject,Integer attended,Integer total){
 		this.subject = new SimpleStringProperty(subject);
 		this.attended = new SimpleIntegerProperty(attended);
 		this.total = new SimpleIntegerProperty(total);

@@ -439,8 +439,8 @@ public class TchrUI implements Runnable {
 
 		scroll[cat.length - (scrollCount)] = new ScrollPane();
 		Components.academic = new GridPane();
-		ObservableList<Marks> subjects1 = FXCollections.observableArrayList();
-		ObservableList<Marks> subjects2 = FXCollections.observableArrayList();
+		ObservableList<AcademicData> subjects1 = FXCollections.observableArrayList();
+		ObservableList<AcademicData> subjects2 = FXCollections.observableArrayList();
 		ColumnConstraints accc0 = new ColumnConstraints();
 		accc0.setHalignment(HPos.RIGHT);
 
@@ -450,20 +450,20 @@ public class TchrUI implements Runnable {
 
 		Components.tsem1 = new TableView<>();
 
-		TableColumn<Marks, String> sub = new TableColumn<>("Subject");
-		TableColumn<Marks, Integer> th = new TableColumn<>("Theory");
-		TableColumn<Marks, Integer> oral = new TableColumn<>("Oral");
-		TableColumn<Marks, Integer> prac = new TableColumn<>("Practical");
-		TableColumn<Marks, Integer> tw = new TableColumn<>("TermWork");
-		TableColumn<Marks, Integer> scr0 = new TableColumn<>("Scored");
-		TableColumn<Marks, Integer> total0 = new TableColumn<>("Total");
-		TableColumn<Marks, Integer> scr1 = new TableColumn<>("Scored");
-		TableColumn<Marks, Integer> total1 = new TableColumn<>("Total");
-		TableColumn<Marks, Integer> scr2 = new TableColumn<>("Scored");
-		TableColumn<Marks, Integer> total2 = new TableColumn<>("Total");
-		TableColumn<Marks, Integer> scr3 = new TableColumn<>("Scored");
-		TableColumn<Marks, Integer> total3 = new TableColumn<>("Total");
-		TableColumn<Marks, Boolean> back = new TableColumn<>("BackLog");
+		TableColumn<AcademicData, String> sub = new TableColumn<>("Subject");
+		TableColumn<AcademicData, Integer> th = new TableColumn<>("Theory");
+		TableColumn<AcademicData, Integer> oral = new TableColumn<>("Oral");
+		TableColumn<AcademicData, Integer> prac = new TableColumn<>("Practical");
+		TableColumn<AcademicData, Integer> tw = new TableColumn<>("TermWork");
+		TableColumn<AcademicData, Integer> scr0 = new TableColumn<>("Scored");
+		TableColumn<AcademicData, Integer> total0 = new TableColumn<>("Total");
+		TableColumn<AcademicData, Integer> scr1 = new TableColumn<>("Scored");
+		TableColumn<AcademicData, Integer> total1 = new TableColumn<>("Total");
+		TableColumn<AcademicData, Integer> scr2 = new TableColumn<>("Scored");
+		TableColumn<AcademicData, Integer> total2 = new TableColumn<>("Total");
+		TableColumn<AcademicData, Integer> scr3 = new TableColumn<>("Scored");
+		TableColumn<AcademicData, Integer> total3 = new TableColumn<>("Total");
+		TableColumn<AcademicData, Boolean> back = new TableColumn<>("BackLog");
 
 		sub.setResizable(false);
 		th.setResizable(false);
@@ -480,16 +480,16 @@ public class TchrUI implements Runnable {
 		total3.setResizable(false);
 		back.setResizable(false);
 
-		sub.setCellValueFactory(new PropertyValueFactory<Marks, String>("subject"));
-		scr0.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("theoryScored"));
-		scr1.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("oralScored"));
-		scr2.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("pracsScored"));
-		scr3.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("termworkScored"));
+		sub.setCellValueFactory(new PropertyValueFactory<AcademicData, String>("subject"));
+		scr0.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("theoryScored"));
+		scr1.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("oralScored"));
+		scr2.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("pracsScored"));
+		scr3.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("termworkScored"));
 
-		total0.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("theoryTotal"));
-		total1.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("oralTotal"));
-		total2.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("pracsTotal"));
-		total3.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("termworkTotal"));
+		total0.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("theoryTotal"));
+		total1.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("oralTotal"));
+		total2.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("pracsTotal"));
+		total3.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("termworkTotal"));
 
 		sub.setCellFactory(TextFieldTableCell.forTableColumn());
 		scr0.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
@@ -503,45 +503,45 @@ public class TchrUI implements Runnable {
 		total3.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 
 		sub.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow())).setSubject(arg.getNewValue());
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow())).setSubject(arg.getNewValue());
 		});
 		scr0.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		scr1.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		scr2.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		scr3.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		total0.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		total1.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		total2.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		total3.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
@@ -561,20 +561,20 @@ public class TchrUI implements Runnable {
 		// Semester 2
 
 		Components.tsem2 = new TableView<>();
-		TableColumn<Marks, String> sub1 = new TableColumn<>("Subject");
-		TableColumn<Marks, Integer> th1 = new TableColumn<>("Theory");
-		TableColumn<Marks, Integer> oral1 = new TableColumn<>("Oral");
-		TableColumn<Marks, Integer> prac1 = new TableColumn<>("Practical");
-		TableColumn<Marks, Integer> tw1 = new TableColumn<>("TermWork");
-		TableColumn<Marks, Integer> scr01 = new TableColumn<>("Scored");
-		TableColumn<Marks, Integer> total01 = new TableColumn<>("Total");
-		TableColumn<Marks, Integer> scr11 = new TableColumn<>("Scored");
-		TableColumn<Marks, Integer> total11 = new TableColumn<>("Total");
-		TableColumn<Marks, Integer> scr21 = new TableColumn<>("Scored");
-		TableColumn<Marks, Integer> total21 = new TableColumn<>("Total");
-		TableColumn<Marks, Integer> scr31 = new TableColumn<>("Scored");
-		TableColumn<Marks, Integer> total31 = new TableColumn<Marks, Integer>("Total");
-		TableColumn<Marks, Boolean> back1 = new TableColumn<>("BackLog");
+		TableColumn<AcademicData, String> sub1 = new TableColumn<>("Subject");
+		TableColumn<AcademicData, Integer> th1 = new TableColumn<>("Theory");
+		TableColumn<AcademicData, Integer> oral1 = new TableColumn<>("Oral");
+		TableColumn<AcademicData, Integer> prac1 = new TableColumn<>("Practical");
+		TableColumn<AcademicData, Integer> tw1 = new TableColumn<>("TermWork");
+		TableColumn<AcademicData, Integer> scr01 = new TableColumn<>("Scored");
+		TableColumn<AcademicData, Integer> total01 = new TableColumn<>("Total");
+		TableColumn<AcademicData, Integer> scr11 = new TableColumn<>("Scored");
+		TableColumn<AcademicData, Integer> total11 = new TableColumn<>("Total");
+		TableColumn<AcademicData, Integer> scr21 = new TableColumn<>("Scored");
+		TableColumn<AcademicData, Integer> total21 = new TableColumn<>("Total");
+		TableColumn<AcademicData, Integer> scr31 = new TableColumn<>("Scored");
+		TableColumn<AcademicData, Integer> total31 = new TableColumn<AcademicData, Integer>("Total");
+		TableColumn<AcademicData, Boolean> back1 = new TableColumn<>("BackLog");
 
 		sub1.setResizable(false);
 		th1.setResizable(false);
@@ -600,17 +600,17 @@ public class TchrUI implements Runnable {
 		Components.tsem2.setItems(subjects2);
 		GridPane.setFillWidth(Components.tsem2, true);
 
-		sub1.setCellValueFactory(new PropertyValueFactory<Marks, String>("subject"));
+		sub1.setCellValueFactory(new PropertyValueFactory<AcademicData, String>("subject"));
 
-		scr01.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("theoryScored"));
-		scr11.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("oralScored"));
-		scr21.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("pracsScored"));
-		scr31.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("termworkScored"));
+		scr01.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("theoryScored"));
+		scr11.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("oralScored"));
+		scr21.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("pracsScored"));
+		scr31.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("termworkScored"));
 
-		total01.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("theoryTotal"));
-		total11.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("oralTotal"));
-		total21.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("pracsTotal"));
-		total31.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("termworkTotal"));
+		total01.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("theoryTotal"));
+		total11.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("oralTotal"));
+		total21.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("pracsTotal"));
+		total31.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("termworkTotal"));
 
 		scr01.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 		scr11.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
@@ -623,45 +623,45 @@ public class TchrUI implements Runnable {
 		total31.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 
 		sub1.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow())).setSubject(arg.getNewValue());
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow())).setSubject(arg.getNewValue());
 		});
 		scr01.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		scr11.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		scr21.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		scr31.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		total01.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		total11.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		total21.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		total31.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
@@ -677,12 +677,12 @@ public class TchrUI implements Runnable {
 
 		Components.addEntry.setOnAction((arg0) -> {
 			if (Components.rbsem1.isSelected()) {
-				subjects1.add(new Marks("", 0, 0, 0, 0, 0, 0, 0, 0, false));
-				Components.atsem1Data.add(new Attendance("subject", 0, 0));
+				subjects1.add(new AcademicData("", 0, 0, 0, 0, 0, 0, 0, 0, false));
+				Components.atsem1Data.add(new AttendanceData("subject", 0, 0));
 
 			} else if (Components.rbsem2.isSelected()) {
-				subjects2.add(new Marks("", 0, 0, 0, 0, 0, 0, 0, 0, false));
-				Components.atsem2Data.add(new Attendance("subject", 0, 0));
+				subjects2.add(new AcademicData("", 0, 0, 0, 0, 0, 0, 0, 0, false));
+				Components.atsem2Data.add(new AttendanceData("subject", 0, 0));
 
 			}
 		});
@@ -742,28 +742,28 @@ public class TchrUI implements Runnable {
 
 		// Semester 1 table
 
-		Components.atsem1 = new TableView<Attendance>();
-		TableColumn<Attendance, String> atsub = new TableColumn<>("Subjects");
-		TableColumn<Attendance, Integer> atAttended = new TableColumn<>("Attended");
-		TableColumn<Attendance, Integer> atTotal = new TableColumn<>("Total");
+		Components.atsem1 = new TableView<AttendanceData>();
+		TableColumn<AttendanceData, String> atsub = new TableColumn<>("Subjects");
+		TableColumn<AttendanceData, Integer> atAttended = new TableColumn<>("Attended");
+		TableColumn<AttendanceData, Integer> atTotal = new TableColumn<>("Total");
 
-		atsub.setCellValueFactory(new PropertyValueFactory<Attendance, String>("subject"));
-		atAttended.setCellValueFactory(new PropertyValueFactory<Attendance, Integer>("attended"));
-		atTotal.setCellValueFactory(new PropertyValueFactory<Attendance, Integer>("total"));
+		atsub.setCellValueFactory(new PropertyValueFactory<AttendanceData, String>("subject"));
+		atAttended.setCellValueFactory(new PropertyValueFactory<AttendanceData, Integer>("attended"));
+		atTotal.setCellValueFactory(new PropertyValueFactory<AttendanceData, Integer>("total"));
 
 		atsub.setCellFactory(TextFieldTableCell.forTableColumn());
 		atsub.setOnEditCommit(t -> {
-			((Attendance) t.getTableView().getItems().get(t.getTablePosition().getRow())).setSubject(t.getNewValue());
+			((AttendanceData) t.getTableView().getItems().get(t.getTablePosition().getRow())).setSubject(t.getNewValue());
 		});
 
 		atAttended.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 		atAttended.setOnEditCommit(t -> {
-			((Attendance) t.getTableView().getItems().get(t.getTablePosition().getRow())).setAttended(t.getNewValue());
+			((AttendanceData) t.getTableView().getItems().get(t.getTablePosition().getRow())).setAttended(t.getNewValue());
 		});
 
 		atTotal.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 		atTotal.setOnEditCommit(t -> {
-			((Attendance) t.getTableView().getItems().get(t.getTablePosition().getRow())).setTotal(t.getNewValue());
+			((AttendanceData) t.getTableView().getItems().get(t.getTablePosition().getRow())).setTotal(t.getNewValue());
 		});
 
 		Components.atsem1.getColumns().addAll(atsub, atAttended, atTotal);
@@ -772,30 +772,30 @@ public class TchrUI implements Runnable {
 
 		// Semester 2 table
 
-		Components.atsem2 = new TableView<Attendance>();
-		TableColumn<Attendance, String> atsub1 = new TableColumn<>("Subjects");
-		TableColumn<Attendance, Integer> atAttended1 = new TableColumn<>("Attended");
-		TableColumn<Attendance, Integer> atTotal1 = new TableColumn<>("Total");
+		Components.atsem2 = new TableView<AttendanceData>();
+		TableColumn<AttendanceData, String> atsub1 = new TableColumn<>("Subjects");
+		TableColumn<AttendanceData, Integer> atAttended1 = new TableColumn<>("Attended");
+		TableColumn<AttendanceData, Integer> atTotal1 = new TableColumn<>("Total");
 
 		Components.atsem2Data = FXCollections.observableArrayList();
 
-		atsub1.setCellValueFactory(new PropertyValueFactory<Attendance, String>("subject"));
-		atAttended1.setCellValueFactory(new PropertyValueFactory<Attendance, Integer>("attended"));
-		atTotal1.setCellValueFactory(new PropertyValueFactory<Attendance, Integer>("total"));
+		atsub1.setCellValueFactory(new PropertyValueFactory<AttendanceData, String>("subject"));
+		atAttended1.setCellValueFactory(new PropertyValueFactory<AttendanceData, Integer>("attended"));
+		atTotal1.setCellValueFactory(new PropertyValueFactory<AttendanceData, Integer>("total"));
 
 		atsub1.setCellFactory(TextFieldTableCell.forTableColumn());
 		atsub1.setOnEditCommit(t -> {
-			((Attendance) t.getTableView().getItems().get(t.getTablePosition().getRow())).setSubject(t.getNewValue());
+			((AttendanceData) t.getTableView().getItems().get(t.getTablePosition().getRow())).setSubject(t.getNewValue());
 		});
 
 		atAttended1.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 		atAttended1.setOnEditCommit(t -> {
-			((Attendance) t.getTableView().getItems().get(t.getTablePosition().getRow())).setAttended(t.getNewValue());
+			((AttendanceData) t.getTableView().getItems().get(t.getTablePosition().getRow())).setAttended(t.getNewValue());
 		});
 
 		atTotal1.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 		atTotal1.setOnEditCommit(t -> {
-			((Attendance) t.getTableView().getItems().get(t.getTablePosition().getRow())).setTotal(t.getNewValue());
+			((AttendanceData) t.getTableView().getItems().get(t.getTablePosition().getRow())).setTotal(t.getNewValue());
 		});
 
 		Components.atsem2.getColumns().addAll(atsub1, atAttended1, atTotal1);
@@ -865,7 +865,7 @@ public class TchrUI implements Runnable {
 
 		Components.prList.setCellFactory((arg0) -> {
 
-			return (new Project(Components.scene));
+			return (new ProjectData(Components.scene));
 
 		});
 
@@ -983,21 +983,21 @@ public class TchrUI implements Runnable {
 		spAssignment.setContent(Components.asList);
 		spAssignment.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		spAssignment.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-		StringConverter<Assignment> converter = new StringConverter<Assignment>() {
+		StringConverter<AssignmentData> converter = new StringConverter<AssignmentData>() {
 
 			@Override
-			public Assignment fromString(String arg0) {
+			public AssignmentData fromString(String arg0) {
 				return null;
 			}
 
-			public String toString(Assignment assignment) {
+			public String toString(AssignmentData assignment) {
 				return "[Semester " + assignment.getSem() + "]\t" + assignment.getTitle();
 			}
 
 		};
-		Components.asList.setCellFactory(CheckBoxListCell.forListView(Assignment::completedProperty, converter));
+		Components.asList.setCellFactory(CheckBoxListCell.forListView(AssignmentData::completedProperty, converter));
 		Components.addAssignment.setOnAction(arg0 -> {
-			Dialog<Assignment> dialog = new Dialog<>();
+			Dialog<AssignmentData> dialog = new Dialog<>();
 			TextField asTitle = new TextField();
 			ComboBox<String> asYear = new ComboBox<>();
 			ButtonType add = new ButtonType("Add", ButtonData.OK_DONE);
@@ -1023,7 +1023,7 @@ public class TchrUI implements Runnable {
 
 			dialog.setResultConverter(value -> {
 				if (value.getButtonData().equals(ButtonData.OK_DONE) && !asTitle.getText().isEmpty()) {
-					return new Assignment(asYear.getSelectionModel().getSelectedIndex() + 1, asTitle.getText(), false);
+					return new AssignmentData(asYear.getSelectionModel().getSelectedIndex() + 1, asTitle.getText(), false);
 				} else if (value.getButtonData().equals(ButtonData.OK_DONE) && asTitle.getText().isEmpty()) {
 
 				}
@@ -1033,7 +1033,7 @@ public class TchrUI implements Runnable {
 			asTitle.setPrefWidth(500);
 
 			dialog.initOwner(Components.stage);
-			Optional<Assignment> result = dialog.showAndWait();
+			Optional<AssignmentData> result = dialog.showAndWait();
 			result.ifPresent(arg -> Components.asList.getItems().add(arg));
 		});
 
@@ -1446,7 +1446,7 @@ public class TchrUI implements Runnable {
 				String title = json.getString("title");
 				int semester = json.getInt("sem");
 				boolean flag = json.getBoolean("completed");
-				Components.asList.getItems().add(new Assignment(semester, title, flag));
+				Components.asList.getItems().add(new AssignmentData(semester, title, flag));
 			}
 		} catch (JSONException | NullPointerException e) {
 		}
@@ -1472,10 +1472,10 @@ public class TchrUI implements Runnable {
 			if (sem % 2 == 1) {
 				Components.atsem1.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
 				Components.atrbsem1.setText("Semester: " + Integer.toString(sem));
-				Components.atsem1.getItems().add(new Attendance(name, at, att));
+				Components.atsem1.getItems().add(new AttendanceData(name, at, att));
 			} else {
 				Components.atsem2.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
-				Components.atsem2.getItems().add(new Attendance(name, at, att));
+				Components.atsem2.getItems().add(new AttendanceData(name, at, att));
 				Components.atrbsem2.setText("Semester: " + Integer.toString(sem));
 
 			}
@@ -1509,10 +1509,10 @@ public class TchrUI implements Runnable {
 
 			if (sem % 2 == 1) {
 				Components.tsem1.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
-				Components.tsem1.getItems().add(new Marks(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
+				Components.tsem1.getItems().add(new AcademicData(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
 			} else {
 				Components.tsem2.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
-				Components.tsem2.getItems().add(new Marks(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
+				Components.tsem2.getItems().add(new AcademicData(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
 			}
 		}
 

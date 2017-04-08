@@ -7,13 +7,13 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public final class Assignment {
+public final class AssignmentData {
 
 	private final  IntegerProperty sem = new SimpleIntegerProperty();
 	private final  StringProperty title = new SimpleStringProperty();
 	private final  BooleanProperty completed = new SimpleBooleanProperty();
 	
-	public Assignment(int y,String t,boolean c){
+	public AssignmentData(int y,String t,boolean c){
 		setSem(y);
 		setTitle(t);
 		setCompleted(c);

@@ -4,7 +4,6 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
-import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
@@ -51,7 +50,7 @@ import ivn.typh.main.Engine;
 public class Search extends TextField {
 	private final SortedSet<String> list;
 	private ContextMenu resultList;
-	private TableView<Marks> tsem1,tsem2;
+	private TableView<AcademicData> tsem1,tsem2;
 	private String result;	
 	private Label year;
 	private Label sem1;
@@ -133,8 +132,8 @@ public class Search extends TextField {
 		
 		ScrollPane sp1 = new ScrollPane();
 		ScrollPane sp2 = new ScrollPane();
-		ObservableList<Marks> subjects1 = FXCollections.observableArrayList();
-		ObservableList<Marks> subjects2 = FXCollections.observableArrayList();
+		ObservableList<AcademicData> subjects1 = FXCollections.observableArrayList();
+		ObservableList<AcademicData> subjects2 = FXCollections.observableArrayList();
 		ColumnConstraints accc0 = new ColumnConstraints();
 		accc0.setHalignment(HPos.RIGHT);
 
@@ -165,31 +164,31 @@ public class Search extends TextField {
 		// Semester 1
 
 		tsem1 = new TableView<>();
-		TableColumn<Marks, String> sub = new TableColumn<>("Subject");
-		TableColumn<Marks, Integer> th = new TableColumn<>("Theory");
-		TableColumn<Marks, Integer> oral = new TableColumn<>("Oral");
-		TableColumn<Marks, Integer> prac = new TableColumn<>("Practical");
-		TableColumn<Marks, Integer> tw = new TableColumn<>("TermWork");
-		TableColumn<Marks, Integer> scr0 = new TableColumn<>("Scored");
-		TableColumn<Marks, Integer> total0 = new TableColumn<>("Total");
-		TableColumn<Marks, Integer> scr1 = new TableColumn<>("Scored");
-		TableColumn<Marks, Integer> total1 = new TableColumn<>("Total");
-		TableColumn<Marks, Integer> scr2 = new TableColumn<>("Scored");
-		TableColumn<Marks, Integer> total2 = new TableColumn<>("Total");
-		TableColumn<Marks, Integer> scr3 = new TableColumn<>("Scored");
-		TableColumn<Marks, Integer> total3 = new TableColumn<>("Total");
-		TableColumn<Marks, Boolean> back = new TableColumn<>("BackLog");
+		TableColumn<AcademicData, String> sub = new TableColumn<>("Subject");
+		TableColumn<AcademicData, Integer> th = new TableColumn<>("Theory");
+		TableColumn<AcademicData, Integer> oral = new TableColumn<>("Oral");
+		TableColumn<AcademicData, Integer> prac = new TableColumn<>("Practical");
+		TableColumn<AcademicData, Integer> tw = new TableColumn<>("TermWork");
+		TableColumn<AcademicData, Integer> scr0 = new TableColumn<>("Scored");
+		TableColumn<AcademicData, Integer> total0 = new TableColumn<>("Total");
+		TableColumn<AcademicData, Integer> scr1 = new TableColumn<>("Scored");
+		TableColumn<AcademicData, Integer> total1 = new TableColumn<>("Total");
+		TableColumn<AcademicData, Integer> scr2 = new TableColumn<>("Scored");
+		TableColumn<AcademicData, Integer> total2 = new TableColumn<>("Total");
+		TableColumn<AcademicData, Integer> scr3 = new TableColumn<>("Scored");
+		TableColumn<AcademicData, Integer> total3 = new TableColumn<>("Total");
+		TableColumn<AcademicData, Boolean> back = new TableColumn<>("BackLog");
 
-		sub.setCellValueFactory(new PropertyValueFactory<Marks, String>("subject"));
-		scr0.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("theoryScored"));
-		scr1.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("oralScored"));
-		scr2.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("pracsScored"));
-		scr3.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("termworkScored"));
+		sub.setCellValueFactory(new PropertyValueFactory<AcademicData, String>("subject"));
+		scr0.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("theoryScored"));
+		scr1.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("oralScored"));
+		scr2.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("pracsScored"));
+		scr3.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("termworkScored"));
 
-		total0.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("theoryTotal"));
-		total1.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("oralTotal"));
-		total2.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("pracsTotal"));
-		total3.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("termworkTotal"));
+		total0.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("theoryTotal"));
+		total1.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("oralTotal"));
+		total2.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("pracsTotal"));
+		total3.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("termworkTotal"));
 
 		sub.setCellFactory(TextFieldTableCell.forTableColumn());
 		scr0.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
@@ -203,45 +202,45 @@ public class Search extends TextField {
 		total3.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 
 		sub.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow())).setSubject(arg.getNewValue());
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow())).setSubject(arg.getNewValue());
 		});
 		scr0.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		scr1.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		scr2.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		scr3.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		total0.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		total1.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		total2.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		total3.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
@@ -260,39 +259,39 @@ public class Search extends TextField {
 		// Semester 2
 
 		tsem2 = new TableView<>();
-		TableColumn<Marks, String> sub1 = new TableColumn<>("Subject");
-		TableColumn<Marks, Integer> th1 = new TableColumn<>("Theory");
-		TableColumn<Marks, Integer> oral1 = new TableColumn<>("Oral");
-		TableColumn<Marks, Integer> prac1 = new TableColumn<>("Practical");
-		TableColumn<Marks, Integer> tw1 = new TableColumn<>("TermWork");
-		TableColumn<Marks, Integer> scr01 = new TableColumn<>("Scored");
-		TableColumn<Marks, Integer> total01 = new TableColumn<>("Total");
-		TableColumn<Marks, Integer> scr11 = new TableColumn<>("Scored");
-		TableColumn<Marks, Integer> total11 = new TableColumn<>("Total");
-		TableColumn<Marks, Integer> scr21 = new TableColumn<>("Scored");
-		TableColumn<Marks, Integer> total21 = new TableColumn<>("Total");
-		TableColumn<Marks, Integer> scr31 = new TableColumn<>("Scored");
-		TableColumn<Marks, Integer> total31 = new TableColumn<Marks, Integer>("Total");
+		TableColumn<AcademicData, String> sub1 = new TableColumn<>("Subject");
+		TableColumn<AcademicData, Integer> th1 = new TableColumn<>("Theory");
+		TableColumn<AcademicData, Integer> oral1 = new TableColumn<>("Oral");
+		TableColumn<AcademicData, Integer> prac1 = new TableColumn<>("Practical");
+		TableColumn<AcademicData, Integer> tw1 = new TableColumn<>("TermWork");
+		TableColumn<AcademicData, Integer> scr01 = new TableColumn<>("Scored");
+		TableColumn<AcademicData, Integer> total01 = new TableColumn<>("Total");
+		TableColumn<AcademicData, Integer> scr11 = new TableColumn<>("Scored");
+		TableColumn<AcademicData, Integer> total11 = new TableColumn<>("Total");
+		TableColumn<AcademicData, Integer> scr21 = new TableColumn<>("Scored");
+		TableColumn<AcademicData, Integer> total21 = new TableColumn<>("Total");
+		TableColumn<AcademicData, Integer> scr31 = new TableColumn<>("Scored");
+		TableColumn<AcademicData, Integer> total31 = new TableColumn<AcademicData, Integer>("Total");
 		th1.getColumns().addAll(scr01, total01);
 		oral1.getColumns().addAll(scr11, total11);
 		prac1.getColumns().addAll(scr21, total21);
 		tw1.getColumns().addAll(scr31, total31);
-		TableColumn<Marks, Boolean> back1 = new TableColumn<>("BackLog");
+		TableColumn<AcademicData, Boolean> back1 = new TableColumn<>("BackLog");
 		tsem2.getColumns().addAll(sub1, th1, oral1, prac1, tw1, back1);
 		tsem2.setTooltip(new Tooltip("Semester 2"));
 		tsem2.setItems(subjects2);
 		GridPane.setFillWidth(tsem2, true);
-		sub1.setCellValueFactory(new PropertyValueFactory<Marks, String>("subject"));
+		sub1.setCellValueFactory(new PropertyValueFactory<AcademicData, String>("subject"));
 
-		scr01.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("theoryScored"));
-		scr11.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("oralScored"));
-		scr21.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("pracsScored"));
-		scr31.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("termworkScored"));
+		scr01.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("theoryScored"));
+		scr11.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("oralScored"));
+		scr21.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("pracsScored"));
+		scr31.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("termworkScored"));
 
-		total01.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("theoryTotal"));
-		total11.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("oralTotal"));
-		total21.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("pracsTotal"));
-		total31.setCellValueFactory(new PropertyValueFactory<Marks, Integer>("termworkTotal"));
+		total01.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("theoryTotal"));
+		total11.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("oralTotal"));
+		total21.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("pracsTotal"));
+		total31.setCellValueFactory(new PropertyValueFactory<AcademicData, Integer>("termworkTotal"));
 
 		scr01.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 		scr11.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
@@ -305,45 +304,45 @@ public class Search extends TextField {
 		total31.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 
 		sub1.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow())).setSubject(arg.getNewValue());
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow())).setSubject(arg.getNewValue());
 		});
 		scr01.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		scr11.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		scr21.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		scr31.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		total01.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		total11.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		total21.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
 		total31.setOnEditCommit(arg -> {
-			((Marks) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
 					.setTheoryScored(arg.getNewValue());
 		});
 
@@ -442,13 +441,13 @@ public class Search extends TextField {
 				tool.setText("Percentage :- "+getSemesterPercent(sem));
 				sem1.setTooltip(tool);
 				sem1.setText("Semester: " + Integer.toString(sem)+"\t[ "+Float.toString(scored)+"/"+Float.toString(total)+" ]");
-				tsem1.getItems().add(new Marks(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
+				tsem1.getItems().add(new AcademicData(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
 			} else {
 				tsem2.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
 				tool.setText("Percentage :- "+getSemesterPercent(sem));
 				sem2.setTooltip(tool);
 				sem2.setText("Semester: " + Integer.toString(sem)+"\t[ "+Float.toString(scored)+"/"+Float.toString(total)+" ]");
-				tsem2.getItems().add(new Marks(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
+				tsem2.getItems().add(new AcademicData(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
 			}
 		}
 

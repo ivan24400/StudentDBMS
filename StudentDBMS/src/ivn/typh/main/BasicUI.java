@@ -3,9 +3,8 @@ package ivn.typh.main;
 import static com.mongodb.client.model.Filters.eq;
 
 import java.awt.Toolkit;
-import java.io.File;
-import java.io.IOException;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -327,6 +326,7 @@ public class BasicUI extends Application implements Runnable {
 			protected Boolean call() throws Exception {
 				InetAddress addr;
 				Boolean result = false;
+				Socket testSocket = null;
 				try {
 					if (ipAddr == null) {
 						return false;
@@ -340,13 +340,14 @@ public class BasicUI extends Application implements Runnable {
 							"mongodb://typh:typhpass@" + ipAddr + ":24000/?authSource=Students", options);
 					Engine.mongo = new MongoClient(connectionString);
 					Engine.db = Engine.mongo.getDatabase("Students");
-
+					testSocket = new Socket(ipAddr,61002);
 					result=true;
 
 					Engine.mongo.getAddress();
 					
 				} catch (Exception e) {
 					result=false;
+					testSocket.close();
 					Engine.mongo.close();
 				}
 

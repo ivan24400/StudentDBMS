@@ -10,13 +10,17 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import ivn.typh.main.BasicUI;
+import ivn.typh.main.Notification;
+import ivn.typh.admin.Components;
 import javafx.application.Platform;
+import javafx.scene.control.Alert.AlertType;
 
 public class HeartBeat implements Runnable {
 
 	private Socket socket;
 	static boolean heartAttack;
 	static String message;
+	private static ScheduledExecutorService service;
 
 	@Override
 	public void run() {
@@ -29,7 +33,7 @@ public class HeartBeat implements Runnable {
 			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 
-			ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+			service = Executors.newSingleThreadScheduledExecutor();
 
 			Runnable users = new Runnable() {
 				@Override
@@ -53,7 +57,8 @@ public class HeartBeat implements Runnable {
 							out.flush();
 
 						} catch (ClassNotFoundException | IOException e) {
-							e.printStackTrace();
+							System.out.println("Server failed");
+							serverFailed();
 						}
 						message = "__BEAT__";
 					} else {
@@ -64,12 +69,26 @@ public class HeartBeat implements Runnable {
 						}
 					}
 				}
+
+				
 			};
 
 			service.scheduleAtFixedRate(users, 0, 5, TimeUnit.SECONDS);
 		} catch (IOException e) {
-			System.out.println("heart: Server not found");
+			serverFailed();
 		}
 	}
 
+	private void serverFailed() {
+		Platform.runLater(()->{
+			Notification.message(Components.stage, AlertType.ERROR,"Connection - Typh™","Server Failed");	
+			service.shutdown();
+			try {
+				socket.close();
+			} catch (IOException a) {
+			}
+			Platform.exit();
+		});
+					
+	}
 }

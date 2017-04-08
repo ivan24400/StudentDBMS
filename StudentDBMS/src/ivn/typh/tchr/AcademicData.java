@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class Marks {
+public class AcademicData {
 	
 	private final SimpleStringProperty subject;
 	private final SimpleIntegerProperty theoryTotal;
@@ -19,7 +19,7 @@ public class Marks {
 	private final SimpleBooleanProperty backlog;
 
 	
-	public Marks(String sub,Integer thscr,Integer thtot,Integer orscr,Integer ortot,Integer prscr, Integer prtot,Integer twscr,Integer twtot,boolean back){
+	public AcademicData(String sub,Integer thscr,Integer thtot,Integer orscr,Integer ortot,Integer prscr, Integer prtot,Integer twscr,Integer twtot,boolean back){
 		this.subject=new SimpleStringProperty(sub);
 		this.theoryTotal=new SimpleIntegerProperty(thtot);
 		this.oralTotal=new SimpleIntegerProperty(ortot);

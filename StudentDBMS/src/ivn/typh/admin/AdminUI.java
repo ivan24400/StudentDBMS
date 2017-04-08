@@ -295,14 +295,14 @@ public class AdminUI implements Runnable {
 		Pane dummy = new Pane();
 		text.setPromptText("Enter message ...");
 		text.setPrefRowCount(8);
-		text.setPrefColumnCount(50);
+		text.setPrefColumnCount(30);
 		text.setWrapText(true);
 		text.textProperty().addListener((obs,o,n)->{
 			characterLimit.setText(Integer.toString(255 - text.getText().length()));
 		});
 
 		HBox.setHgrow(dummy, Priority.ALWAYS);
-		hpane.getChildren().addAll(dummy,characterLimit);
+		hpane.getChildren().addAll(dummy,characterLimit,new Label("  characters"));
 		mpane.getChildren().addAll(new Label("Enter a message for [ "+user+" ]"),text,hpane);
 		ButtonType send = new ButtonType("Send", ButtonData.OK_DONE);
 		dialog.getDialogPane().setContent(mpane);
