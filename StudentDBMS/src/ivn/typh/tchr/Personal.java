@@ -1,5 +1,13 @@
 package ivn.typh.tchr;
 
+import static com.mongodb.client.model.Filters.eq;
+
+import java.util.Iterator;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import ivn.typh.main.Engine;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -76,6 +84,7 @@ public class Personal {
 		tsaddr = new TextField();
 		tsphone = new TextField();
 		tpphone = new TextField();
+		reportPane = new ListView<>();
 		reportList = FXCollections.observableArrayList();
 
 
@@ -269,4 +278,21 @@ public class Personal {
 		Components.scroll[Components.paneList.length - (Components.paneCount--)].setContent(personal);
 
 	}
+	
+	static void loadReport(String year) {
+
+		Personal.reportPane.getItems().clear();
+		String data = Engine.db.getCollection("Students").find(eq("sid", Personal.tsid.getText())).first().toJson();
+		JSONArray rep = new JSONObject(data).getJSONArray("reports");
+		Iterator<?> it = rep.iterator();
+		while (it.hasNext()) {
+			JSONObject j = (JSONObject) it.next();
+			boolean b = j.getBoolean("seen");
+			int sem = j.getInt("sem");
+			String r = j.getString("report");
+			if (TchrUI.sMatchesY(sem, year) == 1)
+				Personal.reportPane.getItems().add(new Report(b, sem, r));
+		}
+	}
+
 }

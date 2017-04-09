@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,86 +26,45 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.mongodb.Block;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
-import com.mongodb.client.gridfs.model.GridFSFile;
-
 import ivn.typh.tchr.Components;
 import ivn.typh.admin.SideBar;
 import ivn.typh.main.BasicUI;
 import ivn.typh.main.Engine;
-import ivn.typh.main.Notification;
-import javafx.animation.ParallelTransition;
-import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
-import javafx.geometry.Side;
 import javafx.geometry.VPos;
-import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
-import javafx.scene.control.Tooltip;
-import javafx.scene.control.cell.CheckBoxListCell;
-import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.SVGPath;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import javafx.util.StringConverter;
-import javafx.util.converter.IntegerStringConverter;
 
 public class TchrUI implements Runnable {
 
@@ -125,10 +83,8 @@ public class TchrUI implements Runnable {
 		Components.scene = scen;
 		Components.menu = new Button("Menu");
 
-
 	}
 
-	@SuppressWarnings("unchecked")
 	public void startUI() {
 
 		Components.tgpane = new GridPane();
@@ -143,7 +99,6 @@ public class TchrUI implements Runnable {
 
 		Components.logout = new Button("Log Out");
 		Components.editable = new ToggleButton("Edit");
-		BorderTitledPane btp = new BorderTitledPane();
 
 		Pane dummy = new Pane();
 		Components.paneList = new String[] { "Personal", "Academic", "Attendance", "Projects", "Assignments" };
@@ -160,7 +115,6 @@ public class TchrUI implements Runnable {
 		Components.pcls = new Label();
 		Components.tstuds = new Label("Total Students:");
 		Components.nstuds = new Label();
-		Personal.reportPane = new ListView<>();
 		Components.slist = new ComboBox<>();
 		Components.srch = new Label("Search");
 		Components.searchBox = new Search();
@@ -173,7 +127,7 @@ public class TchrUI implements Runnable {
 		Components.yrlst = new ComboBox<>();
 		Components.yrlst.getItems().addAll(FXCollections.observableArrayList("FE", "SE", "TE", "BE"));
 		Components.yrlst.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
-			loadReport(n);
+			Personal.loadReport(n);
 			Academic.loadAcademicData(n);
 			Attendance.loadAttendanceData(n);
 			Project.loadProjectData(n);
@@ -215,35 +169,23 @@ public class TchrUI implements Runnable {
 
 		Components.aboveAcc.getChildren().addAll(Components.student, Components.slist, new Label("Select Year"),
 				Components.yrlst, Components.editable, Components.update, Components.report, Components.export);
-
-		//
-		// Personal
-		//
-
 		
+		// Setup All the components
+
+		Personal.setup();
+
+		Academic.setup();
+
+		Attendance.setup();
+
+		Project.setup();
+
+		Assignment.setup();
+
 		loadData();
 
 		//
-		// Academic
-		//
-
-		
-		//
-		// Attendance
-		//
-
-		
-		//
-		// Projects
-		//
-
-		
-		// Assignments
-
-		
-
-		//
-		// Adding all titled panes to the accordion
+		// Adding all panes to the accordion
 		//
 
 		for (int i = 0; i < Components.paneList.length; i++) {
@@ -472,6 +414,7 @@ public class TchrUI implements Runnable {
 		Academic.studProgress.getData().add(data);
 
 		// Attendance
+		
 		Attendance.atsem1.setFixedCellSize(24);
 		Attendance.atsem2.setFixedCellSize(24);
 
@@ -494,24 +437,7 @@ public class TchrUI implements Runnable {
 				+ Personal.tsrno.getValue());
 	}
 
-	private void loadReport(String year) {
-
-		Personal.reportPane.getItems().clear();
-		String data = Engine.db.getCollection("Students").find(eq("sid", Personal.tsid.getText())).first().toJson();
-		JSONArray rep = new JSONObject(data).getJSONArray("reports");
-		Iterator<?> it = rep.iterator();
-		while (it.hasNext()) {
-			JSONObject j = (JSONObject) it.next();
-			boolean b = j.getBoolean("seen");
-			int sem = j.getInt("sem");
-			String r = j.getString("report");
-			if (sMatchesY(sem, year) == 1)
-				Personal.reportPane.getItems().add(new Report(b, sem, r));
-		}
-	}
-
-
-
+	
 	private float getSemesterPercent(int i) {
 		String data = Engine.db.getCollection("Students").find(eq("sid", Personal.tsid.getText())).first().toJson();
 		JSONObject json = new JSONObject(data);
@@ -594,9 +520,6 @@ public class TchrUI implements Runnable {
 		return percent;
 	}
 
-	
-
-	
 	public static int sMatchesY(int sem, String year) {
 		int y = 0;
 		if (year.equals("FE"))
