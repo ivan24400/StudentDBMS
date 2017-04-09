@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import ivn.typh.main.Engine;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -33,8 +34,7 @@ import javafx.scene.layout.GridPane;
 import javafx.util.converter.IntegerStringConverter;
 
 public class Academic {
-	
-	
+
 	public static GridPane academic;
 	public static TableView<AcademicData> tsem1;
 	public static TableView<AcademicData> tsem2;
@@ -43,9 +43,8 @@ public class Academic {
 	public static RadioButton rbsem2;
 	public static LineChart<String, Number> studProgress;
 
-
 	@SuppressWarnings("unchecked")
-	static void setup(){
+	static void setup() {
 		Components.scroll[Components.paneList.length - (Components.paneCount)] = new ScrollPane();
 		academic = new GridPane();
 		ObservableList<AcademicData> subjects1 = FXCollections.observableArrayList();
@@ -112,7 +111,8 @@ public class Academic {
 		total3.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 
 		sub.setOnEditCommit(arg -> {
-			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow())).setSubject(arg.getNewValue());
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+					.setSubject(arg.getNewValue());
 		});
 		scr0.setOnEditCommit(arg -> {
 			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
@@ -232,7 +232,8 @@ public class Academic {
 		total31.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 
 		sub1.setOnEditCommit(arg -> {
-			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow())).setSubject(arg.getNewValue());
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+					.setSubject(arg.getNewValue());
 		});
 		scr01.setOnEditCommit(arg -> {
 			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
@@ -318,27 +319,28 @@ public class Academic {
 		studProgress.setLegendVisible(false);
 
 		academic.setId("academicP");
-		studProgress.setCache(true);               
-		studProgress.setCacheShape(true);          
+		studProgress.setCache(true);
+		studProgress.setCacheShape(true);
 		studProgress.setCacheHint(CacheHint.SPEED);
-		
-		academic.add(BorderTitledPane.addTitle("Semester 1", tsem1), 0, 1, 5, 1);
-		academic.add(BorderTitledPane.addTitle("Semester 2", tsem2), 0, 2, 5, 1);
-		academic.add(addEntry, 2, 0);
-		academic.add(rbsem1, 3, 0);
-		academic.add(rbsem2, 4, 0);
-		academic.add(studProgress, 0, 7, 5, 1);
+
+		Platform.runLater(() -> {
+			academic.add(BorderTitledPane.addTitle("Semester 1", tsem1), 0, 1, 5, 1);
+			academic.add(BorderTitledPane.addTitle("Semester 2", tsem2), 0, 2, 5, 1);
+			academic.add(addEntry, 2, 0);
+			academic.add(rbsem1, 3, 0);
+			academic.add(rbsem2, 4, 0);
+			academic.add(studProgress, 0, 7, 5, 1);
+		});
 
 		Components.scroll[Components.paneList.length - (Components.paneCount)].setHbarPolicy(ScrollBarPolicy.NEVER);
 		Components.scroll[Components.paneList.length - (Components.paneCount--)].setContent(academic);
 
 	}
-	
+
 	static void loadAcademicData(String year) {
 		JSONArray jsona = null;
 		try {
-			String data = Engine.db.getCollection("Students").find(eq("sid", Personal.tsid.getText())).first()
-					.toJson();
+			String data = Engine.db.getCollection("Students").find(eq("sid", Personal.tsid.getText())).first().toJson();
 			jsona = new JSONObject(data).getJSONArray(year.toLowerCase());
 		} catch (JSONException e) {
 		}

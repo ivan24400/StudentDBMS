@@ -12,6 +12,7 @@
     -fx-font-size: 9.0pt;
     -fx-font-family: "Comfortaa";
     -fx-control-inner-background: derive(-fx-base,80.0%);
+    -fx-focus-color: transparent;
     -fx-base: #ff9900;
     -fx-accent: #cc7a00;
     -fx-background-color: white

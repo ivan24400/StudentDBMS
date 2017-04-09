@@ -12,7 +12,8 @@
     -fx-base: #00cccc;
     -fx-control-inner-background: #e6ffff;
     -fx-accent: #4d4dff;
-    -fx-background-color: white
+    -fx-background-color: white;
+    -fx-focus-color: transparent
 }
 
 

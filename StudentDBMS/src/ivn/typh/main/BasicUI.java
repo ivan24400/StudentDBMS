@@ -15,6 +15,8 @@ import org.bson.Document;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
+import com.mongodb.MongoSocketException;
+
 import javafx.animation.FillTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -64,7 +66,7 @@ public class BasicUI extends Application implements Runnable {
 	private Button exit;
 	private Button about;
 	private Button help;
-	private Button cnct;
+	private Button connect;
 	private ToggleButton fulls;
 
 	public void startUI() throws InterruptedException, ExecutionException {
@@ -77,14 +79,14 @@ public class BasicUI extends Application implements Runnable {
 				exit = new Button("Exit");
 				about = new Button("About");
 				help = new Button("Help");
-				cnct = new Button("Connect");
+				connect = new Button("Connect");
 				institute = new Label();
 				fulls = new ToggleButton();
 
 				exit.setId("logout");
 				about.setId("about");
 				help.setId("help");
-				cnct.setId("connect");
+				connect.setId("connect");
 				fulls.setId("fullscreen");
 				
 				exit.setOnAction(event -> {
@@ -94,7 +96,7 @@ public class BasicUI extends Application implements Runnable {
 					stage.setFullScreen(fulls.isSelected());
 				});
 				fulls.setSelected(true);
-				cnct.setOnAction(arg0 -> {
+				connect.setOnAction(arg0 -> {
 					Dialog<String> dialog = new Dialog<>();
 					dialog.setTitle("Connection - Typh™");
 					dialog.initOwner(stage);
@@ -291,7 +293,7 @@ public class BasicUI extends Application implements Runnable {
 				dummy.getChildren().add(institute);
 				institute.setFont(Font.font(16));
 				dummy.setAlignment(Pos.CENTER);
-				tool.getItems().addAll(cnct, new Separator(), help, about, new Separator(), fulls, dummy, exit);
+				tool.getItems().addAll(connect, new Separator(), help, about, new Separator(), fulls, dummy, exit);
 				pane.setTop(tool);
 				pane.setCenter(sp);
 				basic = new Scene(pane, 1360, 768);

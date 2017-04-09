@@ -193,24 +193,29 @@ public class TchrUI implements Runnable {
 			Components.tp[i] = new TitledPane(Components.paneList[i], Components.scroll[i]);
 		}
 
+		Components.slist.setPrefWidth(150);
+
+		
+		Button about = ((Button) Components.mb.getItems().get(3));
+		Button help = ((Button) Components.mb.getItems().get(2));
+
+		about.setId("side-menu-button");
+		help.setId("side-menu-button");
+
+		GridPane.setHgrow(Components.accord, Priority.ALWAYS);
+		GridPane.setValignment(Components.left, VPos.CENTER);
+		StackPane.setAlignment(Components.side, Pos.CENTER_LEFT);
+
 		Components.accord.getPanes().addAll(Components.tp);
 		Components.accord.setExpandedPane(Components.tp[0]);
 
-		Components.slist.setPrefWidth(150);
-
-		GridPane.setHgrow(Components.accord, Priority.ALWAYS);
+		
 
 		Components.top.getChildren().addAll(Components.srch, Components.searchBox);
 		Components.topL.getChildren().add(Components.pname);
 
 		Components.left.getChildren().addAll(Components.dprt, Components.pdprt, Components.cls, Components.pcls,
 				Components.tstuds, Components.nstuds);
-
-		Button about = ((Button) Components.mb.getItems().get(3));
-		Button help = ((Button) Components.mb.getItems().get(2));
-
-		about.setId("side-menu-button");
-		help.setId("side-menu-button");
 
 		Components.side.addNodes(Components.topL, Components.left, help, about);
 
@@ -219,9 +224,6 @@ public class TchrUI implements Runnable {
 		Components.mb.getItems().remove(0, 4);
 		Components.mb.getItems().add(0, Components.menu);
 		Components.mb.getItems().get(2).setId("fullscreen");
-
-		GridPane.setValignment(Components.left, VPos.CENTER);
-		StackPane.setAlignment(Components.side, Pos.CENTER_LEFT);
 
 		Components.tgpane.add(Components.top, 0, 0);
 		Components.tgpane.add(Components.aboveAcc, 0, 1);
@@ -234,15 +236,23 @@ public class TchrUI implements Runnable {
 		Components.sctgpane.setContent(Components.tgpane);
 		Components.stage.getScene().getStylesheets().remove(0);
 		Components.stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
-
-		Components.spMain.getChildren().addAll(Components.sctgpane, dummy, Components.side);
-		Components.pane.setCenter(Components.spMain);
+		
+		Platform.runLater(()->{
+			Components.spMain.getChildren().addAll(Components.sctgpane, dummy, Components.side);
+			Components.pane.setCenter(Components.spMain);
+		});
+		
 
 		disableAll(true);
 		Components.setIdAll();
 		Components.setCacheAll();
 		Components.slist.getSelectionModel().selectFirst();
-
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.out.println("Last Line in tchr");
 	}
 
 	private void uploadData(String sid) {

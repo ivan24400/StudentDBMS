@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import ivn.typh.main.Engine;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.CacheHint;
@@ -31,7 +32,6 @@ import javafx.util.converter.IntegerStringConverter;
 
 public class Attendance {
 
-	
 	public static GridPane attendance;
 	public static ObservableList<AttendanceData> atsem1Data;
 	public static ObservableList<AttendanceData> atsem2Data;
@@ -45,7 +45,7 @@ public class Attendance {
 	public static NumberAxis atYaxis;
 
 	@SuppressWarnings("unchecked")
-	static void setup(){
+	static void setup() {
 		attendance = new GridPane();
 		Components.scroll[Components.paneList.length - (Components.paneCount)] = new ScrollPane();
 
@@ -77,12 +77,14 @@ public class Attendance {
 
 		atsub.setCellFactory(TextFieldTableCell.forTableColumn());
 		atsub.setOnEditCommit(t -> {
-			((AttendanceData) t.getTableView().getItems().get(t.getTablePosition().getRow())).setSubject(t.getNewValue());
+			((AttendanceData) t.getTableView().getItems().get(t.getTablePosition().getRow()))
+					.setSubject(t.getNewValue());
 		});
 
 		atAttended.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 		atAttended.setOnEditCommit(t -> {
-			((AttendanceData) t.getTableView().getItems().get(t.getTablePosition().getRow())).setAttended(t.getNewValue());
+			((AttendanceData) t.getTableView().getItems().get(t.getTablePosition().getRow()))
+					.setAttended(t.getNewValue());
 		});
 
 		atTotal.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
@@ -109,12 +111,14 @@ public class Attendance {
 
 		atsub1.setCellFactory(TextFieldTableCell.forTableColumn());
 		atsub1.setOnEditCommit(t -> {
-			((AttendanceData) t.getTableView().getItems().get(t.getTablePosition().getRow())).setSubject(t.getNewValue());
+			((AttendanceData) t.getTableView().getItems().get(t.getTablePosition().getRow()))
+					.setSubject(t.getNewValue());
 		});
 
 		atAttended1.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 		atAttended1.setOnEditCommit(t -> {
-			((AttendanceData) t.getTableView().getItems().get(t.getTablePosition().getRow())).setAttended(t.getNewValue());
+			((AttendanceData) t.getTableView().getItems().get(t.getTablePosition().getRow()))
+					.setAttended(t.getNewValue());
 		});
 
 		atTotal1.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
@@ -138,21 +142,22 @@ public class Attendance {
 		atBarChart.setLegendVisible(false);
 
 		attendance.setId("attendanceP");
-		atBarChart.setCache(true);               
-		atBarChart.setCacheShape(true);          
+		atBarChart.setCache(true);
+		atBarChart.setCacheShape(true);
 		atBarChart.setCacheHint(CacheHint.SPEED);
-		
-		attendance.add(BorderTitledPane.addTitle("Semester 1", atsem1), 0, 1, 3, 1);
-		attendance.add(BorderTitledPane.addTitle("Semester 2", atsem2), 4, 1, 3, 1);
-		attendance.add(atrbsem1, 3, 5);
-		attendance.add(atrbsem2, 4, 5);
-		attendance.add(atBarChart, 0, 4, 8, 1);
 
+		Platform.runLater(() -> {
+			attendance.add(BorderTitledPane.addTitle("Semester 1", atsem1), 0, 1, 3, 1);
+			attendance.add(BorderTitledPane.addTitle("Semester 2", atsem2), 4, 1, 3, 1);
+			attendance.add(atrbsem1, 3, 5);
+			attendance.add(atrbsem2, 4, 5);
+			attendance.add(atBarChart, 0, 4, 8, 1);
+		});
 		Components.scroll[Components.paneList.length - (Components.paneCount)].setContent(attendance);
 		Components.scroll[Components.paneList.length - (Components.paneCount--)].setHbarPolicy(ScrollBarPolicy.NEVER);
 
 	}
-	
+
 	public static void loadAttendanceChart(String year, int semester) {
 		if (year.equals("SE"))
 			semester = semester + 2;
@@ -180,12 +185,11 @@ public class Attendance {
 		}
 		atBarChart.getData().add(cdata);
 	}
-	
+
 	static void loadAttendanceData(String n) {
 		JSONArray jsona = null;
 		try {
-			String data = Engine.db.getCollection("Students").find(eq("sid", Personal.tsid.getText())).first()
-					.toJson();
+			String data = Engine.db.getCollection("Students").find(eq("sid", Personal.tsid.getText())).first().toJson();
 			jsona = new JSONObject(data).getJSONArray(n.toLowerCase());
 		} catch (JSONException e) {
 		}

@@ -7,13 +7,13 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class Report {
+public class ReportData {
 
 	private BooleanProperty seen = new SimpleBooleanProperty();
 	private StringProperty report = new SimpleStringProperty();
 	private IntegerProperty sem = new SimpleIntegerProperty();
 	
-	public Report(boolean s,int sm,String r){
+	public ReportData(boolean s,int sm,String r){
 		setSeen(s);
 		setSem(sm);
 		setReport(r);

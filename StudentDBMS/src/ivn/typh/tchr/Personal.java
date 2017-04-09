@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import ivn.typh.main.Engine;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -42,7 +43,7 @@ public class Personal {
 	public static ImageView dpImgView;
 	public static TextField tsname;
 	public static TextField tsid;
-	public static ListView<Report> reportPane;
+	public static ListView<ReportData> reportPane;
 	public static ChoiceBox<String> tsrno;
 	public static ChoiceBox<String> tsdprt;
 	public static ChoiceBox<String> tsclass;
@@ -187,19 +188,19 @@ public class Personal {
 		reportPane.setContextMenu(repcm);
 		reportPane.getSelectionModel().selectLast();
 
-		StringConverter<Report> rconvertor = new StringConverter<Report>() {
+		StringConverter<ReportData> rconvertor = new StringConverter<ReportData>() {
 			@Override
-			public Report fromString(String arg0) {
+			public ReportData fromString(String arg0) {
 				return null;
 			}
 
 			@Override
-			public String toString(Report arg) {
+			public String toString(ReportData arg) {
 				return "[Semester " + arg.getSem() + "]\t" + arg.getReport();
 			}
 
 		};
-		reportPane.setCellFactory(CheckBoxListCell.forListView(Report::seenProperty, rconvertor));
+		reportPane.setCellFactory(CheckBoxListCell.forListView(ReportData::seenProperty, rconvertor));
 		
 		Components.report.setOnAction(arg -> {
 			Dialog<String> dialog = new Dialog<>();
@@ -249,31 +250,34 @@ public class Personal {
 		personal.setId("personalP");
 		dpImgView.setId("dpImgView");
 		
-		personal.add(sname, 0, 1);
-		personal.add(tsname, 1, 1);
-		personal.add(sid, 0, 2);
-		personal.add(tsid, 1, 2);
-		personal.add(srno, 0, 3);
-		personal.add(tsrno, 1, 3);
-		personal.add(sdprt, 0, 4);
-		personal.add(tsdprt, 1, 4);
-		personal.add(sclass, 2, 2);
-		personal.add(tsclass, 3, 2);
-		personal.add(sbatch, 2, 1);
-		personal.add(tsbatch, 3, 1);
-		personal.add(smail, 0, 5);
-		personal.add(tsmail, 1, 5);
-		personal.add(saddr, 2, 3);
-		personal.add(tsaddr, 3, 3);
-		personal.add(sphone, 2, 4);
-		personal.add(tsphone, 3, 4);
-		personal.add(pphone, 2, 5);
-		personal.add(tpphone, 3, 5);
-		personal.add(dpImgView, 4, 1, 1, 5);
-		personal.add(reports, 0, 6);
-		personal.add(spReport, 0, 7, 5, 1);
-		personal.setAlignment(Pos.CENTER);
+		Platform.runLater(()->{
+			personal.add(sname, 0, 1);
+			personal.add(tsname, 1, 1);
+			personal.add(sid, 0, 2);
+			personal.add(tsid, 1, 2);
+			personal.add(srno, 0, 3);
+			personal.add(tsrno, 1, 3);
+			personal.add(sdprt, 0, 4);
+			personal.add(tsdprt, 1, 4);
+			personal.add(sclass, 2, 2);
+			personal.add(tsclass, 3, 2);
+			personal.add(sbatch, 2, 1);
+			personal.add(tsbatch, 3, 1);
+			personal.add(smail, 0, 5);
+			personal.add(tsmail, 1, 5);
+			personal.add(saddr, 2, 3);
+			personal.add(tsaddr, 3, 3);
+			personal.add(sphone, 2, 4);
+			personal.add(tsphone, 3, 4);
+			personal.add(pphone, 2, 5);
+			personal.add(tpphone, 3, 5);
+			personal.add(dpImgView, 4, 1, 1, 5);
+			personal.add(reports, 0, 6);
+			personal.add(spReport, 0, 7, 5, 1);
+			personal.setAlignment(Pos.CENTER);
 
+		});
+		
 		Components.scroll[Components.paneList.length - (Components.paneCount)].setHbarPolicy(ScrollBarPolicy.NEVER);
 		Components.scroll[Components.paneList.length - (Components.paneCount--)].setContent(personal);
 
@@ -291,7 +295,7 @@ public class Personal {
 			int sem = j.getInt("sem");
 			String r = j.getString("report");
 			if (TchrUI.sMatchesY(sem, year) == 1)
-				Personal.reportPane.getItems().add(new Report(b, sem, r));
+				Personal.reportPane.getItems().add(new ReportData(b, sem, r));
 		}
 	}
 

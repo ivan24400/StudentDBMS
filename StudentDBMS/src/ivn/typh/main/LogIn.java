@@ -129,14 +129,7 @@ public class LogIn implements Runnable {
 				Boolean result = false;
 				int flag = verifyCredential();
 				if (flag == 1) {
-					Platform.runLater(()->{
 						loadUI();
-						try {
-							Thread.sleep(3000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					});
 					result = true;
 
 				} else if (flag == 2) {

@@ -183,9 +183,13 @@ public class Project {
 	   bin_handle.setCacheHint(CacheHint.SPEED); 
 	   
 		recycle.getChildren().addAll(bin_handle, bin_lid, bin);
-		projects.add(upload, 0, 0);
-		projects.add(prList, 1, 0, 1, 2);
-		projects.add(recycle, 0, 1);
+		
+		Platform.runLater(()->{
+			projects.add(upload, 0, 0);
+			projects.add(prList, 1, 0, 1, 2);
+			projects.add(recycle, 0, 1);
+		});
+
 
 		Components.scroll[Components.paneList.length - (Components.paneCount--)].setContent(projects);
 

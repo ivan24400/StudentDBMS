@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import ivn.typh.main.Engine;
 import ivn.typh.main.Notification;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.CacheHint;
 import javafx.scene.Node;
@@ -123,9 +124,12 @@ public class Assignment {
 		asList.setCacheShape(true);          
 		asList.setCacheHint(CacheHint.SPEED);
 		
-		assignment.add(addAssignment, 2, 0);
-		assignment.add(removeAssignment, 3, 0);
-		assignment.add(spAssignment, 0, 1, 4, 1);
+		Platform.runLater(()->{
+			assignment.add(addAssignment, 2, 0);
+			assignment.add(removeAssignment, 3, 0);
+			assignment.add(spAssignment, 0, 1, 4, 1);
+
+		});
 
 		Components.scroll[Components.paneList.length - (Components.paneCount)].setContent(assignment);
 		Components.scroll[Components.paneList.length - (Components.paneCount--)].setHbarPolicy(ScrollBarPolicy.NEVER);
