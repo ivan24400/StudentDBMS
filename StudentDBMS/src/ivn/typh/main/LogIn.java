@@ -1,5 +1,10 @@
 package ivn.typh.main;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
@@ -130,9 +135,15 @@ public class LogIn implements Runnable {
 				int flag = verifyCredential();
 				if (flag == 1) {
 						loadUI();
+
 					result = true;
 
 				} else if (flag == 2) {
+					result = false;
+				}else if (flag == 4){
+					Platform.runLater(()->{
+						Notification.message(BasicUI.stage, AlertType.ERROR, "User - Typh™", "User Already Logged In");
+					});
 					result = false;
 				}
 				return result;
@@ -161,6 +172,7 @@ public class LogIn implements Runnable {
 		if (Engine.db == null)
 			return 3;
 		
+
 		String pass, dbPass = null, dbUser = null;
 		pass = encryptedPassword(BasicUI.password);
 
@@ -168,7 +180,10 @@ public class LogIn implements Runnable {
 		
 		if(!(coll.count(new Document("user", BasicUI.user)) > 0))
 			return 2;
-			
+		
+		if(isUserLoggedIn())
+			return 4;
+		
 		Document doc = coll.find(eq("user", BasicUI.user)).first();
 		dbPass = doc.getString("passwd");
 		dbUser = doc.getString("user");
@@ -176,6 +191,33 @@ public class LogIn implements Runnable {
 			return 1;
 		else
 			return 2;
+
+	}
+
+	private boolean isUserLoggedIn() {
+		Socket client;
+		boolean flag = false;
+		try {
+			client = new Socket(BasicUI.ipAddr,61003);
+			BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			PrintWriter out = new PrintWriter(client.getOutputStream());
+			
+			out.println(BasicUI.user);
+			out.flush();
+			String line = in.readLine();
+			if(line.equals("__EXIST__"))
+				flag = true;
+			else 
+				flag = false;
+			out.close();
+			in.close();
+			client.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return flag;
+
 	}
 
 	private void loadUI() {

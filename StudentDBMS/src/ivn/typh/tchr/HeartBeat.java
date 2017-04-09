@@ -44,6 +44,8 @@ public class HeartBeat implements Runnable {
 							Platform.runLater(()->{
 								Notification.message(Components.stage, AlertType.INFORMATION, "Message from admin - Typh™", formatMessage(text));
 							});
+						}else{
+							
 						}
 					} catch (IOException | ClassNotFoundException e) {
 						serverFailed(false);

@@ -330,11 +330,13 @@ public class Academic {
 			academic.add(rbsem1, 3, 0);
 			academic.add(rbsem2, 4, 0);
 			academic.add(studProgress, 0, 7, 5, 1);
-		});
+		
 
+		});
+		
 		Components.scroll[Components.paneList.length - (Components.paneCount)].setHbarPolicy(ScrollBarPolicy.NEVER);
 		Components.scroll[Components.paneList.length - (Components.paneCount--)].setContent(academic);
-
+		
 	}
 
 	static void loadAcademicData(String year) {
@@ -361,13 +363,16 @@ public class Academic {
 			boolean back = json.getBoolean("back");
 			int sem = json.getInt("sem");
 
-			if (sem % 2 == 1) {
-				tsem1.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
-				tsem1.getItems().add(new AcademicData(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
-			} else {
-				tsem2.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
-				tsem2.getItems().add(new AcademicData(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
-			}
+			Platform.runLater(()->{
+				if (sem % 2 == 1) {
+					tsem1.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
+					tsem1.getItems().add(new AcademicData(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
+				} else {
+					tsem2.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
+					tsem2.getItems().add(new AcademicData(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
+				}
+			});
+			
 		}
 
 	}

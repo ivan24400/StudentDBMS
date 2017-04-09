@@ -55,14 +55,14 @@ public class Components {
 	public static String[] paneList;
 	public static int paneCount;
 
-	public static SideBar side;
-	
-	public static Button menu;
-	public static ToolBar mb;
+
 	public static TitledPane[] tp;
 	public static Accordion accord;
 	
 	public static Button logout;
+	public static SideBar side;
+	public static Button menu;
+	public static ToolBar mb;
 	
 	public static ComboBox<String> slist;
 	public static ToggleButton editable;
@@ -85,20 +85,7 @@ public class Components {
 	public static int counter;
 	
 	public static String tscsem;
-	
-	//	Personal 
-	
 
-	
-	//	Academics
-
-	//	Attendance
-
-	//	Projects
-	
-
-	//	Assignments
-	
 	
 	public static void setIdAll(){
 		
@@ -154,14 +141,7 @@ public class Components {
 		side.setCache(true);               
 		side.setCacheShape(true);          
 		side.setCacheHint(CacheHint.SPEED);
-		
-		
-		
-	
-		
-		
 
-		
 		
 	}   
 }

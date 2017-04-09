@@ -336,7 +336,7 @@ public class BasicUI extends Application implements Runnable {
 					addr = InetAddress.getByName(ipAddr);
 					if (!addr.isReachable(4000))
 						return false;
-					MongoClientOptions.Builder options = MongoClientOptions.builder().serverSelectionTimeout(7000).sslEnabled(true)
+					MongoClientOptions.Builder options = MongoClientOptions.builder().serverSelectionTimeout(8000).sslEnabled(true)
 							.sslInvalidHostNameAllowed(true);
 					MongoClientURI connectionString = new MongoClientURI(
 							"mongodb://typh:typhpass@" + ipAddr + ":24000/?authSource=Students", options);

@@ -16,6 +16,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
@@ -134,12 +138,6 @@ public class TchrUI implements Runnable {
 			Assignment.loadAssignmentData(n);
 		});
 
-		// Start the heart beat
-
-		Thread pulse = new Thread(new HeartBeat());
-		pulse.start();
-
-		// Logout Action
 
 		Components.logout.setOnAction(arg -> {
 			logoutApplication();
@@ -152,9 +150,6 @@ public class TchrUI implements Runnable {
 		Components.editable.selectedProperty().addListener((arg, o, n) -> {
 			disableAll(!n);
 		});
-
-		Components.paneCount = Components.paneList.length;
-		Components.scroll = new ScrollPane[Components.paneCount];
 
 		Components.slist.getSelectionModel().selectedItemProperty().addListener((arg, o, n) -> {
 			loadStudentProfile(n.split(":")[1]);
@@ -170,6 +165,9 @@ public class TchrUI implements Runnable {
 		Components.aboveAcc.getChildren().addAll(Components.student, Components.slist, new Label("Select Year"),
 				Components.yrlst, Components.editable, Components.update, Components.report, Components.export);
 		
+		Components.paneCount = Components.paneList.length;           
+		Components.scroll = new ScrollPane[Components.paneCount];    
+		
 		// Setup All the components
 
 		Personal.setup();
@@ -183,7 +181,12 @@ public class TchrUI implements Runnable {
 		Assignment.setup();
 
 		loadData();
+		
+		// Start the heart beat
 
+		Thread pulse = new Thread(new HeartBeat());
+		pulse.start();
+		
 		//
 		// Adding all panes to the accordion
 		//
@@ -199,59 +202,64 @@ public class TchrUI implements Runnable {
 		Button about = ((Button) Components.mb.getItems().get(3));
 		Button help = ((Button) Components.mb.getItems().get(2));
 
-		about.setId("side-menu-button");
-		help.setId("side-menu-button");
+		Platform.runLater(()->{
+			about.setId("side-menu-button");
+			help.setId("side-menu-button");
+
+		});
 
 		GridPane.setHgrow(Components.accord, Priority.ALWAYS);
 		GridPane.setValignment(Components.left, VPos.CENTER);
 		StackPane.setAlignment(Components.side, Pos.CENTER_LEFT);
 
-		Components.accord.getPanes().addAll(Components.tp);
-		Components.accord.setExpandedPane(Components.tp[0]);
-
 		
+		Components.setCacheAll();
 
-		Components.top.getChildren().addAll(Components.srch, Components.searchBox);
-		Components.topL.getChildren().add(Components.pname);
-
-		Components.left.getChildren().addAll(Components.dprt, Components.pdprt, Components.cls, Components.pcls,
-				Components.tstuds, Components.nstuds);
-
-		Components.side.addNodes(Components.topL, Components.left, help, about);
-
-		Components.mb.getItems().remove(7);
-		Components.mb.getItems().add(7, Components.logout);
-		Components.mb.getItems().remove(0, 4);
-		Components.mb.getItems().add(0, Components.menu);
-		Components.mb.getItems().get(2).setId("fullscreen");
-
-		Components.tgpane.add(Components.top, 0, 0);
-		Components.tgpane.add(Components.aboveAcc, 0, 1);
-		Components.tgpane.add(Components.accord, 0, 2);
 
 		Components.tgpane.setMaxSize(BasicUI.screenWidth, BasicUI.screenHeight);
 		Components.tgpane.setMinSize(BasicUI.screenWidth, BasicUI.screenHeight);
 		Components.sctgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		Components.sctgpane.setVbarPolicy(ScrollBarPolicy.NEVER);
-		Components.sctgpane.setContent(Components.tgpane);
-		Components.stage.getScene().getStylesheets().remove(0);
-		Components.stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
 		
 		Platform.runLater(()->{
+			Components.accord.getPanes().addAll(Components.tp);
+			Components.accord.setExpandedPane(Components.tp[0]);
+
+			Components.setIdAll();
+
+			Components.top.getChildren().addAll(Components.srch, Components.searchBox);
+			Components.topL.getChildren().add(Components.pname);
+
+			Components.left.getChildren().addAll(Components.dprt, Components.pdprt, Components.cls, Components.pcls,
+					Components.tstuds, Components.nstuds);
+
+
+			
+			Components.tgpane.add(Components.top, 0, 0);
+			Components.tgpane.add(Components.aboveAcc, 0, 1);
+			Components.tgpane.add(Components.accord, 0, 2);
+
+			Components.sctgpane.setContent(Components.tgpane);
+		
+			Components.side.addNodes(Components.topL, Components.left, help, about);
+			Components.stage.getScene().getStylesheets().remove(0);
+			Components.stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
+			
+			Components.mb.getItems().remove(7);
+			Components.mb.getItems().add(7, Components.logout);
+			Components.mb.getItems().remove(0, 4);
+			Components.mb.getItems().add(0, Components.menu);
+			Components.mb.getItems().get(2).setId("fullscreen");
 			Components.spMain.getChildren().addAll(Components.sctgpane, dummy, Components.side);
 			Components.pane.setCenter(Components.spMain);
+			disableAll(true);
+
+
+			Components.slist.getSelectionModel().selectFirst();
+			
+
 		});
 		
-
-		disableAll(true);
-		Components.setIdAll();
-		Components.setCacheAll();
-		Components.slist.getSelectionModel().selectFirst();
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		System.out.println("Last Line in tchr");
 	}
 
@@ -408,25 +416,30 @@ public class TchrUI implements Runnable {
 
 		// Academic
 
-		Academic.studProgress.getData().clear();
-		Academic.tsem1.setFixedCellSize(24);
-		Academic.tsem1.prefHeightProperty()
-				.bind(Bindings.size(Academic.tsem1.getItems()).multiply(Academic.tsem1.getFixedCellSize()).add(90));
-		Academic.tsem2.setFixedCellSize(24);
-		Academic.tsem2.prefHeightProperty()
-				.bind(Bindings.size(Academic.tsem2.getItems()).multiply(Academic.tsem2.getFixedCellSize()).add(90));
-		XYChart.Series<String, Number> data = new XYChart.Series<>();
-		for (int j = 1; j <= 8; j++) {
-			float p = getSemesterPercent(j);
-			if (p != 0)
-				data.getData().addAll(new XYChart.Data<>("Semester " + j, p));
-		}
-		Academic.studProgress.getData().add(data);
-
-		// Attendance
 		
-		Attendance.atsem1.setFixedCellSize(24);
-		Attendance.atsem2.setFixedCellSize(24);
+		Platform.runLater(()->{
+			Academic.studProgress.getData().clear();
+			Academic.tsem1.setFixedCellSize(24);
+			Academic.tsem1.prefHeightProperty()
+					.bind(Bindings.size(Academic.tsem1.getItems()).multiply(Academic.tsem1.getFixedCellSize()).add(90));
+			Academic.tsem2.setFixedCellSize(24);
+			Academic.tsem2.prefHeightProperty()
+					.bind(Bindings.size(Academic.tsem2.getItems()).multiply(Academic.tsem2.getFixedCellSize()).add(90));
+			XYChart.Series<String, Number> data = new XYChart.Series<>();
+			for (int j = 1; j <= 8; j++) {
+				float p = getSemesterPercent(j);
+				if (p != 0)
+					data.getData().addAll(new XYChart.Data<>("Semester " + j, p));
+			}
+
+			Academic.studProgress.getData().add(data);
+
+			//		Attendance
+			
+			Attendance.atsem1.setFixedCellSize(24);
+			Attendance.atsem2.setFixedCellSize(24);
+		});
+
 
 		Attendance.atsem1.prefHeightProperty().bind(
 				Bindings.size(Attendance.atsem1.getItems()).multiply(Attendance.atsem1.getFixedCellSize()).add(90));
@@ -678,8 +691,6 @@ public class TchrUI implements Runnable {
 
 	@Override
 	public void run() {
-		Platform.runLater(() -> {
 			startUI();
-		});
 	}
 }

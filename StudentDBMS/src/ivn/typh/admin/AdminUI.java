@@ -265,18 +265,21 @@ public class AdminUI implements Runnable {
 		Components.sgpane.setVbarPolicy(ScrollBarPolicy.NEVER);
 		Components.spMain.getChildren().addAll(Components.sgpane, dummy, Components.side);
 
-		Components.stage.getScene().getStylesheets().remove(0);
-		Components.stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
-		Components.pane.setCenter(Components.spMain);
+		Platform.runLater(()->{
+			Components.stage.getScene().getStylesheets().remove(0);
+			Components.stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
+			Components.pane.setCenter(Components.spMain);
 
-		Components.setIdAll();
-		Components.setCacheAll();
-		Components.pane.applyCss();
-		Components.pane.layout();
-		Components.pane.requestLayout();
+			Components.setIdAll();
+			Components.setCacheAll();
+			Components.pane.applyCss();
+			Components.pane.layout();
+			Components.pane.requestLayout();
+			
+			tabPane.setTabMinWidth(tabPane.getHeight() / 3 - 17);
+			tabPane.setTabMaxWidth(tabPane.getHeight() / 3 - 17);
+		});
 
-		tabPane.setTabMinWidth(tabPane.getHeight() / 3 - 17);
-		tabPane.setTabMaxWidth(tabPane.getHeight() / 3 - 17);
 	}
 
 	private void sendData(String user) {

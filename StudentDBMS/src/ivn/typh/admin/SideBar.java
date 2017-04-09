@@ -3,6 +3,7 @@ package ivn.typh.admin;
 
 import javafx.animation.Animation;
 import javafx.animation.Transition;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -39,7 +40,10 @@ public class SideBar extends VBox {
 		
 		home.setBackground(new Background(new BackgroundFill(Color.rgb(0, 0, 0, 0.2),CornerRadii.EMPTY,Insets.EMPTY)));
 		setId("sideBar");
+	Platform.runLater(()->{
 		getChildren().addAll(nodes);
+
+	});
 		getChildren().forEach(node->VBox.setVgrow(node, Priority.ALWAYS));;
 
 		menu.setOnAction(arg -> {

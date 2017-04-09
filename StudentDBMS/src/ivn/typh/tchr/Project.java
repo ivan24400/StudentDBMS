@@ -188,9 +188,8 @@ public class Project {
 			projects.add(upload, 0, 0);
 			projects.add(prList, 1, 0, 1, 2);
 			projects.add(recycle, 0, 1);
+
 		});
-
-
 		Components.scroll[Components.paneList.length - (Components.paneCount--)].setContent(projects);
 
 	}
@@ -198,16 +197,21 @@ public class Project {
 
 	
 	static void loadProjectData(String yr) {
-		prList.getItems().clear();
 		Engine.gfs.find().forEach(new Block<GridFSFile>() {
 			public void apply(final GridFSFile file) {
 				String name = file.getFilename().split(":")[1];
 				String gfsid = file.getFilename().split(":")[0];
 				int year = Integer.parseInt(gfsid.substring(2, 4));
-				if (year == TchrUI.sMatchesY(0, yr))
-					prList.getItems().add(name);
+				if (year == TchrUI.sMatchesY(0, yr)){
+					Platform.runLater(()->{
+						prList.getItems().clear();
+						prList.getItems().add(name);
+
+					});
+				}
 			}
 		});
 	}
+
 
 }

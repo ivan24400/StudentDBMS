@@ -41,6 +41,9 @@ public class Loading{
 
 	
 	public void stopTask(){
-		alert.setResult(ButtonType.CLOSE);
+		Platform.runLater(()->{
+			alert.setResult(ButtonType.CLOSE);
+
+		});
 	}
 }

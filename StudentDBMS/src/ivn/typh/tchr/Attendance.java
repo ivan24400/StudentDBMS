@@ -152,6 +152,7 @@ public class Attendance {
 			attendance.add(atrbsem1, 3, 5);
 			attendance.add(atrbsem2, 4, 5);
 			attendance.add(atBarChart, 0, 4, 8, 1);
+			
 		});
 		Components.scroll[Components.paneList.length - (Components.paneCount)].setContent(attendance);
 		Components.scroll[Components.paneList.length - (Components.paneCount--)].setHbarPolicy(ScrollBarPolicy.NEVER);
@@ -170,7 +171,6 @@ public class Attendance {
 		JSONArray jsona = new JSONObject(data).getJSONArray(year.toLowerCase());
 		Iterator<?> it = jsona.iterator();
 
-		atBarChart.getData().clear();
 		XYChart.Series<String, Number> cdata = new XYChart.Series<String, Number>();
 		while (it.hasNext()) {
 			JSONObject json = (JSONObject) it.next();
@@ -183,7 +183,11 @@ public class Attendance {
 				cdata.getData().add(new XYChart.Data<>(name, at));
 			}
 		}
-		atBarChart.getData().add(cdata);
+		Platform.runLater(()->{
+			atBarChart.getData().clear();
+			atBarChart.getData().add(cdata);
+
+		});
 	}
 
 	static void loadAttendanceData(String n) {
@@ -202,16 +206,19 @@ public class Attendance {
 			int at = json.getInt("attended");
 			int att = json.getInt("attendedTotal");
 			int sem = json.getInt("sem");
-			if (sem % 2 == 1) {
-				atsem1.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
-				atrbsem1.setText("Semester: " + Integer.toString(sem));
-				atsem1.getItems().add(new AttendanceData(name, at, att));
-			} else {
-				atsem2.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
-				atsem2.getItems().add(new AttendanceData(name, at, att));
-				atrbsem2.setText("Semester: " + Integer.toString(sem));
-
-			}
+			
+			Platform.runLater(()->{
+				if (sem % 2 == 1) {
+					atsem1.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
+					atrbsem1.setText("Semester: " + Integer.toString(sem));
+					atsem1.getItems().add(new AttendanceData(name, at, att));
+				} else {
+					atsem2.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
+					atsem2.getItems().add(new AttendanceData(name, at, att));
+					atrbsem2.setText("Semester: " + Integer.toString(sem));
+				}
+			});
+			
 		}
 	}
 

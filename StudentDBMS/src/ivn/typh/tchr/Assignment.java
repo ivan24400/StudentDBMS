@@ -129,8 +129,8 @@ public class Assignment {
 			assignment.add(removeAssignment, 3, 0);
 			assignment.add(spAssignment, 0, 1, 4, 1);
 
+			
 		});
-
 		Components.scroll[Components.paneList.length - (Components.paneCount)].setContent(assignment);
 		Components.scroll[Components.paneList.length - (Components.paneCount--)].setHbarPolicy(ScrollBarPolicy.NEVER);
 	}
@@ -142,14 +142,17 @@ public class Assignment {
 					.toJson();
 			jsona = new JSONObject(data).getJSONArray(n.toLowerCase() + "Assignments");
 
-			asList.getItems().clear();
 			Iterator<?> it = jsona.iterator();
 			while (it.hasNext()) {
 				JSONObject json = (JSONObject) it.next();
 				String title = json.getString("title");
 				int semester = json.getInt("sem");
 				boolean flag = json.getBoolean("completed");
-				asList.getItems().add(new AssignmentData(semester, title, flag));
+				Platform.runLater(()->{
+					asList.getItems().clear();
+					asList.getItems().add(new AssignmentData(semester, title, flag));
+
+				});
 			}
 		} catch (JSONException | NullPointerException e) {
 		}

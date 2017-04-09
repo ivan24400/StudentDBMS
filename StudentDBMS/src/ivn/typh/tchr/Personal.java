@@ -277,10 +277,10 @@ public class Personal {
 			personal.setAlignment(Pos.CENTER);
 
 		});
+	
 		
 		Components.scroll[Components.paneList.length - (Components.paneCount)].setHbarPolicy(ScrollBarPolicy.NEVER);
 		Components.scroll[Components.paneList.length - (Components.paneCount--)].setContent(personal);
-
 	}
 	
 	static void loadReport(String year) {
@@ -294,8 +294,11 @@ public class Personal {
 			boolean b = j.getBoolean("seen");
 			int sem = j.getInt("sem");
 			String r = j.getString("report");
-			if (TchrUI.sMatchesY(sem, year) == 1)
-				Personal.reportPane.getItems().add(new ReportData(b, sem, r));
+			if (TchrUI.sMatchesY(sem, year) == 1){
+				Platform.runLater(()->{
+					Personal.reportPane.getItems().add(new ReportData(b, sem, r));
+				});
+			}
 		}
 	}
 

@@ -15,8 +15,6 @@ public class Engine {
 
 	public static void main(String[] args) {
 
-		
-		
 		Thread tliui = new Thread(new BasicUI());
 		tliui.start();
 	}
