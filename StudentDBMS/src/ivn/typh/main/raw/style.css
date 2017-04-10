@@ -68,21 +68,27 @@
  * 	About Dialog
  */				
  	
-#about_pane_title_bar{
-	
-}
-#about_pane{
-	-fx-background-color: linear-gradient(white,derive(white,40%));
+
+#about_pane_contents{
+	-fx-background-color: white;
 	-fx-spacing: 20;
-	-fx-padding: 20
-}
-#about_pane_description{
+	-fx-padding: 30;
 	
 }
+#about_pane_window{
+	-fx-padding: 10;
+	-fx-border-color: black;
+	
+}
+
+
 #about_pane_title{
-	-fx-font-size: 26
+	-fx-padding: 30;
+	-fx-font-size: 26;
+	-fx-effect: dropshadow(gaussian,black,10.0,0.0,3,3)
 }
 #about_pane_close{
+	-fx-font-size: 17;
 	-fx-background-color: transparent
 }
 #about_pane_close:hover{

@@ -40,6 +40,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -296,37 +297,41 @@ public class BasicUI extends Application implements Runnable {
 				
 				about.setOnAction(event->{
 					
-					Dialog<?> abt = new Dialog<>();
+					Alert abt = new Alert(AlertType.NONE);
 					
-					VBox aPane = new VBox();
+					VBox contents = new VBox();
 					HBox titleBar = new HBox();
-
+					VBox window = new VBox();
 					
 					Button close = new Button("x");
+					Pane space = new Pane();
 					Label titleText = new Label("Typh™");
 					//titleText.setGraphic(value);
 					Label description = new Label("Typh™ Students Database Management System.\nVersion 1.0\nCopyright © 2017\nAuthor :- Ivan Pillay");
 					
 					
 					titleBar.setId("about_pane_title_bar");
-					aPane.setId("about_pane");
+					contents.setId("about_pane_contents");
+					window.setId("about_pane_window");
 					description.setId("about_pane_description");
 					titleText.setId("about_pane_title");
 					close.setId("about_pane_close");
 					
+					HBox.setHgrow(space,Priority.ALWAYS);
 					close.setOnAction(value->{
 						Platform.runLater(()->{
-							abt.close();
+							abt.setResult(ButtonType.CLOSE);
 						});
 					});
-					close.setAlignment(Pos.TOP_RIGHT);
+					abt.getDialogPane().getScene().setFill(Color.TRANSPARENT);
+					titleBar.getChildren().addAll(space,close);
 					
-					titleBar.getChildren().add(close);
-					
-					aPane.getChildren().addAll(titleBar,titleText,description);
+					contents.getChildren().addAll(titleText,description);
+					window.getChildren().addAll(titleBar,contents);
 					abt.initOwner(stage);
 					abt.initStyle(StageStyle.TRANSPARENT);
-					abt.getDialogPane().setContent(aPane);
+					abt.getButtonTypes().clear();
+					abt.getDialogPane().setContent(window);
 					abt.show();
 				});
 				
