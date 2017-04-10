@@ -124,7 +124,7 @@ public class AdminUI extends Task<Void>{
 							"First select a valid user.");
 				});
 			}else
-			sendData(item);
+			sendMessage(item);
 		});
 
 		Components.onlineUser.setContextMenu(oucm);
@@ -289,7 +289,7 @@ public class AdminUI extends Task<Void>{
 
 	}
 
-	private void sendData(String user) {
+	private void sendMessage(String user) {
 	
 		Dialog<String> dialog = new Dialog<>();
 		dialog.setTitle("Messenger - Typh™");

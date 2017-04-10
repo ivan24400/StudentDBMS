@@ -97,11 +97,9 @@
  *  Help Page
  */
  
-#help_pane_contents{
-	
-}
+
 #help_pane_window{
-		-fx-padding: 10;
+	-fx-padding: 10;
 	-fx-border-color: black;
 	
 }
@@ -114,7 +112,4 @@
 }
 #help_pane_title{
 	-fx-font-size: 15;
-}
-#help_pane{
-	
 }

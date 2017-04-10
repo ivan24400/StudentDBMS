@@ -389,7 +389,8 @@ public class BasicUI extends Application implements Runnable {
 					});
 					Pane space = new Pane();
 					HBox.setHgrow(space,Priority.ALWAYS);
-					
+
+					helpPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 					titleBar.setOnMousePressed(mouse->{
 			                xOffset = mouse.getSceneX();
 			                yOffset = mouse.getSceneY();
