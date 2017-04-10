@@ -172,6 +172,7 @@ public class Attendance {
 		Iterator<?> it = jsona.iterator();
 
 		XYChart.Series<String, Number> cdata = new XYChart.Series<String, Number>();
+		atBarChart.getData().clear();
 		while (it.hasNext()) {
 			JSONObject json = (JSONObject) it.next();
 			if (json.getInt("sem") == semester) {
@@ -184,7 +185,6 @@ public class Attendance {
 			}
 		}
 		Platform.runLater(()->{
-			atBarChart.getData().clear();
 			atBarChart.getData().add(cdata);
 
 		});

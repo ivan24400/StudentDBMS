@@ -8,9 +8,6 @@ import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.bson.Document;
 import org.json.JSONObject;
 
@@ -119,10 +116,20 @@ public class LogIn implements Runnable {
 
 		loginTask.setOnSucceeded(value -> {
 
-			loadBar.stopTask();
-			if (!loginTask.getValue())
+			// update ui
+	
+			if (!loginTask.getValue()){
+				loadBar.stopTask();
 				Notification.message(stage, AlertType.ERROR, "Invalid credentials - Typh™",
 						"Either username or password is incorrect !");
+			}else{
+				Task<Void> loadUI = loadUI();
+				(new Thread(loadUI)).start();
+				loadUI.setOnSucceeded(event->{
+					loadBar.stopTask();
+
+				});
+			}
 		});
 
 	}
@@ -134,9 +141,7 @@ public class LogIn implements Runnable {
 				Boolean result = false;
 				int flag = verifyCredential();
 				if (flag == 1) {
-						loadUI();
-
-					result = true;
+						result = true;
 
 				} else if (flag == 2) {
 					result = false;
@@ -220,28 +225,27 @@ public class LogIn implements Runnable {
 
 	}
 
-	private void loadUI() {
+	private Task<Void> loadUI() {
 
+		Task<Void> loadUI = null;
 		if (BasicUI.user.equals(new String("admin"))) {
-			 ExecutorService execsrv = Executors.newSingleThreadExecutor();
-			 execsrv.execute(new AdminUI(stage,pane,mb));
-			 execsrv.shutdown();
-
-		} else {
+			
+			loadUI = new AdminUI(stage,pane,mb);
+			
+		}else{
 			String freeze = Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first().toJson();
 			JSONObject json = new JSONObject(freeze);
-
-			if (!json.getBoolean("status")) {
-				 ExecutorService execsrv =
-				 Executors.newSingleThreadExecutor();
-				 execsrv.execute(new TchrUI(stage,pane,scene,mb));
-				 execsrv.shutdown();
-
-			} else
+			if (!json.getBoolean("status")) 
+				
+				loadUI = new TchrUI(stage,pane,scene,mb);
+			
+			else
+				
 				Notification.message(stage, AlertType.ERROR, "User Accounts - Typh™",
 						"Your account has been locked !\nContact system administrators");
 		}
-
+		
+		return loadUI;
 	}
 
 

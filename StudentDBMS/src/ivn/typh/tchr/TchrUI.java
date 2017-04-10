@@ -16,10 +16,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
@@ -42,6 +39,7 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
@@ -70,7 +68,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class TchrUI implements Runnable {
+public class TchrUI extends Task<Void> {
 
 	private static ObservableList<String> studList;
 	private static ObservableMap<String, String> dprtList;
@@ -221,7 +219,6 @@ public class TchrUI implements Runnable {
 		Components.sctgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		Components.sctgpane.setVbarPolicy(ScrollBarPolicy.NEVER);
 		
-		Platform.runLater(()->{
 			Components.accord.getPanes().addAll(Components.tp);
 			Components.accord.setExpandedPane(Components.tp[0]);
 
@@ -242,23 +239,30 @@ public class TchrUI implements Runnable {
 			Components.sctgpane.setContent(Components.tgpane);
 		
 			Components.side.addNodes(Components.topL, Components.left, help, about);
-			Components.stage.getScene().getStylesheets().remove(0);
-			Components.stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
 			
-			Components.mb.getItems().remove(7);
-			Components.mb.getItems().add(7, Components.logout);
-			Components.mb.getItems().remove(0, 4);
-			Components.mb.getItems().add(0, Components.menu);
-			Components.mb.getItems().get(2).setId("fullscreen");
+
 			Components.spMain.getChildren().addAll(Components.sctgpane, dummy, Components.side);
-			Components.pane.setCenter(Components.spMain);
-			disableAll(true);
-
-
-			Components.slist.getSelectionModel().selectFirst();
 			
 
-		});
+			Platform.runLater(()->{
+				
+	
+					Components.mb.getItems().remove(7);
+					Components.mb.getItems().add(7, Components.logout);
+					Components.mb.getItems().remove(0, 4);
+					Components.mb.getItems().add(0, Components.menu);
+					Components.mb.getItems().get(2).setId("fullscreen");
+					
+					Components.stage.getScene().getStylesheets().remove(0);
+					Components.stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
+					
+					Components.pane.setCenter(Components.spMain);
+					disableAll(true);
+					Components.slist.getSelectionModel().selectFirst();
+
+				});
+
+
 		
 		System.out.println("Last Line in tchr");
 	}
@@ -371,7 +375,9 @@ public class TchrUI implements Runnable {
 		JSONObject jsonData = new JSONObject(json);
 
 		// Personal
-		byte[] deci;
+		
+		
+			byte[] deci;
 		BufferedImage bf = null;
 		try {
 			deci = Base64.getDecoder().decode(jsonData.getString("img"));
@@ -382,42 +388,43 @@ public class TchrUI implements Runnable {
 		} catch (IOException | JSONException e) {
 			Personal.dpImgView.setImage(new Image(getClass().getResourceAsStream("/ivn/typh/main/raw/pic.jpg")));
 		}
-		Personal.tsname.setText(jsonData.getString("name"));
-		Personal.tsid.setText(jsonData.getString("sid"));
-		Personal.tsrno.getSelectionModel().select(jsonData.getString("rno"));
-		Personal.tsdprt.getSelectionModel().select(jsonData.getString("department"));
-		Personal.tsclass.getSelectionModel().select(jsonData.getString("batch"));
-		Personal.tsbatch.getSelectionModel().select(jsonData.getString("class"));
-		Personal.tsmail.setText(jsonData.getString("email"));
-		Personal.tsaddr.setText(jsonData.getString("address"));
-		Personal.tsphone.setText(jsonData.getString("studentPhone"));
-		Personal.tpphone.setText(jsonData.getString("parentPhone"));
+	
+			Personal.tsname.setText(jsonData.getString("name"));
+			Personal.tsid.setText(jsonData.getString("sid"));
+			Personal.tsrno.getSelectionModel().select(jsonData.getString("rno"));
+			Personal.tsdprt.getSelectionModel().select(jsonData.getString("department"));
+			Personal.tsclass.getSelectionModel().select(jsonData.getString("batch"));
+			Personal.tsbatch.getSelectionModel().select(jsonData.getString("class"));
+			Personal.tsmail.setText(jsonData.getString("email"));
+			Personal.tsaddr.setText(jsonData.getString("address"));
+			Personal.tsphone.setText(jsonData.getString("studentPhone"));
+			Personal.tpphone.setText(jsonData.getString("parentPhone"));
+			Components.yrlst.getItems().clear();
+			
+			Components.tscsem = jsonData.getString("current_semester");
 
-		Components.tscsem = jsonData.getString("current_semester");
 
-		Components.yrlst.getItems().clear();
+			switch (Components.tscsem) {
+			case "SEM 7":
+			case "SEM 8":
+				Components.yrlst.getItems().add("BE");
+			case "SEM 5":
+			case "SEM 6":
+				Components.yrlst.getItems().add("TE");
+			case "SEM 3":
+			case "SEM 4":
+				Components.yrlst.getItems().add("SE");
+			case "SEM 1":
+			case "SEM 2":
+				Components.yrlst.getItems().add("FE");
+			}
 
-		switch (Components.tscsem) {
-		case "SEM 7":
-		case "SEM 8":
-			Components.yrlst.getItems().add("BE");
-		case "SEM 5":
-		case "SEM 6":
-			Components.yrlst.getItems().add("TE");
-		case "SEM 3":
-		case "SEM 4":
-			Components.yrlst.getItems().add("SE");
-		case "SEM 1":
-		case "SEM 2":
-			Components.yrlst.getItems().add("FE");
-		}
-
-		Components.yrlst.getSelectionModel().selectFirst();
-
-		// Academic
+			Components.yrlst.getSelectionModel().selectFirst();
 
 		
-		Platform.runLater(()->{
+		// Academic
+
+
 			Academic.studProgress.getData().clear();
 			Academic.tsem1.setFixedCellSize(24);
 			Academic.tsem1.prefHeightProperty()
@@ -438,7 +445,6 @@ public class TchrUI implements Runnable {
 			
 			Attendance.atsem1.setFixedCellSize(24);
 			Attendance.atsem2.setFixedCellSize(24);
-		});
 
 
 		Attendance.atsem1.prefHeightProperty().bind(
@@ -564,12 +570,14 @@ public class TchrUI implements Runnable {
 	}
 
 	private void loadData() {
-		Components.pname.setText(BasicUI.user);
-		Components.pdprt.setText(
-				(String) Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first().get("department"));
-		Components.classIncharge = (String) Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first()
-				.get("classIncharge");
-		Components.pcls.setText(Components.classIncharge);
+		
+			Components.pname.setText(BasicUI.user);
+			Components.pdprt.setText(
+					(String) Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first().get("department"));
+			Components.classIncharge = (String) Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first()
+					.get("classIncharge");
+			Components.pcls.setText(Components.classIncharge);
+
 
 		MongoCursor<Document> cursor = Engine.db.getCollection("Students").find().iterator();
 		while (cursor.hasNext()) {
@@ -689,8 +697,10 @@ public class TchrUI implements Runnable {
 		});
 	}
 
+
 	@Override
-	public void run() {
-			startUI();
+	public Void call() throws Exception {
+		startUI();
+		return null;
 	}
 }

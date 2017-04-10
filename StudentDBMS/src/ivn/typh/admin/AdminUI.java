@@ -24,6 +24,7 @@ import ivn.typh.main.Notification;
 import ivn.typh.admin.Components;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
@@ -61,7 +62,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import static com.mongodb.client.model.Filters.*;
 
-public class AdminUI implements Runnable {
+public class AdminUI extends Task<Void>{
 
 	public AdminUI(Stage s, BorderPane p, ToolBar tb) {
 		Components.mb = tb;
@@ -557,10 +558,10 @@ public class AdminUI implements Runnable {
 		});
 	}
 
+
 	@Override
-	public void run() {
-		Platform.runLater(() -> {
-			startUI();
-		});
+	protected Void call() throws Exception {
+		startUI();
+		return null;
 	}
 }

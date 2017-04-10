@@ -38,8 +38,8 @@ public class Project {
 
 
 	static void setup(){
-		projects = new GridPane();
 		Components.scroll[Components.paneList.length - (Components.paneCount)] = new ScrollPane();
+		projects = new GridPane();
 		prPath = new HashMap<>();
 		Button upload = new Button("Upload");
 		recycle = new Group();
@@ -197,6 +197,7 @@ public class Project {
 
 	
 	static void loadProjectData(String yr) {
+		prList.getItems().clear();
 		Engine.gfs.find().forEach(new Block<GridFSFile>() {
 			public void apply(final GridFSFile file) {
 				String name = file.getFilename().split(":")[1];
@@ -204,7 +205,6 @@ public class Project {
 				int year = Integer.parseInt(gfsid.substring(2, 4));
 				if (year == TchrUI.sMatchesY(0, yr)){
 					Platform.runLater(()->{
-						prList.getItems().clear();
 						prList.getItems().add(name);
 
 					});

@@ -141,6 +141,7 @@ public class Assignment {
 			String data = Engine.db.getCollection("Students").find(eq("sid", Personal.tsid.getText())).first()
 					.toJson();
 			jsona = new JSONObject(data).getJSONArray(n.toLowerCase() + "Assignments");
+			asList.getItems().clear();
 
 			Iterator<?> it = jsona.iterator();
 			while (it.hasNext()) {
@@ -149,7 +150,6 @@ public class Assignment {
 				int semester = json.getInt("sem");
 				boolean flag = json.getBoolean("completed");
 				Platform.runLater(()->{
-					asList.getItems().clear();
 					asList.getItems().add(new AssignmentData(semester, title, flag));
 
 				});
