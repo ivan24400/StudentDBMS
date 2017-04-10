@@ -80,8 +80,8 @@ public class LogIn implements Runnable {
 		Node logined = dialog.getDialogPane().lookupButton(login);
 		logined.setDisable(true);
 
-		userText.textProperty().addListener((observable, oldv, newv) -> {
-			logined.setDisable(newv.trim().isEmpty());
+		passText.textProperty().addListener((observable, oldv, newv) -> {
+			logined.setDisable(newv.trim().isEmpty() || userText.getText().trim().isEmpty());
 
 		});
 

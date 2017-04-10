@@ -77,10 +77,8 @@
 }
 #about_pane_window{
 	-fx-padding: 10;
-	-fx-border-color: black;
-	
+	-fx-border-color: black;	
 }
-
 
 #about_pane_title{
 	-fx-padding: 30;
@@ -93,4 +91,30 @@
 }
 #about_pane_close:hover{
 	-fx-text-fill: red;
+}
+
+/*
+ *  Help Page
+ */
+ 
+#help_pane_contents{
+	
+}
+#help_pane_window{
+		-fx-padding: 10;
+	-fx-border-color: black;
+	
+}
+#help_pane_close{
+	-fx-font-size: 17;
+	-fx-background-color: transparent
+}
+#help_pane_close:hover{
+		-fx-text-fill: red;
+}
+#help_pane_title{
+	-fx-font-size: 15;
+}
+#help_pane{
+	
 }

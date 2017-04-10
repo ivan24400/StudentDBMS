@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Typh - Students Database</title>
+
+<style>
+@font-face {
+font-family: Comfortaa;
+src: url('Comfortaa.ttf'),
+}
+
+#title{
+	font-size:400%;
+	text-align:center;
+	color: white;
+	letter-spacing: 4px;
+	text-shadow: 3px 3px 6px black
+}
+
+hr {
+	height:10px;
+	background-color:grey
+}
+h1 {
+	font-size: 150%;
+	text-shadow: 2px 2px 5px grey;
+}
+
+* {
+	font-family: Comfortaa;
+	font-size: 18px;
+}
+</style>
+</head>
+
+<body>
+<h1 id="title">Typh<h1>
+
+<h1>Introduction</h1>
+<p id="paragraph">
+<br>Typh is students database management software. It is based on a 
+	client-server model where each user installs a client application on their system.<br>
+	The client connects to the server which is also installed into the network itself. Typh is 
+	meant for private networks only. <br>The required softwares are installed in a server node to which 
+	all the clients connect.
+</p>
+<hr>
+<h1>System Requirements </h1>
+<p id="paragraph">
+Typh can run only on Desktop or Laptop systems.<br>
+<strong>Following are the minimum hardware requirements: </strong>
+<dl>
+<dt>Processor</dt>
+<dd> - 2.4 GHz CPU with 2D graphic acceleration support.	</dd>
+<dt>Memory</dt>
+<dd> - 2 GB. </dd>
+<dt>Storage</dt>
+<dd>
+	<ul>
+		<li> For Server: 1 GB.	</li>
+		<li> For Client: 5 MB. </li>
+	</ul>
+</dl>
+
+<strong>Following are the software requirements:</strong>
+<dl>
+<dt>Operating System</dt>
+<dd> 
+	<ol type='a'>	
+		<li> Windows 7 64 bit or Later.
+		<li> Any Linux distribution.
+	</ol>
+</dd>
+<dt>Java</dt>
+<dd> - Java 8 or Later </dd>
+</dl>
+</pr>
+
+<hr>
+
+<h1>Features</h1>
+<h2>Client User :-</h2>
+<p id="paragraph">
+<h3>Login</h3>
+<ul>
+	<li> The Login username and password is provided by the administrator.</li>
+	<li> Upon Login, the user's last login, total students, etc are provided in the side bar.</li>
+</ul>
+<h3>Students Profile</h3>
+	<ul>
+		<li>The user can view academic data of any student but can edit only of those who the user is assigned to i.e. class teacher.</li>
+		<li>Students data is divided into following sections:
+			<ol type="[a]">
+				<li>Personal</li>
+				<li>Academic</li>
+				<li>Attendance</li>
+				<li>Projects</li>
+				<li>Assignments</li>
+			</ol>
+		</li>
+		<li>The user can also export the data in Excel format.<br>
+		<li>The user has the use update button to update changes to the database.</li>
+	</ul>
+</p>
+<hr style="height:2px">
+<h2>Admin User :-</h2>
+<p id="paragraph">The admin controls and manages all the other accounts including student's profiles.
+The admin can perform the following actions:
+<ul>
+	<li>Create or Delete User Accounts</li>
+	<li>Create or Delete Student's Base profile</li>
+	<li>Send short text message to any client who is online</li>
+</ul>
+</p>
+</body>
+</html>

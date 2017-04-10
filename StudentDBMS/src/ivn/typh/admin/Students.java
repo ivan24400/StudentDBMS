@@ -316,11 +316,14 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 			}
 			return null;
 		});
-		show();
-		tsrno.setPrefWidth(tsname.getWidth());
-		tsdprt.setPrefWidth(tsname.getWidth());
-		tsclass.setPrefWidth(tsname.getWidth());
-		tsbatch.setPrefWidth(tsname.getWidth());
+		
+		Platform.runLater(()->{
+			show();
+			tsrno.setPrefWidth(tsname.getWidth());
+			tsdprt.setPrefWidth(tsname.getWidth());
+			tsclass.setPrefWidth(tsname.getWidth());
+			tsbatch.setPrefWidth(tsname.getWidth());
+		});
 	}
 
 	private void initRooms() {

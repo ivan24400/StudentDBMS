@@ -202,7 +202,9 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		dPane.add(classIncharge, 1, 6);
 		getDialogPane().setContent(dPane);
 
-		show();
+		Platform.runLater(()->{
+			show();
+		});
 	}
 
 	private void initRoom() {

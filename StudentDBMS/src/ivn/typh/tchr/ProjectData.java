@@ -46,7 +46,7 @@ public class ProjectData extends ListCell<String>{
 			dir.setTitle("Select a download path - Typh™");
 			dir.setInitialDirectory(new File(System.getProperty("user.home")));
 			File dPath = dir.showDialog(w);
-			if(dPath !=null){
+			if(dPath !=null && dPath.exists()){
 				Engine.gfs.find().forEach(new Block<GridFSFile>(){
 					public void apply(final GridFSFile file){
 						

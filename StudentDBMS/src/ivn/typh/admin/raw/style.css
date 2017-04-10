@@ -154,10 +154,6 @@
 	-fx-spacing: 20.0;
 }
 
-#topL{
-	-fx-alignment: center;
-	-fx-padding: 20.0;
-}
 
 #top{
 	-fx-padding: 20.0;
@@ -165,11 +161,12 @@
 	-fx-alignment: center;
 }
 
-#left{
-		-fx-alignment: center;
-		-fx-spacing: 30.0;
-	-fx-padding: 20.0;
+#left, #topL{
+	-fx-spacing: 20.0;
+	-fx-padding: 60.0;
+	-fx-alignment: center
 }
+
 
 #right{
 	-fx-padding: 30.0;

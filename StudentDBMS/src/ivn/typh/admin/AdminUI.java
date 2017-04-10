@@ -238,20 +238,18 @@ public class AdminUI extends Task<Void>{
 
 		Button about = ((Button) Components.mb.getItems().get(3));
 		Button help = ((Button) Components.mb.getItems().get(2));
+		Pane space = new Pane();
+		
+		VBox.setVgrow(space, Priority.ALWAYS);
 
-		about.setId("side-menu-button");
-		help.setId("side-menu-button");
+		Platform.runLater(()->{
+			about.setId("side-menu-button");
+			help.setId("side-menu-button");
+		});
 
-		Components.side.addNodes(Components.topL, Components.left, help, about);
+		Components.side.addNodes(Components.topL, Components.left,space, help, about);
 		Components.side.setPrefWidth(300);
 
-		Components.mb.getItems().remove(7);
-		Components.mb.getItems().add(7, logout);
-		Components.mb.getItems().remove(0, 4);
-		Components.mb.getItems().add(0, Components.menu);
-		Components.mb.getItems().get(2).setId("fullscreen");
-
-		loadProfiles();
 
 		Components.gpane.getColumnConstraints().addAll(cc0, cc1);
 		Components.gpane.getRowConstraints().addAll(rc0, rc1);
@@ -273,12 +271,20 @@ public class AdminUI extends Task<Void>{
 
 			Components.setIdAll();
 			Components.setCacheAll();
+
+			Components.mb.getItems().remove(7);
+			Components.mb.getItems().add(7, logout);
+			Components.mb.getItems().remove(0, 4);
+			Components.mb.getItems().add(0, Components.menu);
+			Components.mb.getItems().get(2).setId("fullscreen");
+
+			loadProfiles();
 			Components.pane.applyCss();
 			Components.pane.layout();
 			Components.pane.requestLayout();
 			
-			tabPane.setTabMinWidth(tabPane.getHeight() / 3 - 17);
-			tabPane.setTabMaxWidth(tabPane.getHeight() / 3 - 17);
+			tabPane.setTabMinWidth(tabPane.getWidth()/tabPane.getTabs().size() -20);
+			tabPane.setTabMaxWidth(tabPane.getWidth()/tabPane.getTabs().size() -20);
 		});
 
 	}

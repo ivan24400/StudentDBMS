@@ -2,10 +2,14 @@ package ivn.typh.main;
 
 import static com.mongodb.client.model.Filters.eq;
 
+import java.awt.Desktop;
 import java.awt.Toolkit;
+import java.io.File;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.Socket;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -15,15 +19,16 @@ import org.bson.Document;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
-import com.mongodb.MongoSocketException;
-
 import javafx.animation.FillTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -38,6 +43,7 @@ import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -47,6 +53,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
@@ -63,7 +70,10 @@ public class BasicUI extends Application implements Runnable {
 	public static Stage stage;
 	public static double screenWidth;
 	public static double screenHeight;
+	private double xOffset,yOffset;
+
 	public Circle login;
+	
 
 	public Scene basic;
 	private Button exit;
@@ -309,7 +319,18 @@ public class BasicUI extends Application implements Runnable {
 					//titleText.setGraphic(value);
 					Label description = new Label("Typh™ Students Database Management System.\nVersion 1.0\nCopyright © 2017\nAuthor :- Ivan Pillay");
 					
-					
+					xOffset = yOffset = 0;
+
+					titleBar.setOnMousePressed(mouse->{
+		                xOffset = mouse.getSceneX();
+		                yOffset = mouse.getSceneY();
+					});
+				
+					titleBar.setOnMouseDragged(mouse->{
+						abt.setX(mouse.getScreenX() - xOffset);
+						abt.setY(mouse.getScreenY() - yOffset);
+					});
+				
 					titleBar.setId("about_pane_title_bar");
 					contents.setId("about_pane_contents");
 					window.setId("about_pane_window");
@@ -336,7 +357,58 @@ public class BasicUI extends Application implements Runnable {
 				});
 				
 				help.setOnAction(event->{
+					Alert helpPage = new Alert(AlertType.NONE);
 					
+					VBox window = new VBox();
+					VBox contents = new VBox();
+					HBox titleBar = new HBox();
+					
+					Button close = new Button("X");
+					
+					xOffset = yOffset = 0;
+					WebView helpPane = new WebView();
+					helpPane.getEngine().load(getClass().getResource("/ivn/typh/main/raw/help/help.html").toExternalForm());
+					
+					contents.setId("help_pane_contents");
+					window.setId("help_pane_window");
+					close.setId("help_pane_close");
+					helpPane.setId("help_pane");
+					
+					helpPane.getChildrenUnmodifiable().addListener(new ListChangeListener<Node>() {
+					      @Override 
+					      public void onChanged(Change<? extends Node> change) {
+					        Set<Node> deadSeaScrolls = helpPane.lookupAll(".scroll-bar");
+					        for (Node scroll : deadSeaScrolls) {
+					          scroll.setVisible(false);
+					        }
+					      }
+					    });
+					 
+					close.setOnAction(value->{
+						helpPage.setResult(ButtonType.CLOSE);
+					});
+					Pane space = new Pane();
+					HBox.setHgrow(space,Priority.ALWAYS);
+					
+					titleBar.setOnMousePressed(mouse->{
+			                xOffset = mouse.getSceneX();
+			                yOffset = mouse.getSceneY();
+			        });
+					
+					titleBar.setOnMouseDragged(mouse->{
+						helpPage.setX(mouse.getScreenX() - xOffset);
+						helpPage.setY(mouse.getScreenY() - yOffset);
+					});
+					
+					titleBar.getChildren().addAll(space,close);
+					contents.getChildren().add(helpPane);
+					window.getChildren().addAll(titleBar,contents);
+					
+					helpPage.getButtonTypes().clear();
+					helpPage.initOwner(stage);
+					helpPage.initStyle(StageStyle.TRANSPARENT);
+					helpPage.getDialogPane().setContent(window);
+					helpPage.show();
 				});
 				
 				sp.getChildren().addAll(login, lLabel);

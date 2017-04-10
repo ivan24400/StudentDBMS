@@ -183,7 +183,9 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 
 		});
 
-		show();
+		Platform.runLater(()->{
+			show();
+		});
 	}
 
 	private void initRoom() {
@@ -285,7 +287,9 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 					}
 					return null;
 				});
+			Platform.runLater(()->{
 				dalert.show();
+			});	
 
 			});
 			seBox.getChildren().addAll(edit, del);

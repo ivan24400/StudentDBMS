@@ -50,6 +50,7 @@ public class Export {
 		filechooser.getExtensionFilters().add(new ExtensionFilter("Excel Workbook", "*.xlsx"));
 		path = filechooser.showSaveDialog(Components.stage);
 
+		if(path!=null && path.exists()){
 		Loading load = new Loading(Components.stage);
 
 		Task<Boolean> task = createWriteTask();
@@ -64,6 +65,10 @@ public class Export {
 						"Error while writing data to file !\nClose other programs using it");
 
 		});
+		task.setOnCancelled(value->{
+			load.stopTask();
+		});
+		}
 
 	}
 
@@ -83,13 +88,17 @@ public class Export {
 
 				XSSFSheet sheet = book.createSheet();
 				XSSFFont cell_font = book.createFont();
+				XSSFFont instituteFont = book.createFont();
 				book.setSheetName(0, Personal.tsname.getText() + "\'s Data");
 
 				cell_font.setBold(true);
+				instituteFont.setBold(true);
+				instituteFont.setFontHeight(30);
 	
 				CellStyle cell_style = book.createCellStyle();
 				CellStyle inst_style = book.createCellStyle();
-				inst_style.setFont(cell_font);
+				
+				inst_style.setFont(instituteFont);
 				inst_style.setAlignment(HorizontalAlignment.CENTER);
 
 				Row row = sheet.createRow(row_index++);

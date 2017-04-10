@@ -16,7 +16,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
@@ -199,13 +198,15 @@ public class TchrUI extends Task<Void> {
 		
 		Button about = ((Button) Components.mb.getItems().get(3));
 		Button help = ((Button) Components.mb.getItems().get(2));
-
+		Pane sideSpacer = new Pane();
+		
 		Platform.runLater(()->{
 			about.setId("side-menu-button");
 			help.setId("side-menu-button");
 
 		});
 
+		VBox.setVgrow(sideSpacer, Priority.ALWAYS);
 		GridPane.setHgrow(Components.accord, Priority.ALWAYS);
 		GridPane.setValignment(Components.left, VPos.CENTER);
 		StackPane.setAlignment(Components.side, Pos.CENTER_LEFT);
@@ -238,7 +239,7 @@ public class TchrUI extends Task<Void> {
 
 			Components.sctgpane.setContent(Components.tgpane);
 		
-			Components.side.addNodes(Components.topL, Components.left, help, about);
+			Components.side.addNodes(Components.topL, Components.left, sideSpacer,help, about);
 			
 
 			Components.spMain.getChildren().addAll(Components.sctgpane, dummy, Components.side);
