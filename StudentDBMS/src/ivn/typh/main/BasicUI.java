@@ -54,6 +54,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.web.WebView;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
@@ -339,6 +340,7 @@ public class BasicUI extends Application implements Runnable {
 					close.setId("about_pane_close");
 					
 					HBox.setHgrow(space,Priority.ALWAYS);
+					
 					close.setOnAction(value->{
 						Platform.runLater(()->{
 							abt.setResult(ButtonType.CLOSE);
@@ -350,7 +352,7 @@ public class BasicUI extends Application implements Runnable {
 					contents.getChildren().addAll(titleText,description);
 					window.getChildren().addAll(titleBar,contents);
 					abt.initOwner(stage);
-					abt.initStyle(StageStyle.TRANSPARENT);
+					abt.initStyle(StageStyle.UNDECORATED);
 					abt.getButtonTypes().clear();
 					abt.getDialogPane().setContent(window);
 					abt.show();
