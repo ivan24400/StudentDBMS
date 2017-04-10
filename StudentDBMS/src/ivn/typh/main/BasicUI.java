@@ -42,10 +42,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
@@ -92,9 +94,11 @@ public class BasicUI extends Application implements Runnable {
 				exit.setOnAction(event -> {
 					exitApplication();
 				});
+				
 				fulls.setOnAction(value -> {
 					stage.setFullScreen(fulls.isSelected());
 				});
+				
 				fulls.setSelected(true);
 				connect.setOnAction(arg0 -> {
 					Dialog<String> dialog = new Dialog<>();
@@ -289,6 +293,47 @@ public class BasicUI extends Application implements Runnable {
 				login.setId("login");
 				Label lLabel = new Label("Login");
 				lLabel.setOnMouseClicked(login.getOnMouseClicked());
+				
+				about.setOnAction(event->{
+					
+					Dialog<?> abt = new Dialog<>();
+					
+					VBox aPane = new VBox();
+					HBox titleBar = new HBox();
+
+					
+					Button close = new Button("x");
+					Label titleText = new Label("Typh™");
+					//titleText.setGraphic(value);
+					Label description = new Label("Typh™ Students Database Management System.\nVersion 1.0\nCopyright © 2017\nAuthor :- Ivan Pillay");
+					
+					
+					titleBar.setId("about_pane_title_bar");
+					aPane.setId("about_pane");
+					description.setId("about_pane_description");
+					titleText.setId("about_pane_title");
+					close.setId("about_pane_close");
+					
+					close.setOnAction(value->{
+						Platform.runLater(()->{
+							abt.close();
+						});
+					});
+					close.setAlignment(Pos.TOP_RIGHT);
+					
+					titleBar.getChildren().add(close);
+					
+					aPane.getChildren().addAll(titleBar,titleText,description);
+					abt.initOwner(stage);
+					abt.initStyle(StageStyle.TRANSPARENT);
+					abt.getDialogPane().setContent(aPane);
+					abt.show();
+				});
+				
+				help.setOnAction(event->{
+					
+				});
+				
 				sp.getChildren().addAll(login, lLabel);
 				dummy.getChildren().add(institute);
 				institute.setFont(Font.font(16));
