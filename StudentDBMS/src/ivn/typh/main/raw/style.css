@@ -77,6 +77,7 @@
 }
 #about_pane_window{
 	-fx-padding: 10;
+	-fx-border-color: black;
 }
 
 #about_pane_title{

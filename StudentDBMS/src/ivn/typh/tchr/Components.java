@@ -1,41 +1,28 @@
 package ivn.typh.tchr;
 
 import java.util.Arrays;
-import java.util.Map;
-
-import ivn.typh.admin.SideBar;
-import javafx.collections.ObservableList;
+import ivn.typh.tchr.SideBar;
+import ivn.typh.main.CenterPane;
 import javafx.scene.CacheHint;
-import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.SVGPath;
 import javafx.stage.Stage;
 
 public class Components {
 	
+
 	public static Stage stage;
 	public static Scene scene;
 	
@@ -43,6 +30,8 @@ public class Components {
 	public static ScrollPane sctgpane;
 	public static StackPane spMain;
 	public static ScrollPane[] scroll;
+	public static CenterPane centerPane;
+
 
 	public static GridPane center;
 	public static VBox left;

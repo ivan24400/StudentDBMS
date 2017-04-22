@@ -1,36 +1,28 @@
 package ivn.typh.tchr;
 
 
+import ivn.typh.main.CenterPane;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 
 public class SideBar extends VBox {
 
 	private Button menu;
-	private Pane home;
 	private double width;
 	static Label rts, rtu, rll;
 
-	public SideBar(Pane gp,Button m) {
-		home = gp;
-		menu = m;
-		home.setVisible(false);
+	public SideBar() {
+		menu = Components.menu;
+		CenterPane.shade.setVisible(false);
 		setVisible(false);
-		home.setBackground(new Background(new BackgroundFill(Color.rgb(0, 0, 0, 0.2),CornerRadii.EMPTY,Insets.EMPTY)));
 		
 		setId("sideBar");
 
@@ -72,11 +64,11 @@ public class SideBar extends VBox {
 			
 			if(show.statusProperty().get() == Animation.Status.STOPPED && hide.statusProperty().get() == Animation.Status.STOPPED){
 				if(isVisible()){
-					home.setVisible(false);
+					CenterPane.shade.setVisible(false);
 					hide.play();
 				}
 				else{
-					home.setVisible(true);
+					CenterPane.shade.setVisible(true);
 					setVisible(true);
 					show.play();
 				}

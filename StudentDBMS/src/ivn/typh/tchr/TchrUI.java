@@ -30,8 +30,8 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
 import ivn.typh.tchr.Components;
-import ivn.typh.admin.SideBar;
 import ivn.typh.main.BasicUI;
+import ivn.typh.main.CenterPane;
 import ivn.typh.main.Engine;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -71,6 +71,7 @@ public class TchrUI extends Task<Void> {
 
 	private static ObservableList<String> studList;
 	private static ObservableMap<String, String> dprtList;
+	
 
 	public TchrUI(Stage s, BorderPane p, Scene scen, ToolBar tb) {
 
@@ -91,6 +92,7 @@ public class TchrUI extends Task<Void> {
 		Components.tgpane = new GridPane();
 		Components.sctgpane = new ScrollPane();
 		Components.spMain = new StackPane();
+		Components.centerPane = new CenterPane(Components.sctgpane);
 
 		Components.center = new GridPane();
 		Components.left = new VBox();
@@ -101,13 +103,12 @@ public class TchrUI extends Task<Void> {
 		Components.logout = new Button("Log Out");
 		Components.editable = new ToggleButton("Edit");
 
-		Pane dummy = new Pane();
 		Components.paneList = new String[] { "Personal", "Academic", "Attendance", "Projects", "Assignments" };
 
-		Components.side = new SideBar(dummy, Components.menu);
+		Components.side = new SideBar();
 		Components.side.setMenuWidth(300);
 		Components.side.getStyleClass().add(".sideBarButton");
-		Components.menu.setGraphic(new ImageView(new Image("/ivn/typh/main/icons/menu.png")));
+		Components.menu.setGraphic(new ImageView(new Image(Resources.MENU_ICON.path)));
 
 		Components.pname = new Label();
 		Components.dprt = new Label("Department:");
@@ -242,7 +243,7 @@ public class TchrUI extends Task<Void> {
 			Components.side.addNodes(Components.topL, Components.left, sideSpacer,help, about);
 			
 
-			Components.spMain.getChildren().addAll(Components.sctgpane, dummy, Components.side);
+			Components.spMain.getChildren().addAll(Components.sctgpane, Components.side);
 			
 
 			Platform.runLater(()->{
@@ -255,9 +256,11 @@ public class TchrUI extends Task<Void> {
 					Components.mb.getItems().get(2).setId("fullscreen");
 					
 					Components.stage.getScene().getStylesheets().remove(0);
-					Components.stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
+					Components.stage.getScene().getStylesheets().add(getClass().getResource(Resources.STYLE_SHEET.path).toExternalForm());
 					
-					Components.pane.setCenter(Components.spMain);
+					
+					
+					Components.pane.setCenter(Components.centerPane);
 					disableAll(true);
 					Components.slist.getSelectionModel().selectFirst();
 
@@ -387,7 +390,8 @@ public class TchrUI extends Task<Void> {
 			Personal.dpImgView.setImage(SwingFXUtils.toFXImage(bf, null));
 
 		} catch (IOException | JSONException e) {
-			Personal.dpImgView.setImage(new Image(getClass().getResourceAsStream("/ivn/typh/main/raw/pic.jpg")));
+			Personal.dpImgView.setImage(new Image(getClass().getResourceAsStream(Resources.DEFAULT_PIC.path)));
+			
 		}
 	
 			Personal.tsname.setText(jsonData.getString("name"));

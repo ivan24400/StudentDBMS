@@ -98,14 +98,12 @@ public class LogIn implements Runnable {
 		Optional<LoginData> result = dialog.showAndWait();
 		Task<Boolean> loginTask = checkCredTask();
 
-		Loading loadBar = new Loading(stage);
-
 		result.ifPresent(arg -> {
 			try {
 				if(!(arg == null)){
 				BasicUI.user = arg.getUser();
 				BasicUI.password = arg.getPassword();
-				loadBar.startTask(loginTask);
+				CenterPane.showMessage("Logging in ");
 				(new Thread(loginTask)).start();
 				}
 			} catch (Exception e) {
@@ -119,14 +117,14 @@ public class LogIn implements Runnable {
 			// update ui
 	
 			if (!loginTask.getValue()){
-				loadBar.stopTask();
+				CenterPane.hideMessage();
 				Notification.message(stage, AlertType.ERROR, "Invalid credentials - Typh™",
 						"Either username or password is incorrect !");
 			}else{
 				Task<Void> loadUI = loadUI();
 				(new Thread(loadUI)).start();
 				loadUI.setOnSucceeded(event->{
-					loadBar.stopTask();
+					CenterPane.hideMessage();
 
 				});
 			}
