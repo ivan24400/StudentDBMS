@@ -1,5 +1,7 @@
 package ivn.typh.main;
 
+import java.io.File;
+
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -7,6 +9,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -29,12 +33,12 @@ public class CenterPane extends StackPane{
 		super();
 		shade =  new Pane();
 		alert = new Alert(AlertType.NONE);
-		
+		alert.initOwner(BasicUI.stage);
+		alert.initStyle(StageStyle.UNDECORATED);
+
 		loading = new Label("Loading ...");
-	//	loading.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(Resources.LOADING.path))));
-        loading.setStyle("-fx-background-image: url(\"/ivn/typh/main/icons/gifs/loading_triple.gif\");");
-
-
+		loading.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(Resources.LOADING.path))));
+		
 		shade.setVisible(false);
 		shade.setBackground(new Background(new BackgroundFill(Color.rgb(0,0,0,0.2),CornerRadii.EMPTY,Insets.EMPTY)));
 		
@@ -50,11 +54,9 @@ public class CenterPane extends StackPane{
 	
 	public static void showMessage(String message){
 		loading.setText(message);
-
-		alert.initOwner(BasicUI.stage);
-		alert.initStyle(StageStyle.TRANSPARENT);
 		dialogPane = new HBox();
-		dialogPane.setId("loadingPane");
+		dialogPane.setBackground(new Background(new BackgroundFill(Color.rgb(0,0,0,0),CornerRadii.EMPTY,Insets.EMPTY)));
+		dialogPane.setStyle("-fx-background-color: rgba(0, 0, 0, 0);");
 		dialogPane.getChildren().add(loading);
 		alert.getDialogPane().setContent(dialogPane);
 		
@@ -69,7 +71,7 @@ public class CenterPane extends StackPane{
 	public static void hideMessage(){
 		Platform.runLater(()->{
 			CenterPane.shade.setVisible(false);
-			CenterPane.alert.setResult(ButtonType.OK);
+			CenterPane.alert.setResult(ButtonType.CLOSE);
 		});
 	}
 }

@@ -140,14 +140,15 @@ public class BasicUI extends Application implements Runnable {
 				
 				tool.getItems().addAll(connect, new Separator(), help, about, new Separator(), fulls, dummy, exit);
 				homePane.setTop(tool);
-				center = new CenterPane(loginPane);
-
-				homePane.setCenter(center);
+				
 				basic = new Scene(homePane, 1360, 768);
 
 
 				basic.getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
 				stage.setScene(basic);
+				
+				center = new CenterPane(loginPane);
+				homePane.setCenter(center);
 				stage.show();
 
 
@@ -180,6 +181,7 @@ public class BasicUI extends Application implements Runnable {
 		stage.setFullScreen(true);
 		stage.setAlwaysOnTop(true);
 		startUI();
+
 	}
 
 	@Override

@@ -56,7 +56,7 @@ public class LogIn implements Runnable {
 		Label pass = new Label("Password:");
 		TextField userText = new TextField();
 		PasswordField passText = new PasswordField();
-		
+
 		userText.setId("user");
 		passText.setId("password");
 
@@ -100,11 +100,11 @@ public class LogIn implements Runnable {
 
 		result.ifPresent(arg -> {
 			try {
-				if(!(arg == null)){
-				BasicUI.user = arg.getUser();
-				BasicUI.password = arg.getPassword();
-				CenterPane.showMessage("Logging in ");
-				(new Thread(loginTask)).start();
+				if (!(arg == null)) {
+					BasicUI.user = arg.getUser();
+					BasicUI.password = arg.getPassword();
+					CenterPane.showMessage("Logging in ");
+					(new Thread(loginTask)).start();
 				}
 			} catch (Exception e) {
 				System.out.println("No db running");
@@ -115,19 +115,21 @@ public class LogIn implements Runnable {
 		loginTask.setOnSucceeded(value -> {
 
 			// update ui
-	
-			if (!loginTask.getValue()){
-				CenterPane.hideMessage();
-				Notification.message(stage, AlertType.ERROR, "Invalid credentials - Typh™",
-						"Either username or password is incorrect !");
-			}else{
-				Task<Void> loadUI = loadUI();
-				(new Thread(loadUI)).start();
-				loadUI.setOnSucceeded(event->{
-					CenterPane.hideMessage();
+			Platform.runLater(() -> {
 
-				});
-			}
+				if (!loginTask.getValue()) {
+					CenterPane.hideMessage();
+					Notification.message(stage, AlertType.ERROR, "Invalid credentials - Typh™",
+							"Either username or password is incorrect !");
+				} else {
+					Task<Void> loadUI = loadUI();
+					(new Thread(loadUI)).start();
+					loadUI.setOnSucceeded(event -> {
+						CenterPane.hideMessage();
+
+					});
+				}
+			});
 		});
 
 	}
@@ -139,12 +141,12 @@ public class LogIn implements Runnable {
 				Boolean result = false;
 				int flag = verifyCredential();
 				if (flag == 1) {
-						result = true;
+					result = true;
 
 				} else if (flag == 2) {
 					result = false;
-				}else if (flag == 4){
-					Platform.runLater(()->{
+				} else if (flag == 4) {
+					Platform.runLater(() -> {
 						Notification.message(BasicUI.stage, AlertType.ERROR, "User - Typh™", "User Already Logged In");
 					});
 					result = false;
@@ -174,19 +176,18 @@ public class LogIn implements Runnable {
 	private int verifyCredential() {
 		if (Engine.db == null)
 			return 3;
-		
 
 		String pass, dbPass = null, dbUser = null;
 		pass = encryptedPassword(BasicUI.password);
 
 		MongoCollection<Document> coll = Engine.db.getCollection("Users");
-		
-		if(!(coll.count(new Document("user", BasicUI.user)) > 0))
+
+		if (!(coll.count(new Document("user", BasicUI.user)) > 0))
 			return 2;
-		
-		if(isUserLoggedIn())
+
+		if (isUserLoggedIn())
 			return 4;
-		
+
 		Document doc = coll.find(eq("user", BasicUI.user)).first();
 		dbPass = doc.getString("passwd");
 		dbUser = doc.getString("user");
@@ -201,16 +202,16 @@ public class LogIn implements Runnable {
 		Socket client;
 		boolean flag = false;
 		try {
-			client = new Socket(BasicUI.ipAddr,61003);
+			client = new Socket(BasicUI.ipAddr, 61003);
 			BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			PrintWriter out = new PrintWriter(client.getOutputStream());
-			
+
 			out.println(BasicUI.user);
 			out.flush();
 			String line = in.readLine();
-			if(line.equals("__EXIST__"))
+			if (line.equals("__EXIST__"))
 				flag = true;
-			else 
+			else
 				flag = false;
 			out.close();
 			in.close();
@@ -227,25 +228,24 @@ public class LogIn implements Runnable {
 
 		Task<Void> loadUI = null;
 		if (BasicUI.user.equals(new String("admin"))) {
-			
-			loadUI = new AdminUI(stage,pane,mb);
-			
-		}else{
+
+			loadUI = new AdminUI(stage, pane, mb);
+
+		} else {
 			String freeze = Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first().toJson();
 			JSONObject json = new JSONObject(freeze);
-			if (!json.getBoolean("status")) 
-				
-				loadUI = new TchrUI(stage,pane,scene,mb);
-			
+			if (!json.getBoolean("status"))
+
+				loadUI = new TchrUI(stage, pane, scene, mb);
+
 			else
-				
+
 				Notification.message(stage, AlertType.ERROR, "User Accounts - Typh™",
 						"Your account has been locked !\nContact system administrators");
 		}
-		
+
 		return loadUI;
 	}
-
 
 	@Override
 	public void run() {

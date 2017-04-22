@@ -33,6 +33,7 @@ import ivn.typh.tchr.Components;
 import ivn.typh.main.BasicUI;
 import ivn.typh.main.CenterPane;
 import ivn.typh.main.Engine;
+import ivn.typh.main.Resources;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;

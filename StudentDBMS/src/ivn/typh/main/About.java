@@ -58,6 +58,7 @@ public class About implements EventHandler<ActionEvent>{
 		close.setOnAction(value->{
 			Platform.runLater(()->{
 				abt.setResult(ButtonType.CLOSE);
+				CenterPane.shade.setVisible(false);
 			});
 		});
 		abt.getDialogPane().getScene().setFill(Color.TRANSPARENT);
@@ -69,6 +70,7 @@ public class About implements EventHandler<ActionEvent>{
 		abt.initStyle(StageStyle.UNDECORATED);
 		abt.getButtonTypes().clear();
 		abt.getDialogPane().setContent(window);
+		CenterPane.shade.setVisible(true);
 		abt.show();
 		
 	}

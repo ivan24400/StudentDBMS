@@ -12,6 +12,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -165,21 +166,31 @@ public class Connect implements EventHandler<ActionEvent>{
 		});
 
 		cm.setOnSucceeded(value -> {
-			CenterPane.hideMessage();
-			if (cm.getValue()){
-				Notification.message(BasicUI.stage, AlertType.INFORMATION, "Connection  - Typh™",
-						"Connected to Server");
-				try{
-					Document doc = Engine.db.getCollection("Users").find(eq("user","admin")).first();
-					BasicUI.institute.setText(doc.getString("instituteName"));
-				}catch(NullPointerException e){
-					BasicUI.institute.setText("");
-				}
-			}else
-				Notification.message(BasicUI.stage, AlertType.ERROR, "Connection - Typh™", "Server not found!");
+			Platform.runLater(()->{
+				CenterPane.hideMessage();
+
+				if (cm.getValue()){
+					Notification.message(BasicUI.stage, AlertType.INFORMATION, "Connection  - Typh™",
+							"Connected to Server");
+					try{
+						Document doc = Engine.db.getCollection("Users").find(eq("user","admin")).first();
+						BasicUI.institute.setText(doc.getString("instituteName"));
+					}catch(NullPointerException e){
+						BasicUI.institute.setText("");
+					}
+				}else
+					Notification.message(BasicUI.stage, AlertType.ERROR, "Connection - Typh™", "Server not found!");
+			});
+			
 		});
 
-	
+	cm.setOnFailed(value->{
+		Platform.runLater(()->{
+			CenterPane.hideMessage();
+			Notification.message(BasicUI.stage, AlertType.ERROR, "Connection - Typh™", "Server not found!");
+
+		});
+	});
 		
 	}
 
@@ -198,7 +209,7 @@ public class Connect implements EventHandler<ActionEvent>{
 					addr = InetAddress.getByName(BasicUI.ipAddr);
 					if (!addr.isReachable(4000))
 						return false;
-					MongoClientOptions.Builder options = MongoClientOptions.builder().serverSelectionTimeout(8000).sslEnabled(true)
+					MongoClientOptions.Builder options = MongoClientOptions.builder().serverSelectionTimeout(6000).sslEnabled(true)
 							.sslInvalidHostNameAllowed(true);
 					MongoClientURI connectionString = new MongoClientURI(
 							"mongodb://typh:typhpass@" + BasicUI.ipAddr + ":24000/?authSource=Students", options);

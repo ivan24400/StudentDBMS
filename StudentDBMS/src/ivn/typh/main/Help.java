@@ -52,6 +52,8 @@ public class Help implements EventHandler<ActionEvent>{
 		 
 		close.setOnAction(value->{
 			helpPage.setResult(ButtonType.CLOSE);
+			CenterPane.shade.setVisible(false);
+
 		});
 		Pane space = new Pane();
 		HBox.setHgrow(space,Priority.ALWAYS);
@@ -75,6 +77,8 @@ public class Help implements EventHandler<ActionEvent>{
 		helpPage.initOwner(BasicUI.stage);
 		helpPage.initStyle(StageStyle.TRANSPARENT);
 		helpPage.getDialogPane().setContent(window);
+		CenterPane.shade.setVisible(true);
+
 		helpPage.show();		
 	}
 
