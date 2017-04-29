@@ -1,7 +1,5 @@
 package ivn.typh.main;
 
-import java.io.File;
-
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -34,9 +32,9 @@ public class CenterPane extends StackPane{
 		shade =  new Pane();
 		alert = new Alert(AlertType.NONE);
 		alert.initOwner(BasicUI.stage);
-		alert.initStyle(StageStyle.UNDECORATED);
+		alert.initStyle(StageStyle.TRANSPARENT);
 
-		loading = new Label("Loading ...");
+		loading = new Label("Loading . . .");
 		loading.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(Resources.LOADING.path))));
 		
 		shade.setVisible(false);
@@ -54,13 +52,14 @@ public class CenterPane extends StackPane{
 	
 	public static void showMessage(String message){
 		loading.setText(message);
+
 		dialogPane = new HBox();
+		dialogPane.setId("loadingPane");
 		dialogPane.setBackground(new Background(new BackgroundFill(Color.rgb(0,0,0,0),CornerRadii.EMPTY,Insets.EMPTY)));
-		dialogPane.setStyle("-fx-background-color: rgba(0, 0, 0, 0);");
+		dialogPane.setStyle("-fx-background-color: rgba(0, 0, 0, 0); -fx-padding: 30 30 0 0;");
 		dialogPane.getChildren().add(loading);
-		alert.getDialogPane().setContent(dialogPane);
-		
-		
+ 		alert.getDialogPane().setContent(dialogPane);
+
 		Platform.runLater(()->{
 			CenterPane.shade.setVisible(true);
 			CenterPane.alert.show();	
@@ -71,7 +70,7 @@ public class CenterPane extends StackPane{
 	public static void hideMessage(){
 		Platform.runLater(()->{
 			CenterPane.shade.setVisible(false);
-			CenterPane.alert.setResult(ButtonType.CLOSE);
+			CenterPane.alert.setResult(ButtonType.OK);
 		});
 	}
 }

@@ -8,14 +8,14 @@
 }
 
 
-.root{
+.root {
     -fx-font-size: 9pt;
     -fx-font-family: "Comfortaa";
     -fx-background-color : white;
     -fx-base:  #00b3a1;
     -fx-control-inner-background: white;
     -fx-focus-color: transparent;
-    }
+  }
 
 .button {
 	-fx-background-radius: 5;
@@ -110,3 +110,4 @@
 #help_pane_title{
 	-fx-font-size: 15;
 }
+

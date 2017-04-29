@@ -128,6 +128,9 @@ public class LogIn implements Runnable {
 						CenterPane.hideMessage();
 
 					});
+					loadUI.setOnFailed(en->{
+						CenterPane.hideMessage();
+					});
 				}
 			});
 		});
