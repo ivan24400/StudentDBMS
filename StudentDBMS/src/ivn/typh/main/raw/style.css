@@ -39,7 +39,7 @@
 
 #user, #password {
 	-fx-alignment: baseline-left;
-	-fx-min-width: 220
+	-fx-min-width: 150
 }
 #fullscreen{
 	-fx-graphic: url('/ivn/typh/main/icons/fullscreen.png')

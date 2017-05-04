@@ -58,12 +58,8 @@ public class CenterPane extends StackPane{
 	}
 	
 	public void showMessage(String message){
-		
-		(new Thread(new Runnable(){
 
-			@Override
-			public void run() {
-				loading.setText(message);
+				loading.setText("\t"+message);
 
 				dialogPane = new HBox();
 				dialogPane.setId("loadingPane");
@@ -76,9 +72,7 @@ public class CenterPane extends StackPane{
 					shade.setVisible(true);
 					alert.show();	
 				});				
-			}
 			
-		})).start();
 		
 	}
 
@@ -87,20 +81,14 @@ public class CenterPane extends StackPane{
 	}
 	
 	public void hideMessage(){
-		(new Thread(new Runnable(){
-
-			@Override
-			public void run() {
+	
 				Platform.runLater(()->{
 					System.out.println("CenterPane: hideMessage");
 					shade.setVisible(false);
 					CenterPane.alert.setResult(ButtonType.CLOSE);
 					CenterPane.alert.close();
 				});				
-			}
 			
-		})).start();
-		
 	}
 	
 	public void setShadeVisible(boolean flag){

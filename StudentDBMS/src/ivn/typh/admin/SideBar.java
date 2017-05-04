@@ -8,6 +8,8 @@ import ivn.typh.main.Engine;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -34,6 +36,11 @@ public class SideBar extends VBox {
 
 		Button about = ((Button) Components.mb.getItems().get(3));
 		Button help = ((Button) Components.mb.getItems().get(2));
+		
+		about.onActionProperty().addListener(arg->{
+			menu.fire();
+		});
+		
 		Button instituteName = new Button("Change Institute Name");
 		instituteName.setId("side-menu-button");
 		instituteName.setOnAction(event -> {
