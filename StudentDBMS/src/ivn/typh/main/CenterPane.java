@@ -1,12 +1,15 @@
 package ivn.typh.main;
 
 import javafx.application.Platform;
+import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -23,6 +26,7 @@ public class CenterPane extends StackPane{
 	private static Alert alert;
 	private static HBox dialogPane;
 	private static Label loading;
+	private ReadOnlyDoubleProperty property;
 	
 	public static Pane shade;
 	
@@ -57,27 +61,40 @@ public class CenterPane extends StackPane{
 		});
 	}
 	
-	public void showMessage(String message){
+	public void showMessage(String message,boolean isText){
+	
+		dialogPane = new HBox();
+		loading.setText("\t"+message);
 
-				loading.setText("\t"+message);
-
-				dialogPane = new HBox();
-				dialogPane.setId("loadingPane");
-				dialogPane.setBackground(new Background(new BackgroundFill(Color.rgb(0,0,0,0),CornerRadii.EMPTY,Insets.EMPTY)));
-				dialogPane.setStyle("-fx-background-color: rgba(0, 0, 0, 0); -fx-padding: 10 50 0 0;");
-				dialogPane.getChildren().add(loading);
-		 		alert.getDialogPane().setContent(dialogPane);
-
-				Platform.runLater(()->{
-					shade.setVisible(true);
-					alert.show();	
-				});				
-			
+		if(isText){
+			dialogPane.getChildren().add(loading);
+		}else{
+			ProgressIndicator progress = new ProgressIndicator();
+			progress.progressProperty().bind(property);
+			dialogPane.getChildren().addAll(progress,loading);
+		}
 		
+ 		alert.getDialogPane().setContent(dialogPane);
+
+		Platform.runLater(()->{
+			shade.setVisible(true);
+			alert.show();	
+		});				
+	
+	}
+	
+	public void showMessage(String message){
+		showMessage(message,true);
+	
 	}
 
 	public void showMessage(){
 		showMessage("Loading . . . ");
+	}
+	
+	public void showProgress(String message,ReadOnlyDoubleProperty prpty){
+		property = prpty;
+		showMessage(message,false);
 	}
 	
 	public void hideMessage(){

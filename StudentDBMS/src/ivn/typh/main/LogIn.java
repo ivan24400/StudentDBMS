@@ -51,6 +51,8 @@ public class LogIn implements Runnable {
 
 	public void startUI() {
 
+		BasicUI.centerOfHomePane.shade.setVisible(true);
+
 		gpane = new GridPane();
 		Label user = new Label("User :");
 		Label pass = new Label("Password :");
@@ -65,8 +67,6 @@ public class LogIn implements Runnable {
 		Platform.runLater(()->{
 			userText.requestFocus();
 		});
-		
-
 		
 		Dialog<LoginData> dialog = new Dialog<>();
 		dialog.setTitle("Typh™ Login");
@@ -97,6 +97,8 @@ public class LogIn implements Runnable {
 		});
 
 		dialog.setResultConverter((button) -> {
+			BasicUI.centerOfHomePane.shade.setVisible(false);
+
 			if (button == login) {
 				return new LoginData(userText.getText(), passText.getText());
 			}
@@ -124,7 +126,6 @@ public class LogIn implements Runnable {
 
 		loginTask.setOnSucceeded(value -> {
 
-			// update ui
 			Platform.runLater(() -> {
 
 				if (!loginTask.getValue()) {

@@ -35,6 +35,8 @@ public class Connect implements EventHandler<ActionEvent>{
 	@Override
 	public void handle(ActionEvent event) {
 
+		CenterPane.shade.setVisible(true);
+
 		Dialog<String> dialog = new Dialog<>();
 		dialog.setTitle("Connection - Typh™");
 		dialog.initOwner(BasicUI.stage);
@@ -147,7 +149,9 @@ public class Connect implements EventHandler<ActionEvent>{
 		dialog.getDialogPane().getButtonTypes().add(ok);
 		
 		dialog.setResultConverter(result -> {
-			if ((tf1.getText() + tf2.getText() + tf3.getText() + tf4.getText()).trim().isEmpty())
+			CenterPane.shade.setVisible(false);
+
+			if ((tf1.getText() + tf2.getText() + tf3.getText() + tf4.getText()).trim().isEmpty() || (result == null))
 				return null;
 			else
 				return tf1.getText() + "." + tf2.getText() + "." + tf3.getText() + "." + tf4.getText();
@@ -165,10 +169,7 @@ public class Connect implements EventHandler<ActionEvent>{
 			BasicUI.ipAddr = ip;
 			BasicUI.centerOfHomePane.showMessage("Connecting . . . ");
 			(new Thread(cm)).start();
-			}else{
-				Notification.message(BasicUI.stage, AlertType.ERROR,"Network - Typh™", "Invalid network address");
 			}
-
 		});
 
 		cm.setOnSucceeded(value -> {

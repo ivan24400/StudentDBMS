@@ -21,6 +21,8 @@ public class About implements EventHandler<ActionEvent>{
 
 	@Override
 	public void handle(ActionEvent event) {
+		
+		CenterPane.shade.setVisible(true);
 
 		Alert abt = new Alert(AlertType.NONE);
 		
@@ -70,7 +72,6 @@ public class About implements EventHandler<ActionEvent>{
 		abt.initStyle(StageStyle.UNDECORATED);
 		abt.getButtonTypes().clear();
 		abt.getDialogPane().setContent(window);
-		CenterPane.shade.setVisible(true);
 		abt.show();
 		
 	}

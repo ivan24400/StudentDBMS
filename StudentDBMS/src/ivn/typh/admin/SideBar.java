@@ -37,9 +37,7 @@ public class SideBar extends VBox {
 		Button about = ((Button) Components.mb.getItems().get(3));
 		Button help = ((Button) Components.mb.getItems().get(2));
 		
-		about.onActionProperty().addListener(arg->{
-			menu.fire();
-		});
+	
 		
 		Button instituteName = new Button("Change Institute Name");
 		instituteName.setId("side-menu-button");
@@ -134,7 +132,11 @@ public class SideBar extends VBox {
 				}
 			}
 		});
-
+		
+		about.setOnMouseClicked(arg->{
+			menu.fire();
+		});
+		
 		setVisible(false);
 	}
 
