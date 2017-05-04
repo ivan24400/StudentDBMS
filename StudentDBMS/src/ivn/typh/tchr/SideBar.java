@@ -1,13 +1,14 @@
 package ivn.typh.tchr;
 
 
-import ivn.typh.main.CenterPane;
+import ivn.typh.main.BasicUI;
+import ivn.typh.tchr.Components;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
@@ -16,16 +17,27 @@ import javafx.util.Duration;
 public class SideBar extends VBox {
 
 	private Button menu;
-	private double width;
+	private final double width=300;
 	static Label rts, rtu, rll;
 
 	public SideBar() {
 		menu = Components.menu;
-		CenterPane.shade.setVisible(false);
-		setVisible(false);
+		setMinWidth(width);
+		setMaxWidth(width);
+		setPrefWidth(width);
 		
-		setId("sideBar");
+		Button about = ((Button) Components.mb.getItems().get(3));
+		Button help = ((Button) Components.mb.getItems().get(2));
+		Pane sideSpacer = new Pane();
+		
+		Platform.runLater(()->{
+			setId("sideBar");
+			about.setId("side-menu-button");
+			help.setId("side-menu-button");
+			getChildren().addAll(Components.topL, Components.left, sideSpacer,help, about);
+			getChildren().forEach(node -> VBox.setVgrow(node, Priority.ALWAYS));
 
+		});
 
 		menu.setOnAction(arg -> {
 
@@ -64,31 +76,18 @@ public class SideBar extends VBox {
 			
 			if(show.statusProperty().get() == Animation.Status.STOPPED && hide.statusProperty().get() == Animation.Status.STOPPED){
 				if(isVisible()){
-					CenterPane.shade.setVisible(false);
+					BasicUI.centerOfHomePane.setShadeVisible(false);
 					hide.play();
 				}
 				else{
-					CenterPane.shade.setVisible(true);
+					BasicUI.centerOfHomePane.setShadeVisible(true);
 					setVisible(true);
 					show.play();
 				}
 			}
 		});
-
+		getStyleClass().add(".sideBarButton");
+		setVisible(false);
 	}
 
-	public void setMenuWidth(double w){
-		setMinWidth(w);
-		setMaxWidth(w);
-		width = w;
-	}
-	public void addNodes(Node... nodes) {
-		getChildren().addAll(nodes);
-		getChildren().forEach(node->VBox.setVgrow(node, Priority.ALWAYS));;
-		
-	}
-	
-	public ObservableList<Node> getChildren(){
-		return getChildren();
-	}
 }

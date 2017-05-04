@@ -26,7 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import ivn.typh.main.Engine;
-import ivn.typh.main.CenterPane;
+import ivn.typh.main.BasicUI;
 import ivn.typh.main.Notification;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert.AlertType;
@@ -53,10 +53,10 @@ public class Export {
 		if(path!=null && path.exists()){
 
 		Task<Boolean> task = createWriteTask();
-		CenterPane.showMessage("Exporting ...");
+		BasicUI.centerOfHomePane.showMessage("Exporting . . . ");
 		(new Thread(task)).start();
 		task.setOnSucceeded(arg -> {
-			CenterPane.hideMessage();
+			BasicUI.centerOfHomePane.hideMessage();
 			if (task.getValue())
 				Notification.message(Components.stage, "File Exported  to :- \n "+path.getAbsolutePath());
 			else
@@ -65,7 +65,7 @@ public class Export {
 
 		});
 		task.setOnCancelled(value->{
-			CenterPane.hideMessage();
+			BasicUI.centerOfHomePane.hideMessage();
 		});
 		}
 

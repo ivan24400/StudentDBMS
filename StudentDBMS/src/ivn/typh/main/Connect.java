@@ -23,7 +23,9 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.Node;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -140,16 +142,20 @@ public class Connect implements EventHandler<ActionEvent>{
 		hb.setPadding(new Insets(40));
 		hb.getChildren().addAll(tf1, new Label(" . "), tf2, new Label(" . "), tf3, new Label(" . "), tf4);
 		dialog.getDialogPane().setContent(hb);
-		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+		
+		ButtonType ok = new ButtonType("Connect",ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().add(ok);
+		
 		dialog.setResultConverter(result -> {
-			if ((tf1.getText() + tf2.getText() + tf3.getText() + tf4.getText()).trim().isEmpty()
-					|| result.equals(ButtonType.CANCEL))
+			if ((tf1.getText() + tf2.getText() + tf3.getText() + tf4.getText()).trim().isEmpty())
 				return null;
 			else
 				return tf1.getText() + "." + tf2.getText() + "." + tf3.getText() + "." + tf4.getText();
 		});
 
-
+		Node connectOK = dialog.getDialogPane().lookupButton(ok);
+		connectOK.getStyleClass().add("dialogOKButton");
+		
 		Optional<String> result = dialog.showAndWait();
 
 		Task<Boolean> cm = checkMachine(BasicUI.stage);
@@ -157,7 +163,7 @@ public class Connect implements EventHandler<ActionEvent>{
 		result.ifPresent(ip -> {
 			if(ip!=null){
 			BasicUI.ipAddr = ip;
-			CenterPane.showMessage("Connecting ...");
+			BasicUI.centerOfHomePane.showMessage("Connecting . . . ");
 			(new Thread(cm)).start();
 			}else{
 				Notification.message(BasicUI.stage, AlertType.ERROR,"Network - Typh™", "Invalid network address");
@@ -167,7 +173,7 @@ public class Connect implements EventHandler<ActionEvent>{
 
 		cm.setOnSucceeded(value -> {
 			Platform.runLater(()->{
-				CenterPane.hideMessage();
+				BasicUI.centerOfHomePane.hideMessage();
 
 				if (cm.getValue()){
 					Notification.message(BasicUI.stage, AlertType.INFORMATION, "Connection  - Typh™",
@@ -186,7 +192,7 @@ public class Connect implements EventHandler<ActionEvent>{
 
 	cm.setOnFailed(value->{
 		Platform.runLater(()->{
-			CenterPane.hideMessage();
+			BasicUI.centerOfHomePane.hideMessage();
 			Notification.message(BasicUI.stage, AlertType.ERROR, "Connection - Typh™", "Server not found!");
 
 		});

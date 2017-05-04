@@ -10,7 +10,6 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -19,7 +18,6 @@ public class Components {
 	public static Stage stage;
 	public static GridPane gpane;
 	public static ScrollPane sgpane;
-	public static StackPane spMain;
 	public static GridPane userGrid;
 	public static GridPane dprtGrid;
 	public static ListView<String> onlineUser;

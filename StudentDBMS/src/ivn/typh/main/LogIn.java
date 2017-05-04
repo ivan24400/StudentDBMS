@@ -52,40 +52,50 @@ public class LogIn implements Runnable {
 	public void startUI() {
 
 		gpane = new GridPane();
-		Label user = new Label("User:");
-		Label pass = new Label("Password:");
+		Label user = new Label("User :");
+		Label pass = new Label("Password :");
 		TextField userText = new TextField();
 		PasswordField passText = new PasswordField();
 
 		userText.setId("user");
 		passText.setId("password");
+		
+		userText.setPromptText("UserName");
+		passText.setPromptText("Password");
+		Platform.runLater(()->{
+			userText.requestFocus();
+		});
+		
 
+		
 		Dialog<LoginData> dialog = new Dialog<>();
 		dialog.setTitle("Typh™ Login");
 		dialog.setHeaderText("Enter your login information");
 
 		gpane.setPadding(new Insets(50));
-		gpane.setHgap(20);
 		gpane.setVgap(20);
+		gpane.setHgap(20);
 		gpane.add(user, 0, 0);
 		gpane.add(userText, 1, 0);
 		gpane.add(pass, 0, 1);
 		gpane.add(passText, 1, 1);
 
+		
+		
 		dialog.getDialogPane().setContent(gpane);
 
 		ButtonType login = new ButtonType("Log In", ButtonData.OK_DONE);
-		dialog.getDialogPane().getButtonTypes().addAll(login, ButtonType.CANCEL);
+		dialog.getDialogPane().getButtonTypes().add(login);
 
 		Node logined = dialog.getDialogPane().lookupButton(login);
-		logined.setDisable(true);
+		logined.getStyleClass().add("dialogOKButton");
 
+		
 		passText.textProperty().addListener((observable, oldv, newv) -> {
 			logined.setDisable(newv.trim().isEmpty() || userText.getText().trim().isEmpty());
 
 		});
 
-		Platform.runLater(() -> userText.requestFocus());
 		dialog.setResultConverter((button) -> {
 			if (button == login) {
 				return new LoginData(userText.getText(), passText.getText());
@@ -103,7 +113,7 @@ public class LogIn implements Runnable {
 				if (!(arg == null)) {
 					BasicUI.user = arg.getUser();
 					BasicUI.password = arg.getPassword();
-					CenterPane.showMessage("Logging in ");
+					BasicUI.centerOfHomePane.showMessage("Logging in . . . ");
 					(new Thread(loginTask)).start();
 				}
 			} catch (Exception e) {
@@ -118,19 +128,18 @@ public class LogIn implements Runnable {
 			Platform.runLater(() -> {
 
 				if (!loginTask.getValue()) {
-					CenterPane.hideMessage();
+					BasicUI.centerOfHomePane.hideMessage();
 					Notification.message(stage, AlertType.ERROR, "Invalid credentials - Typh™",
 							"Either username or password is incorrect !");
 				} else {
 					Task<Void> loadUI = loadUI();
 					(new Thread(loadUI)).start();
-					loadUI.setOnSucceeded(event -> {
-						CenterPane.hideMessage();
+					
+					loadUI.setOnSucceeded(arg->{
+						BasicUI.centerOfHomePane.hideMessage();
 
 					});
-					loadUI.setOnFailed(en->{
-						CenterPane.hideMessage();
-					});
+
 				}
 			});
 		});
@@ -231,18 +240,13 @@ public class LogIn implements Runnable {
 
 		Task<Void> loadUI = null;
 		if (BasicUI.user.equals(new String("admin"))) {
-
 			loadUI = new AdminUI(stage, pane, mb);
-
 		} else {
 			String freeze = Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first().toJson();
 			JSONObject json = new JSONObject(freeze);
 			if (!json.getBoolean("status"))
-
 				loadUI = new TchrUI(stage, pane, scene, mb);
-
 			else
-
 				Notification.message(stage, AlertType.ERROR, "User Accounts - Typh™",
 						"Your account has been locked !\nContact system administrators");
 		}

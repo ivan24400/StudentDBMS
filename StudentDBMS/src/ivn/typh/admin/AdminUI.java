@@ -75,7 +75,6 @@ public class AdminUI extends Task<Void>{
 	}
 
 	public void startUI() {
-		Components.spMain = new StackPane();
 		Components.gpane = new GridPane();
 		Components.sgpane = new ScrollPane();
 
@@ -85,13 +84,18 @@ public class AdminUI extends Task<Void>{
 		Components.center = new HBox();
 		Components.top = new HBox();
 
-		Thread pulse = new Thread(new HeartBeat());
-		pulse.start();
 
 		ColumnConstraints cc0 = new ColumnConstraints();
 		ColumnConstraints cc1 = new ColumnConstraints();
 		RowConstraints rc0 = new RowConstraints();
 		RowConstraints rc1 = new RowConstraints();
+		
+
+		cc0.setPercentWidth(70);
+		cc1.setPercentWidth(30);
+		rc0.setPercentHeight(15);
+		rc1.setPercentHeight(75);
+
 
 		Components.admin = new Label("Administrator");
 		Components.totalStudents = new Label("Total Students:");
@@ -106,13 +110,10 @@ public class AdminUI extends Task<Void>{
 		logout.setId("logout");
 		search.setId("search");
 
-		Pane dummy = new Pane();
-
-		Components.side = new SideBar(dummy, Components.menu);
-		Components.side.setMenuWidth(300);
-
 		Components.onlineUser = new ListView<>();
 		Components.onlineUser.getItems().add("No User is online !");
+		
+		
 		ContextMenu oucm = new ContextMenu();
 		MenuItem sText = new MenuItem("Send a message");
 		oucm.getItems().add(sText);
@@ -128,12 +129,14 @@ public class AdminUI extends Task<Void>{
 		});
 
 		Components.onlineUser.setContextMenu(oucm);
+		
+		// Start pulse
+		
+		Thread pulse = new Thread(new HeartBeat());
+		pulse.start();
+				
+		
 		Components.menu.setGraphic(new ImageView(new Image("/ivn/typh/main/icons/menu.png")));
-
-		cc0.setPercentWidth(70);
-		cc1.setPercentWidth(30);
-		rc0.setPercentHeight(15);
-		rc1.setPercentHeight(75);
 
 		TabPane tabPane = new TabPane();
 		tabPane.getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
@@ -223,11 +226,6 @@ public class AdminUI extends Task<Void>{
 
 		tabPane.getTabs().addAll(Components.user, Components.stud, Components.dprt);
 
-
-		HBox.setHgrow(tabPane, Priority.ALWAYS);
-		VBox.setVgrow(Components.onlineUser, Priority.ALWAYS);
-		StackPane.setAlignment(Components.side, Pos.CENTER_LEFT);
-
 		Components.center.getChildren().add(tabPane);
 
 		Components.topL.getChildren().add(Components.admin);
@@ -235,21 +233,6 @@ public class AdminUI extends Task<Void>{
 		Components.totalUsers, Components.rTotalUsers, Components.lastLogin, Components.rLastLogin);
 		Components.right.getChildren().addAll(au, Components.onlineUser);
 		Components.top.getChildren().addAll(search, Components.srch);
-
-		Button about = ((Button) Components.mb.getItems().get(3));
-		Button help = ((Button) Components.mb.getItems().get(2));
-		Pane space = new Pane();
-		
-		VBox.setVgrow(space, Priority.ALWAYS);
-
-		Platform.runLater(()->{
-			about.setId("side-menu-button");
-			help.setId("side-menu-button");
-		});
-
-		Components.side.addNodes(Components.topL, Components.left,space, help, about);
-		Components.side.setPrefWidth(300);
-
 
 		Components.gpane.getColumnConstraints().addAll(cc0, cc1);
 		Components.gpane.getRowConstraints().addAll(rc0, rc1);
@@ -262,22 +245,31 @@ public class AdminUI extends Task<Void>{
 		Components.sgpane.setContent(Components.gpane);
 		Components.sgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		Components.sgpane.setVbarPolicy(ScrollBarPolicy.NEVER);
-		Components.spMain.getChildren().addAll(Components.sgpane, dummy, Components.side);
+		
+
 
 		Platform.runLater(()->{
-			Components.stage.getScene().getStylesheets().remove(0);
-			Components.stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
-			Components.pane.setCenter(Components.spMain);
-
+			Components.side = new SideBar();
+			
 			Components.setIdAll();
 			Components.setCacheAll();
 
 			Components.mb.getItems().remove(7);
-			Components.mb.getItems().add(7, logout);
+			Components.mb.getItems().add(logout);
 			Components.mb.getItems().remove(0, 4);
 			Components.mb.getItems().add(0, Components.menu);
-			Components.mb.getItems().get(2).setId("fullscreen");
+			Components.mb.getItems().get(1).setId("fullscreen");
 
+			
+			BasicUI.centerOfHomePane.changeRootPane(Components.sgpane, Components.side);
+
+			StackPane.setAlignment(Components.side, Pos.CENTER_LEFT);
+			HBox.setHgrow(tabPane, Priority.ALWAYS);
+			VBox.setVgrow(Components.onlineUser, Priority.ALWAYS);
+			
+			Components.stage.getScene().getStylesheets().remove(0);
+			Components.stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
+	
 			loadProfiles();
 			Components.pane.applyCss();
 			Components.pane.layout();
@@ -338,44 +330,7 @@ public class AdminUI extends Task<Void>{
 	}
 
 	private void loadProfiles() {
-		Button instituteName = new Button("Change Institute Name");
-		instituteName.setId("side-menu-button");
-		instituteName.setOnAction(event -> {
-			Dialog<?> dialog = new Dialog<Object>();
-			VBox pane = new VBox();
-			pane.setId("institute_dialog");
-			Label label = new Label("Enter new name:-");
-			TextField tf = new TextField();
-			tf.setPromptText(">");
-			pane.getChildren().addAll(label, tf);
-			ButtonType apply = new ButtonType("Apply", ButtonData.APPLY);
-
-			dialog.setTitle("Institute Name - Typh™");
-			dialog.initOwner(Components.stage);
-			dialog.getDialogPane().getButtonTypes().addAll(apply, ButtonType.CANCEL);
-			dialog.getDialogPane().setContent(pane);
-
-			Node apply_t = dialog.getDialogPane().lookupButton(apply);
-			apply_t.setDisable(true);
-			tf.textProperty().addListener((obs, o, n) -> {
-				apply_t.setDisable((n.trim().isEmpty()));
-			});
-
-			dialog.setResultConverter(button -> {
-				ButtonType tmp = button;
-				if (tmp.getButtonData().equals(ButtonData.APPLY)) {
-					BasicUI.institute.setText(tf.getText());
-					Bson newv = new Document("instituteName", BasicUI.institute.getText());
-					Bson query = new Document("user", "admin");
-					Engine.db.getCollection("Users").updateOne(query, new Document("$set", newv));
-				}
-				return null;
-			});
-			dialog.show();
-		});
-
-		Components.side.getChildren().add(Components.side.getChildren().size() - 2, instituteName);
-
+		
 		Document tmpdoc = Engine.db.getCollection("Users").find(eq("user", "admin")).first();
 		Components.rLastLogin.setText(tmpdoc.getString("lastLogin"));
 

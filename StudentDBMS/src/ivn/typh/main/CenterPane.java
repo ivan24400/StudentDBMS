@@ -16,7 +16,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class CenterPane extends StackPane{
@@ -42,35 +41,71 @@ public class CenterPane extends StackPane{
 		
 		getChildren().clear();
 		getChildren().addAll(pane,shade);
-
 	}
 	
-	public CenterPane(Stage s, Node pane, Node sidebar){
+	public CenterPane(Node pane, Node sidebar){
 		this(pane);
 		getChildren().add(sidebar);
 	}
 	
-	public static void showMessage(String message){
-		loading.setText(message);
-
-		dialogPane = new HBox();
-		dialogPane.setId("loadingPane");
-		dialogPane.setBackground(new Background(new BackgroundFill(Color.rgb(0,0,0,0),CornerRadii.EMPTY,Insets.EMPTY)));
-		dialogPane.setStyle("-fx-background-color: rgba(0, 0, 0, 0); -fx-padding: 30 30 0 0;");
-		dialogPane.getChildren().add(loading);
- 		alert.getDialogPane().setContent(dialogPane);
-
+	public void changeRootPane(Node pane,Node sidebar){
 		Platform.runLater(()->{
-			CenterPane.shade.setVisible(true);
-			CenterPane.alert.show();	
+			getChildren().remove(0);
+			getChildren().add(0, pane);
+			getChildren().add(sidebar);
+				
 		});
 	}
-
 	
-	public static void hideMessage(){
+	public void showMessage(String message){
+		
+		(new Thread(new Runnable(){
+
+			@Override
+			public void run() {
+				loading.setText(message);
+
+				dialogPane = new HBox();
+				dialogPane.setId("loadingPane");
+				dialogPane.setBackground(new Background(new BackgroundFill(Color.rgb(0,0,0,0),CornerRadii.EMPTY,Insets.EMPTY)));
+				dialogPane.setStyle("-fx-background-color: rgba(0, 0, 0, 0); -fx-padding: 10 50 0 0;");
+				dialogPane.getChildren().add(loading);
+		 		alert.getDialogPane().setContent(dialogPane);
+
+				Platform.runLater(()->{
+					shade.setVisible(true);
+					alert.show();	
+				});				
+			}
+			
+		})).start();
+		
+	}
+
+	public void showMessage(){
+		showMessage("Loading . . . ");
+	}
+	
+	public void hideMessage(){
+		(new Thread(new Runnable(){
+
+			@Override
+			public void run() {
+				Platform.runLater(()->{
+					System.out.println("CenterPane: hideMessage");
+					shade.setVisible(false);
+					CenterPane.alert.setResult(ButtonType.CLOSE);
+					CenterPane.alert.close();
+				});				
+			}
+			
+		})).start();
+		
+	}
+	
+	public void setShadeVisible(boolean flag){
 		Platform.runLater(()->{
-			CenterPane.shade.setVisible(false);
-			CenterPane.alert.setResult(ButtonType.OK);
+			shade.setVisible(flag);
 		});
 	}
 }

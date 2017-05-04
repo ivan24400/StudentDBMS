@@ -1,5 +1,5 @@
 /*
- * Stylesheet for main UI
+ * 	Style sheet for main UI
  */
  
 @font-face {
@@ -38,7 +38,8 @@
 }
 
 #user, #password {
-	-fx-alignment: baseline-left
+	-fx-alignment: baseline-left;
+	-fx-min-width: 220
 }
 #fullscreen{
 	-fx-graphic: url('/ivn/typh/main/icons/fullscreen.png')
@@ -60,9 +61,20 @@
 	-fx-graphic: url('/ivn/typh/main/icons/help.png')
 }
 
+.dialogOKButton{
+	-fx-background-color: linear-gradient(derive(#00b3a1,70%),#00b3a1);
+	-fx-text-fill: white;
+}
+
+.dialogOKButton:hover {
+	-fx-cursor: hand;
+	-fx-background-color: linear-gradient(#00b3a1,derive(#00b3a1,-30%));
+}
+
 #logout{
 	-fx-graphic: url('/ivn/typh/main/icons/logout.png')
 }
+
 
 /*
  * 	About Dialog

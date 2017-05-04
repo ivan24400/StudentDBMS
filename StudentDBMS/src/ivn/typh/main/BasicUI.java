@@ -20,8 +20,6 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -39,12 +37,13 @@ public class BasicUI extends Application implements Runnable {
 	public static String user;
 	public static String password;
 	public static BorderPane homePane;
+	public static CenterPane centerOfHomePane;
+	
 	public static Label institute;
 	public static String ipAddr;
 	public static Stage stage;
 	public static double screenWidth;
 	public static double screenHeight;
-	public static CenterPane center;
 	public static Label loading;
 
 	public Circle login;
@@ -147,8 +146,8 @@ public class BasicUI extends Application implements Runnable {
 				basic.getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
 				stage.setScene(basic);
 				
-				center = new CenterPane(loginPane);
-				homePane.setCenter(center);
+				centerOfHomePane = new CenterPane(loginPane);
+				homePane.setCenter(centerOfHomePane);
 				stage.show();
 
 

@@ -31,7 +31,6 @@ import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
 import ivn.typh.tchr.Components;
 import ivn.typh.main.BasicUI;
-import ivn.typh.main.CenterPane;
 import ivn.typh.main.Engine;
 import ivn.typh.main.Resources;
 import javafx.application.Platform;
@@ -53,7 +52,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.control.ScrollPane;
@@ -89,11 +87,10 @@ public class TchrUI extends Task<Void> {
 	}
 
 	public void startUI() {
+		System.out.println("First Line in tchr");
 
 		Components.tgpane = new GridPane();
 		Components.sctgpane = new ScrollPane();
-		Components.spMain = new StackPane();
-		Components.centerPane = new CenterPane(Components.sctgpane);
 
 		Components.center = new GridPane();
 		Components.left = new VBox();
@@ -106,9 +103,6 @@ public class TchrUI extends Task<Void> {
 
 		Components.paneList = new String[] { "Personal", "Academic", "Attendance", "Projects", "Assignments" };
 
-		Components.side = new SideBar();
-		Components.side.setMenuWidth(300);
-		Components.side.getStyleClass().add(".sideBarButton");
 		Components.menu.setGraphic(new ImageView(new Image(Resources.MENU_ICON.path)));
 
 		Components.pname = new Label();
@@ -181,6 +175,7 @@ public class TchrUI extends Task<Void> {
 
 		loadData();
 		
+		
 		// Start the heart beat
 
 		Thread pulse = new Thread(new HeartBeat());
@@ -197,25 +192,6 @@ public class TchrUI extends Task<Void> {
 
 		Components.slist.setPrefWidth(150);
 
-		
-		Button about = ((Button) Components.mb.getItems().get(3));
-		Button help = ((Button) Components.mb.getItems().get(2));
-		Pane sideSpacer = new Pane();
-		
-		Platform.runLater(()->{
-			about.setId("side-menu-button");
-			help.setId("side-menu-button");
-
-		});
-
-		VBox.setVgrow(sideSpacer, Priority.ALWAYS);
-		GridPane.setHgrow(Components.accord, Priority.ALWAYS);
-		GridPane.setValignment(Components.left, VPos.CENTER);
-		StackPane.setAlignment(Components.side, Pos.CENTER_LEFT);
-
-		
-		Components.setCacheAll();
-
 
 		Components.tgpane.setMaxSize(BasicUI.screenWidth, BasicUI.screenHeight);
 		Components.tgpane.setMinSize(BasicUI.screenWidth, BasicUI.screenHeight);
@@ -225,7 +201,7 @@ public class TchrUI extends Task<Void> {
 			Components.accord.getPanes().addAll(Components.tp);
 			Components.accord.setExpandedPane(Components.tp[0]);
 
-			Components.setIdAll();
+
 
 			Components.top.getChildren().addAll(Components.srch, Components.searchBox);
 			Components.topL.getChildren().add(Components.pname);
@@ -234,34 +210,43 @@ public class TchrUI extends Task<Void> {
 					Components.tstuds, Components.nstuds);
 
 
-			
 			Components.tgpane.add(Components.top, 0, 0);
 			Components.tgpane.add(Components.aboveAcc, 0, 1);
 			Components.tgpane.add(Components.accord, 0, 2);
 
-			Components.sctgpane.setContent(Components.tgpane);
-		
-			Components.side.addNodes(Components.topL, Components.left, sideSpacer,help, about);
-			
 
-			Components.spMain.getChildren().addAll(Components.sctgpane, Components.side);
-			
+			Components.sctgpane.setContent(Components.tgpane);
+//
+
+//
+			System.out.println("Before Last Line in tchr");
 
 			Platform.runLater(()->{
-				
-	
+				Components.side = new SideBar();
+
+
 					Components.mb.getItems().remove(7);
 					Components.mb.getItems().add(7, Components.logout);
 					Components.mb.getItems().remove(0, 4);
 					Components.mb.getItems().add(0, Components.menu);
 					Components.mb.getItems().get(2).setId("fullscreen");
-					
+
+					Components.setIdAll();
+					Components.setCacheAll();
+
+					BasicUI.centerOfHomePane.changeRootPane(Components.sctgpane, Components.side);
+
+					GridPane.setHgrow(Components.accord, Priority.ALWAYS);
+					GridPane.setValignment(Components.left, VPos.CENTER);
+					StackPane.setAlignment(Components.side, Pos.CENTER_LEFT);
+
+
 					Components.stage.getScene().getStylesheets().remove(0);
 					Components.stage.getScene().getStylesheets().add(getClass().getResource(Resources.STYLE_SHEET.path).toExternalForm());
 					
-					
-					
-					Components.pane.setCenter(Components.centerPane);
+
+					Components.pane.applyCss();
+					Components.pane.layout();
 					disableAll(true);
 					Components.slist.getSelectionModel().selectFirst();
 

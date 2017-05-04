@@ -2,7 +2,6 @@ package ivn.typh.tchr;
 
 import java.util.Arrays;
 import ivn.typh.tchr.SideBar;
-import ivn.typh.main.CenterPane;
 import javafx.scene.CacheHint;
 import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
@@ -16,7 +15,6 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -28,9 +26,7 @@ public class Components {
 	
 	public static GridPane tgpane;
 	public static ScrollPane sctgpane;
-	public static StackPane spMain;
 	public static ScrollPane[] scroll;
-	public static CenterPane centerPane;
 
 
 	public static GridPane center;
@@ -108,11 +104,7 @@ public class Components {
 		sctgpane.setCache(true);               
 		sctgpane.setCacheShape(true);          
 		sctgpane.setCacheHint(CacheHint.SPEED);
-		
-		spMain.setCache(true);                
-		spMain.setCacheShape(true);           
-		spMain.setCacheHint(CacheHint.SPEED); 
-		
+	
 		pane.setCache(true);               
 		pane.setCacheShape(true);          
 		pane.setCacheHint(CacheHint.SPEED);
