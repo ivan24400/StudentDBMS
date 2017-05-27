@@ -51,7 +51,7 @@ public class LogIn implements Runnable {
 
 	public void startUI() {
 
-		BasicUI.centerOfHomePane.shade.setVisible(true);
+		CenterPane.shade.setVisible(true);
 
 		gpane = new GridPane();
 		Label user = new Label("User :");
@@ -97,7 +97,7 @@ public class LogIn implements Runnable {
 		});
 
 		dialog.setResultConverter((button) -> {
-			BasicUI.centerOfHomePane.shade.setVisible(false);
+			CenterPane.shade.setVisible(false);
 
 			if (button == login) {
 				return new LoginData(userText.getText(), passText.getText());
@@ -215,7 +215,7 @@ public class LogIn implements Runnable {
 		Socket client;
 		boolean flag = false;
 		try {
-			client = new Socket(BasicUI.ipAddr, 61003);
+			client = new Socket(BasicUI.ipAddr, PortList.CHECKUSER.port);
 			BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			PrintWriter out = new PrintWriter(client.getOutputStream());
 

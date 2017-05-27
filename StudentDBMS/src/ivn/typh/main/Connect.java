@@ -222,7 +222,7 @@ public class Connect implements EventHandler<ActionEvent>{
 							"mongodb://typh:typhpass@" + BasicUI.ipAddr + ":24000/?authSource=Students", options);
 					Engine.mongo = new MongoClient(connectionString);
 					Engine.db = Engine.mongo.getDatabase("Students");
-					testSocket = new Socket(BasicUI.ipAddr,61002);
+					testSocket = new Socket(BasicUI.ipAddr,PortList.NETWORKTEST.port);
 					result=true;
 
 					Engine.mongo.getAddress();

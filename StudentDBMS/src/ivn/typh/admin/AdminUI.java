@@ -228,7 +228,7 @@ public class AdminUI extends Task<Void>{
 		Components.dprt.setContent(scrollDprt);
 
 		tabPane.getTabs().addAll(Components.user, Components.stud, Components.dprt);
-
+		
 		Components.center.getChildren().add(tabPane);
 
 		Components.accNamePane.getChildren().add(Components.admin);
@@ -278,9 +278,9 @@ public class AdminUI extends Task<Void>{
 			Components.pane.layout();
 			Components.pane.requestLayout();
 			
-//			tabPane.setTabMinWidth(tabPane.getWidth()/tabPane.getTabs().size() -20);
-//			tabPane.setTabMaxWidth(tabPane.getWidth()/tabPane.getTabs().size() -20);
+			tabPane.setTabMinWidth(200);
 		});
+
 
 	}
 
