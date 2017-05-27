@@ -25,7 +25,10 @@ public class Help implements EventHandler<ActionEvent>{
 	@Override
 	public void handle(ActionEvent event) {
 
+		if (CenterPane.menu != null)
+			CenterPane.menu.fire();
 		CenterPane.shade.setVisible(true);
+		
 		Alert helpPage = new Alert(AlertType.NONE);
 		
 		VBox window = new VBox();

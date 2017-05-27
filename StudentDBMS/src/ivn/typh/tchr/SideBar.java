@@ -1,7 +1,7 @@
 package ivn.typh.tchr;
 
 
-import ivn.typh.main.BasicUI;
+import ivn.typh.main.CenterPane;
 import ivn.typh.tchr.Components;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
@@ -21,7 +21,7 @@ public class SideBar extends VBox {
 	static Label rts, rtu, rll;
 
 	public SideBar() {
-		menu = Components.menu;
+		menu = CenterPane.menu;
 		setMinWidth(width);
 		setMaxWidth(width);
 		setPrefWidth(width);
@@ -34,7 +34,7 @@ public class SideBar extends VBox {
 			setId("sideBar");
 			about.setId("side-menu-button");
 			help.setId("side-menu-button");
-			getChildren().addAll(Components.topL, Components.left, sideSpacer,help, about);
+			getChildren().addAll(Components.accUserPane, Components.accDescPane, sideSpacer,help, about);
 			getChildren().forEach(node -> VBox.setVgrow(node, Priority.ALWAYS));
 
 		});
@@ -76,11 +76,11 @@ public class SideBar extends VBox {
 			
 			if(show.statusProperty().get() == Animation.Status.STOPPED && hide.statusProperty().get() == Animation.Status.STOPPED){
 				if(isVisible()){
-					BasicUI.centerOfHomePane.setShadeVisible(false);
 					hide.play();
+					CenterPane.shade.setVisible(false);
 				}
 				else{
-					BasicUI.centerOfHomePane.setShadeVisible(true);
+					CenterPane.shade.setVisible(true);
 					setVisible(true);
 					show.play();
 				}

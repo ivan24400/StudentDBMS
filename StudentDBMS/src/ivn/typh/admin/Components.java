@@ -21,7 +21,7 @@ public class Components {
 	public static GridPane userGrid;
 	public static GridPane dprtGrid;
 	public static ListView<String> onlineUser;
-	public static ToolBar mb;
+	public static ToolBar menuBar;
 	public static BorderPane pane;
 	
 	public static Label admin;
@@ -42,9 +42,9 @@ public class Components {
 	public static Button addDepartment;
 	public static Button addStudent;
 
-	public static VBox topL;
-	public static VBox left;
-	public static VBox right; 
+	public static VBox accNamePane;
+	public static VBox accDescPane;
+	public static VBox onlineUserPane; 
 	public static HBox center;
 	public static HBox top; 
 	
@@ -70,9 +70,9 @@ public class Components {
 		Components.dprtGrid.setId("dGrid");
 		
 		Components.center.setId("center");
-		Components.topL.setId("topL");
-		Components.left.setId("left");
-		Components.right.setId("right");
+		Components.accNamePane.setId("topL");
+		Components.accDescPane.setId("left");
+		Components.onlineUserPane.setId("right");
 		Components.top.setId("top");
 
 		

@@ -31,6 +31,7 @@ import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
 import ivn.typh.tchr.Components;
 import ivn.typh.main.BasicUI;
+import ivn.typh.main.CenterPane;
 import ivn.typh.main.Engine;
 import ivn.typh.main.Resources;
 import javafx.application.Platform;
@@ -64,6 +65,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class TchrUI extends Task<Void> {
@@ -82,7 +84,6 @@ public class TchrUI extends Task<Void> {
 		Components.pane = p;
 		Components.stage = s;
 		Components.scene = scen;
-		Components.menu = new Button("Menu");
 
 	}
 
@@ -91,32 +92,34 @@ public class TchrUI extends Task<Void> {
 
 		Components.tgpane = new GridPane();
 		Components.sctgpane = new ScrollPane();
+		CenterPane.menu = new Button("Menu");
+		CenterPane.menu.setGraphic(new ImageView(new Image(Resources.MENU_ICON.path)));
 
 		Components.center = new GridPane();
-		Components.left = new VBox();
+		Components.accDescPane = new VBox();
 		Components.top = new HBox();
-		Components.topL = new HBox();
+		Components.accUserPane = new HBox();
 		Components.aboveAcc = new HBox();
 
 		Components.logout = new Button("Log Out");
 		Components.editable = new ToggleButton("Edit");
 
 		Components.paneList = new String[] { "Personal", "Academic", "Attendance", "Projects", "Assignments" };
-
-		Components.menu.setGraphic(new ImageView(new Image(Resources.MENU_ICON.path)));
+		Components.tp = new TitledPane[Components.paneList.length];
 
 		Components.pname = new Label();
+		Components.pname.setFont(new Font(30));
 		Components.dprt = new Label("Department:");
 		Components.pdprt = new Label();
 		Components.cls = new Label("Class:");
 		Components.pcls = new Label();
 		Components.tstuds = new Label("Total Students:");
 		Components.nstuds = new Label();
+		
 		Components.slist = new ComboBox<>();
 		Components.srch = new Label("Search");
 		Components.searchBox = new Search();
 		Components.student = new Label("Student");
-		Components.tp = new TitledPane[Components.paneList.length];
 		Components.accord = new Accordion();
 		Components.update = new Button("Update");
 		Components.report = new Button("Report");
@@ -204,9 +207,9 @@ public class TchrUI extends Task<Void> {
 
 
 			Components.top.getChildren().addAll(Components.srch, Components.searchBox);
-			Components.topL.getChildren().add(Components.pname);
+			Components.accUserPane.getChildren().add(Components.pname);
 
-			Components.left.getChildren().addAll(Components.dprt, Components.pdprt, Components.cls, Components.pcls,
+			Components.accDescPane.getChildren().addAll(Components.dprt, Components.pdprt, Components.cls, Components.pcls,
 					Components.tstuds, Components.nstuds);
 
 
@@ -228,7 +231,7 @@ public class TchrUI extends Task<Void> {
 					Components.mb.getItems().remove(7);
 					Components.mb.getItems().add(7, Components.logout);
 					Components.mb.getItems().remove(0, 4);
-					Components.mb.getItems().add(0, Components.menu);
+					Components.mb.getItems().add(0, CenterPane.menu);
 					Components.mb.getItems().get(2).setId("fullscreen");
 
 					Components.setIdAll();
@@ -237,7 +240,7 @@ public class TchrUI extends Task<Void> {
 					BasicUI.centerOfHomePane.changeRootPane(Components.sctgpane, Components.side);
 
 					GridPane.setHgrow(Components.accord, Priority.ALWAYS);
-					GridPane.setValignment(Components.left, VPos.CENTER);
+					GridPane.setValignment(Components.accDescPane, VPos.CENTER);
 					StackPane.setAlignment(Components.side, Pos.CENTER_LEFT);
 
 

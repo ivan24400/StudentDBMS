@@ -4,12 +4,11 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import ivn.typh.main.BasicUI;
+import ivn.typh.main.CenterPane;
 import ivn.typh.main.Engine;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -29,13 +28,13 @@ public class SideBar extends VBox {
 	static Label rts, rtu, rll;
 
 	public SideBar() {
-		menu = Components.menu;
+		menu = CenterPane.menu;
 		setMinWidth(width);
 		setMaxWidth(width);
 		setPrefWidth(width);
 
-		Button about = ((Button) Components.mb.getItems().get(3));
-		Button help = ((Button) Components.mb.getItems().get(2));
+		Button about = ((Button) Components.menuBar.getItems().get(3));
+		Button help = ((Button) Components.menuBar.getItems().get(2));
 		
 	
 		
@@ -83,7 +82,7 @@ public class SideBar extends VBox {
 			setId("sideBar");
 			about.setId("side-menu-button");
 			help.setId("side-menu-button");
-			getChildren().addAll(Components.topL, Components.left, space,instituteName, help, about);
+			getChildren().addAll(Components.accNamePane, Components.accDescPane, space,instituteName, help, about);
 			getChildren().forEach(node -> VBox.setVgrow(node, Priority.ALWAYS));
 
 		});
@@ -124,19 +123,15 @@ public class SideBar extends VBox {
 					&& hide.statusProperty().get() == Animation.Status.STOPPED) {
 				if (isVisible()) {
 					hide.play();
-					BasicUI.centerOfHomePane.setShadeVisible(false);
+					CenterPane.shade.setVisible(false);
 				} else {
-					BasicUI.centerOfHomePane.setShadeVisible(true);
+					CenterPane.shade.setVisible(true);
 					setVisible(true);
 					show.play();
 				}
 			}
 		});
-		
-		about.setOnMouseClicked(arg->{
-			menu.fire();
-		});
-		
+
 		setVisible(false);
 	}
 

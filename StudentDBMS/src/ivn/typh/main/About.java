@@ -22,6 +22,8 @@ public class About implements EventHandler<ActionEvent>{
 	@Override
 	public void handle(ActionEvent event) {
 		
+		if (CenterPane.menu != null)
+			CenterPane.menu.fire();
 		CenterPane.shade.setVisible(true);
 
 		Alert abt = new Alert(AlertType.NONE);

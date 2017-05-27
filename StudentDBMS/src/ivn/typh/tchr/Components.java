@@ -30,9 +30,9 @@ public class Components {
 
 
 	public static GridPane center;
-	public static VBox left;
+	public static VBox accDescPane;
 	public static HBox top;
-	public static HBox topL;
+	public static HBox accUserPane;
 	public static HBox aboveAcc;
 	
 	public static String classIncharge;
@@ -78,9 +78,9 @@ public class Components {
 		
 		tgpane.setId("home");
 		center.setId("center");
-		left.setId("leftP");
+		accDescPane.setId("leftP");
 		top.setId("topP");
-		topL.setId("toplP");
+		accUserPane.setId("toplP");
 		aboveAcc.setId("acP");
 		
 		srch.setId("search");

@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import com.mongodb.client.MongoCursor;
 
 import ivn.typh.main.BasicUI;
+import ivn.typh.main.CenterPane;
 import ivn.typh.main.Engine;
 import ivn.typh.main.Notification;
 import ivn.typh.admin.Components;
@@ -63,22 +64,19 @@ import static com.mongodb.client.model.Filters.*;
 public class AdminUI extends Task<Void>{
 
 	public AdminUI(Stage s, BorderPane p, ToolBar tb) {
-		Components.mb = tb;
+		Components.menuBar = tb;
 		Components.stage = s;
 		Components.pane = p;
-		Components.menu = new Button("Menu");
-		Components.rTotalStudents = new Label("0");
-		Components.rTotalUsers = new Label("0");
-		Components.rLastLogin = new Label("No last Login");
+		
 	}
 
 	public void startUI() {
 		Components.gpane = new GridPane();
 		Components.sgpane = new ScrollPane();
 
-		Components.topL = new VBox();
-		Components.left = new VBox();
-		Components.right = new VBox();
+		Components.accNamePane = new VBox();
+		Components.accDescPane = new VBox();
+		Components.onlineUserPane = new VBox();
 		Components.center = new HBox();
 		Components.top = new HBox();
 
@@ -95,10 +93,18 @@ public class AdminUI extends Task<Void>{
 		rc1.setPercentHeight(75);
 
 
-		Components.admin = new Label("Administrator");
+		Components.admin = new Label("Admin");
+		Components.admin.setFont(new Font(30));
 		Components.totalStudents = new Label("Total Students:");
 		Components.totalUsers = new Label("Total Users:");
 		Components.lastLogin = new Label("Last Login:");
+		Components.rTotalStudents = new Label("0");
+		Components.rTotalUsers = new Label("0");
+		Components.rLastLogin = new Label("No last Login");
+		
+		
+		CenterPane.menu = new Button("Menu");
+		CenterPane.menu.setGraphic(new ImageView(new Image("/ivn/typh/main/icons/menu.png")));
 
 		Label search = new Label("Search");
 		Label au = new Label("Online Users");
@@ -134,7 +140,6 @@ public class AdminUI extends Task<Void>{
 		pulse.start();
 				
 		
-		Components.menu.setGraphic(new ImageView(new Image("/ivn/typh/main/icons/menu.png")));
 
 		TabPane tabPane = new TabPane();
 		tabPane.getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
@@ -226,17 +231,17 @@ public class AdminUI extends Task<Void>{
 
 		Components.center.getChildren().add(tabPane);
 
-		Components.topL.getChildren().add(Components.admin);
-		Components.left.getChildren().addAll(Components.topL, Components.totalStudents, Components.rTotalStudents,
+		Components.accNamePane.getChildren().add(Components.admin);
+		Components.accDescPane.getChildren().addAll(Components.accNamePane, Components.totalStudents, Components.rTotalStudents,
 		Components.totalUsers, Components.rTotalUsers, Components.lastLogin, Components.rLastLogin);
-		Components.right.getChildren().addAll(au, Components.onlineUser);
+		Components.onlineUserPane.getChildren().addAll(au, Components.onlineUser);
 		Components.top.getChildren().addAll(search, Components.srch);
 
 		Components.gpane.getColumnConstraints().addAll(cc0, cc1);
 		Components.gpane.getRowConstraints().addAll(rc0, rc1);
 		Components.gpane.add(Components.top, 0, 0);
 		Components.gpane.add(Components.center, 0, 1);
-		Components.gpane.add(Components.right, 1, 0, 1, 2);
+		Components.gpane.add(Components.onlineUserPane, 1, 0, 1, 2);
 		Components.gpane.setMaxSize(BasicUI.screenWidth, BasicUI.screenHeight);
 		Components.gpane.setMinSize(BasicUI.screenWidth, BasicUI.screenHeight);
 
@@ -252,11 +257,11 @@ public class AdminUI extends Task<Void>{
 			Components.setIdAll();
 			Components.setCacheAll();
 
-			Components.mb.getItems().remove(7);
-			Components.mb.getItems().add(logout);
-			Components.mb.getItems().remove(0, 4);
-			Components.mb.getItems().add(0, Components.menu);
-			Components.mb.getItems().get(1).setId("fullscreen");
+			Components.menuBar.getItems().remove(7);
+			Components.menuBar.getItems().add(logout);
+			Components.menuBar.getItems().remove(0, 4);
+			Components.menuBar.getItems().add(0, CenterPane.menu);
+			Components.menuBar.getItems().get(1).setId("fullscreen");
 
 			
 			BasicUI.centerOfHomePane.changeRootPane(Components.sgpane, Components.side);
@@ -273,8 +278,8 @@ public class AdminUI extends Task<Void>{
 			Components.pane.layout();
 			Components.pane.requestLayout();
 			
-			tabPane.setTabMinWidth(tabPane.getWidth()/tabPane.getTabs().size() -20);
-			tabPane.setTabMaxWidth(tabPane.getWidth()/tabPane.getTabs().size() -20);
+//			tabPane.setTabMinWidth(tabPane.getWidth()/tabPane.getTabs().size() -20);
+//			tabPane.setTabMaxWidth(tabPane.getWidth()/tabPane.getTabs().size() -20);
 		});
 
 	}

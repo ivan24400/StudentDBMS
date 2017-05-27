@@ -7,6 +7,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
@@ -23,6 +24,8 @@ import javafx.stage.StageStyle;
 
 public class CenterPane extends StackPane{
 
+	public static Button menu;
+	
 	private static Alert alert;
 	private static HBox dialogPane;
 	private static Label loading;
