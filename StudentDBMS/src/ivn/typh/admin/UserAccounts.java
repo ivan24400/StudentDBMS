@@ -39,6 +39,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+/*
+ * This class provides management of all the recorded users 
+ * in database.
+ */
 public class UserAccounts extends Dialog<String> implements EventHandler<ActionEvent> {
 
 	static ObservableList<String> userList;
@@ -206,6 +210,11 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 			show();
 		});
 	}
+	
+	/*
+	 * This method creates a list of class rooms existing in department and which 
+	 * are attended by students.
+	 */
 
 	private void initRoom() {
 		
@@ -222,6 +231,11 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		
 	}
 
+	/*
+	 * This method adds additional buttons onto the dialog.
+	 * They are to freeze, edit and delete account.
+	 * @param dPane The pane of UserAccount dialog.
+	 */
 	private void addEdit(GridPane dPane) {
 		if (!isFirst) {
 			HBox seBox = new HBox();
@@ -272,6 +286,12 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 			dPane.add(seBox, 0, 8, 2, 1);
 		}
 	}
+	
+	/*
+	 * This method checks whether do another user account with
+	 * the same given name already exists.
+	 * @return boolean representing does it exist or not.
+	 */
 
 	private boolean isAvailable() {
 		if (userList.contains(username.getText())) {
@@ -280,6 +300,11 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 			return false;
 		}
 	}
+	
+	/*
+	 * This method enables or disables all of the nodes present in
+	 * UserAccount.
+	 */
 
 	private void disableAll(boolean flag) {
 		username.setEditable(!flag);
@@ -295,6 +320,10 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		}
 
 	}
+	
+	/*
+	 * This method is called to add a new user account entry to database
+	 */
 
 	public void addButton() {
 		Button tmp = new Button(username.getText());
@@ -329,6 +358,11 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 
 	}
 
+	/*
+	 * This method creates a hash from given text.
+	 * @param text Input text to be SHA-256 hashed
+	 * @return A String which is sha256 hashed
+	 */
 	private String encryptedPassword(String text) {
 
 		StringBuffer hash = new StringBuffer();
@@ -344,6 +378,11 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		}
 		return hash.toString();
 	}
+	
+	/*
+	 * This method checks whether the text fields are empty or not.
+	 * @return boolean value representing empty or not.
+	 */
 
 	private boolean areFieldsEmpty() {
 		if (username.getText().trim().isEmpty() || password.getText().trim().isEmpty()

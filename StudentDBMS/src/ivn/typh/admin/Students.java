@@ -46,6 +46,9 @@ import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+/*
+ * This class provides a dialog box to manage all of the students
+ */
 public class Students extends Dialog<String> implements EventHandler<ActionEvent> {
 
 	static ObservableList<String> studentList;
@@ -326,6 +329,10 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		});
 	}
 
+	/*
+	 * This method is used to initialize all combo/choice boxes with a 
+	 * range of values.
+	 */
 	private void initRooms() {
 		for (int i = 1; i < 100; i++) {
 			tsclass.getItems().add(String.format("%02d", i));
@@ -339,6 +346,12 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 			tsrno.getItems().add(String.format("%03d", i));
 		}
 	}
+	
+	/*
+	 * This method adds additional buttons onto the dialog.
+	 * They are to edit and delete Profile.
+	 * @param pane The pane of Students dialog.
+	 */
 
 	private void addEdit(GridPane pane) {
 
@@ -373,6 +386,11 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		}
 	}
 
+	/*
+	 * This method enables or disables all of the nodes present inside
+	 * Students
+	 * @param flag A boolean value representing yes or no
+	 */
 	private void disableAll(Boolean flag) {
 
 		tsname.setEditable(!flag);
@@ -393,6 +411,10 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 
 
 	}
+	
+	/*
+	 * This method adds a new Student entry to the database.
+	 */
 
 	private void addButton() {
 
@@ -439,6 +461,11 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		}
 	}
 
+	/*
+	 * This method converts semester value to its corresponding 
+	 * academic year.
+	 * @return String representing any one of the four years.
+	 */
 	private String getYear() {
 		String year = null;
 		
@@ -462,9 +489,6 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		return year;
 	}
 
-	public String getStudentName() {
-		return tsname.getText();
-	}
 
 	public void begin() {
 		isFirst = true;

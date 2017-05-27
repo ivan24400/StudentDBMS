@@ -11,9 +11,16 @@ import java.util.concurrent.TimeUnit;
 import ivn.typh.admin.Components;
 import ivn.typh.main.BasicUI;
 import ivn.typh.main.Notification;
+import ivn.typh.main.PortList;
 import javafx.application.Platform;
 import javafx.scene.control.Alert.AlertType;
 
+/*
+ * This class runs a service/daemon to check for any messages from admin,
+ * and displays to the user if it is.
+ * <p> 
+ * It also notifies the server the existence of this application.
+ */
 public class HeartBeat implements Runnable {
 
 	private Socket socket;
@@ -24,7 +31,7 @@ public class HeartBeat implements Runnable {
 	public void run() {
 		try {
 			heartAttack = false;
-			socket = new Socket(BasicUI.ipAddr,61000);
+			socket = new Socket(BasicUI.ipAddr,PortList.USER.port);
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 			out.writeObject(BasicUI.user);
@@ -37,8 +44,6 @@ public class HeartBeat implements Runnable {
 				public void run() {
 					if(!heartAttack){
 					try {
-						System.out.println("pulse: user");
-
 						String text = (String) in.readObject();
 						if(!(text.equals("__BEAT__"))){
 							Platform.runLater(()->{
@@ -55,7 +60,13 @@ public class HeartBeat implements Runnable {
 					}
 				}
 
-				
+				/*
+				 * This method formats the message recieved from admin.
+				 * It adds a newline character after every twenty characters present
+				 * in the message.
+				 * @param text message
+				 * @return formatted string
+				 */
 				private String formatMessage(String text) {
 					StringBuffer message = new StringBuffer();
 					for(int i=1;i<=text.length();i++){
@@ -73,6 +84,10 @@ public class HeartBeat implements Runnable {
 		}
 	}
 	
+	/*
+	 * This method is called if any server fault occurs
+	 * @param logout status of server.
+	 */
 	private void serverFailed(boolean logout) {
 		
 		if(!logout){

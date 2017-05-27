@@ -1,5 +1,9 @@
 package ivn.typh.main;
 
+/*
+ * This class consists of port values 
+ * used by the client application
+ */
 public enum PortList {
 	USER(61000),
 	
@@ -9,7 +13,7 @@ public enum PortList {
 	
 	CHECKUSER(61003);
 	
-	int port;
+	public int port;
 	
 	PortList(int p){
 		this.port=p;

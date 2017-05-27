@@ -15,6 +15,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.StageStyle;
 
+/*
+ * This class displays the information about this software in a window frame.
+ */
 public class About implements EventHandler<ActionEvent>{
 	
 	private double xOffset,yOffset;

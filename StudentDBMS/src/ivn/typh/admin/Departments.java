@@ -32,6 +32,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+/*
+ * This class provides a dialog box to manage all of departments available in the institute.
+ */
 public class Departments extends Dialog<String> implements EventHandler<ActionEvent> {
 
 	public static ObservableMap<String, String> dprtList;
@@ -188,6 +191,9 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 		});
 	}
 
+	/*
+	 * This method initializes all of the choice boxes with a default range of values.
+	 */
 	private void initRoom() {
 		for ( counter = 1; counter <= 99; counter++) {
 			tlabs.getItems().add(String.format("%02d", counter));
@@ -198,12 +204,20 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 			}
 	}
 
+	/*
+	 * This method checks whether the textfields are empty or not.
+	 * @return a boolean representing empty or not.
+	 */
 	private boolean areFieldsEmpty() {
 		if (dname.getText().trim().isEmpty() || dhead.getText().trim().isEmpty())
 			return true;
 		else
 			return false;
 	}
+	
+	/*
+	 * This method adds a new entry of department in the database
+	 */
 
 	public void addDepartment() {
 
@@ -238,6 +252,12 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 		}
 
 	}
+	
+	/*
+	 * This method enables or disables all of the nodes
+	 * in Department dialog box 
+	 * @param flag A boolean value representing enable/disable.
+	 */
 
 	public void disableAll(boolean flag) {
 		dname.setEditable(!flag);
@@ -256,6 +276,11 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 			del.setDisable(flag);
 	}
 
+	/*
+	 * This method adds edit and delete options to already existing department
+	 * entries.
+	 * @param pane Home GridPane of UI.
+	 */
 	public void addEdit(GridPane pane) {
 		if (!isFirst) {
 			HBox seBox = new HBox();

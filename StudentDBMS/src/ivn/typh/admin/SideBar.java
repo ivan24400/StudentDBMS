@@ -21,6 +21,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
+/*
+ * This class provides a left sided menu bar with few information and options.
+ */
 public class SideBar extends VBox {
 
 	private Button menu;
@@ -88,6 +91,8 @@ public class SideBar extends VBox {
 		});
 		
 
+		// To make the menu bar slide onto screen and back outside of the screen
+		
 		menu.setOnAction(arg -> {
 
 			final Animation show = new Transition() {

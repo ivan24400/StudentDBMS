@@ -11,10 +11,15 @@ import java.util.concurrent.TimeUnit;
 
 import ivn.typh.main.BasicUI;
 import ivn.typh.main.Notification;
+import ivn.typh.main.PortList;
 import ivn.typh.admin.Components;
 import javafx.application.Platform;
 import javafx.scene.control.Alert.AlertType;
 
+/*
+ * This class is responsible to provide the admin with 
+ * list of all logged in users. 
+ */
 public class HeartBeat implements Runnable {
 
 	private Socket socket;
@@ -28,7 +33,7 @@ public class HeartBeat implements Runnable {
 		message = "__BEAT__";
 
 		try {
-			socket = new Socket(BasicUI.ipAddr, 61001);
+			socket = new Socket(BasicUI.ipAddr, PortList.ADMIN.port);
 			System.out.println(socket.getRemoteSocketAddress());
 			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
@@ -42,7 +47,6 @@ public class HeartBeat implements Runnable {
 						try {
 							@SuppressWarnings("unchecked")
 							List<String> u = (List<String>) in.readObject();
-							System.out.println("pulse: admin\t"+u.toString());
 							Platform.runLater(() -> {
 								Components.onlineUser.getItems().clear();
 								u.forEach(item -> {
@@ -57,7 +61,6 @@ public class HeartBeat implements Runnable {
 							out.flush();
 
 						} catch (ClassNotFoundException | IOException e) {
-							System.out.println("Server failed");
 							serverFailed();
 						}
 						message = "__BEAT__";
@@ -78,7 +81,11 @@ public class HeartBeat implements Runnable {
 			serverFailed();
 		}
 	}
-
+	
+	/*
+	 * This method is called if any server fault occurs
+	 * @param logout status of server.
+	 */
 	private void serverFailed() {
 		Platform.runLater(()->{
 			Notification.message(Components.stage, AlertType.ERROR,"Connection - Typh™","Server Failed");	

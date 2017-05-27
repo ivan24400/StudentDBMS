@@ -30,6 +30,10 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+/*
+ * This class connects the client app to the server machine not
+ * the database with user provided ip address.
+ */
 public class Connect implements EventHandler<ActionEvent>{
 
 	@Override
@@ -50,6 +54,7 @@ public class Connect implements EventHandler<ActionEvent>{
 		TextField tf4 = new TextField("1");
 		Tooltip tt = new Tooltip();
 
+		//	To make numeric input only
 	
 		tf1.textProperty().addListener((obs, o, n) -> {
 			if (!n.matches("\\d*")) {
@@ -92,7 +97,9 @@ public class Connect implements EventHandler<ActionEvent>{
 			}
 		});
 
-
+		
+		// To allow digits of maximum length 3
+		
 		tf1.addEventFilter(KeyEvent.KEY_TYPED, arg -> {
 			TextField tx = (TextField) arg.getSource();
 			if (tx.getText().length() >= 3) {
@@ -200,6 +207,15 @@ public class Connect implements EventHandler<ActionEvent>{
 	});
 		
 	}
+	
+	
+	/*
+	 * This method verifies whether the system is
+	 * reachable and if it is then make a connection to that
+	 * system 
+	 * @param stage Current stage
+	 * @return Task wrapped process 
+	 */
 
 	public Task<Boolean> checkMachine(Stage stage) {
 		Task<Boolean> task = new Task<Boolean>() {

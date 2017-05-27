@@ -13,6 +13,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+/*
+ * This class consists all of the common variables used 
+ * within this package.
+ */
 public class Components {
 	
 	public static Stage stage;

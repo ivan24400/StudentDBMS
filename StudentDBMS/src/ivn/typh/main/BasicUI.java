@@ -32,6 +32,11 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.control.Label;
 
+/*
+ * This class creates the first user
+ * interface of the client application.
+ */
+
 public class BasicUI extends Application implements Runnable {
 
 	public static String user;
@@ -78,7 +83,8 @@ public class BasicUI extends Application implements Runnable {
 				help.setId("help");
 				connect.setId("connect");
 				fulls.setId("fullscreen");
-				
+				institute.setFont(Font.font(16));
+
 				exit.setOnAction(event -> {
 					exitApplication();
 				});
@@ -93,6 +99,7 @@ public class BasicUI extends Application implements Runnable {
 				login = new Circle();
 				login.setFill(Color.TEAL);
 				login.setRadius(59);
+				
 				DropShadow dropShadow = new DropShadow();
 				dropShadow.setOffsetX(5);
 				dropShadow.setOffsetY(5);
@@ -134,15 +141,12 @@ public class BasicUI extends Application implements Runnable {
 				
 				loginPane.getChildren().addAll(login, lLabel);
 				dummy.getChildren().add(institute);
-				institute.setFont(Font.font(16));
 				dummy.setAlignment(Pos.CENTER);
 				
 				tool.getItems().addAll(connect, new Separator(), help, about, new Separator(), fulls, dummy, exit);
 				homePane.setTop(tool);
 				
-				basic = new Scene(homePane, 1360, 768);
-
-
+				basic = new Scene(homePane, BasicUI.screenWidth, BasicUI.screenHeight);
 				basic.getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
 				stage.setScene(basic);
 				
@@ -150,9 +154,12 @@ public class BasicUI extends Application implements Runnable {
 				homePane.setCenter(centerOfHomePane);
 				stage.show();
 
-
 	}
 
+	/*
+	 * This method is called when the user exits the
+	 * application.
+	 */
 	private void exitApplication() {
 		Alert ex = new Alert(AlertType.CONFIRMATION);
 		ex.setHeaderText("Exit Typh™ ? ");

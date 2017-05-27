@@ -18,6 +18,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 import javafx.stage.StageStyle;
 
+/*
+ * This class provides directions and requirements of this software in a window frame.
+ */
 public class Help implements EventHandler<ActionEvent>{
 
 	private double xOffset,yOffset;

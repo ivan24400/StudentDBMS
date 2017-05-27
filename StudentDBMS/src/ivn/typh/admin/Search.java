@@ -11,7 +11,10 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-
+/*
+ * This class is Search Box where the user enters name in this box
+ * to look a brief information about of the student.
+ */
 
 public class Search extends TextField {
 	private final SortedSet<String> list;
@@ -46,6 +49,9 @@ public class Search extends TextField {
 
 	}
 
+	/*
+	 * This method gives a popup window if a user selects an entry from the result.
+	 */
 	private void loadData() {
 		Components.studGrid.getChildren().forEach(arg->{
 			Button tmp = (Button)arg;
@@ -54,14 +60,19 @@ public class Search extends TextField {
 		});
 	}
 
-	public SortedSet<String> getEntries() {
-		return list;
-	}
 
+	/*
+	 * This method changes the contents of list with provided one.
+	 * @param items a List of students
+	 */
 	public void setItems(List<String> items){
 		list.addAll(items);
 	}
 	
+	/*
+	 * This method creates the search result list.
+	 * @param searchResult the list of students matching the search query
+	 */
 	private void populatePopup(List<String> searchResult) {
 		List<CustomMenuItem> menuItems = new LinkedList<>();
 		int maxEntries = 10;

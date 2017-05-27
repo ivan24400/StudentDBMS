@@ -34,6 +34,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
+/*
+ * This class authenticates user name and password.
+ * If it is valid then it retrieves account data from the server
+ */
 public class LogIn implements Runnable {
 
 	private Stage stage;
@@ -79,11 +83,12 @@ public class LogIn implements Runnable {
 		gpane.add(userText, 1, 0);
 		gpane.add(pass, 0, 1);
 		gpane.add(passText, 1, 1);
-
-		
 		
 		dialog.getDialogPane().setContent(gpane);
 
+		// To disable login button until user enters a text in
+		// the given user and password field
+		
 		ButtonType login = new ButtonType("Log In", ButtonData.OK_DONE);
 		dialog.getDialogPane().getButtonTypes().add(login);
 
@@ -147,6 +152,10 @@ public class LogIn implements Runnable {
 
 	}
 
+	/*
+	 * This method checks if user name and password is valid
+	 * @return Task wrapped operation
+	 */
 	private Task<Boolean> checkCredTask() {
 		Task<Boolean> loginTask = new Task<Boolean>() {
 			@Override
@@ -170,6 +179,11 @@ public class LogIn implements Runnable {
 		return loginTask;
 	}
 
+	/*
+	 * This method creates a SHA-256 hash of text and returns it.
+	 * @param text String message to hash.
+	 * @return SHA-256 hash of text
+	 */
 	private String encryptedPassword(String text) {
 
 		StringBuffer hash = new StringBuffer();
@@ -186,6 +200,11 @@ public class LogIn implements Runnable {
 		return hash.toString();
 	}
 
+	/*
+	 * This is the method which retrieves hashed password of the user
+	 * from the database and compares it with that of provided by the client.
+	 * @return int value representing result of comparison.
+	 */
 	private int verifyCredential() {
 		if (Engine.db == null)
 			return 3;
@@ -210,6 +229,12 @@ public class LogIn implements Runnable {
 			return 2;
 
 	}
+	
+	/*
+	 * This method verifies if the name of the user mentioned in
+	 * the login box is already logged in or not.
+	 * @return a boolean representing logged in or out.
+	 */
 
 	private boolean isUserLoggedIn() {
 		Socket client;
@@ -236,6 +261,11 @@ public class LogIn implements Runnable {
 		return flag;
 
 	}
+	
+	/*
+	 * This method initiates the change in UI after a successful authentication.
+	 * @return Task wrapped operation.
+	 */
 
 	private Task<Void> loadUI() {
 

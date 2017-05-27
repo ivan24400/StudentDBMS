@@ -22,6 +22,15 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.StageStyle;
 
+/*
+ * This is the center of the border pane which is the scene.
+ * It stacks :
+ * [i]   The nodes which users interact with.
+ * [ii]  A grey colored pane.
+ * [iii] A menu bar.
+ * <p>
+ * It can also be used to popup messages during progress of operations.
+ */
 public class CenterPane extends StackPane{
 
 	public static Button menu;
@@ -55,6 +64,11 @@ public class CenterPane extends StackPane{
 		getChildren().add(sidebar);
 	}
 	
+	/*
+	 * This method changes the frame which consists of all the nodes that interact with the user.
+	 * @param pane The new pane which is to be replaced by the older one.
+	 * @param sidebar The side bar
+	 */
 	public void changeRootPane(Node pane,Node sidebar){
 		Platform.runLater(()->{
 			getChildren().remove(0);
@@ -64,6 +78,12 @@ public class CenterPane extends StackPane{
 		});
 	}
 	
+	/*
+	 * This method is used to popup messages on screen. 
+	 * Particularly used to display progress of long tasks.
+	 * @param message The message to display on the label
+	 * @param isText To indicate is it a text or progress message.
+	 */
 	public void showMessage(String message,boolean isText){
 	
 		dialogPane = new HBox();
@@ -86,20 +106,37 @@ public class CenterPane extends StackPane{
 	
 	}
 	
+	/*
+	 * This method shows a message
+	 * @param message The contents of the message to be displayed.
+	 */
+	
 	public void showMessage(String message){
 		showMessage(message,true);
 	
 	}
+	
+	/*
+	 * This method is used to show a default message.
+	 */
 
 	public void showMessage(){
 		showMessage("Loading . . . ");
 	}
 	
+	/*
+	 * This method is used to show progress box
+	 * @param message The contents of the message to display.
+	 * @param prpty a progress property of the task.
+	 */
 	public void showProgress(String message,ReadOnlyDoubleProperty prpty){
 		property = prpty;
 		showMessage(message,false);
 	}
 	
+	/*
+	 * This method hides the progress box.
+	 */
 	public void hideMessage(){
 	
 				Platform.runLater(()->{
@@ -111,6 +148,10 @@ public class CenterPane extends StackPane{
 			
 	}
 	
+	/*
+	 * This method changes the visibility status of the grey colored scene.
+	 * @param flag A boolean value representing to enable or disable the scene.
+	 */
 	public void setShadeVisible(boolean flag){
 		Platform.runLater(()->{
 			shade.setVisible(flag);

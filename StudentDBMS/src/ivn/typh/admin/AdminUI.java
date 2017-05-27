@@ -61,6 +61,13 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import static com.mongodb.client.model.Filters.*;
 
+/*
+ *This class creates user interface for Admin user,
+ *and it is called by LogIn class.
+ *@see Task. 
+ */
+
+
 public class AdminUI extends Task<Void>{
 
 	public AdminUI(Stage s, BorderPane p, ToolBar tb) {
@@ -117,6 +124,7 @@ public class AdminUI extends Task<Void>{
 		Components.onlineUser = new ListView<>();
 		Components.onlineUser.getItems().add("No User is online !");
 		
+		// Setup context menu for the messenger
 		
 		ContextMenu oucm = new ContextMenu();
 		MenuItem sText = new MenuItem("Send a message");
@@ -134,12 +142,12 @@ public class AdminUI extends Task<Void>{
 
 		Components.onlineUser.setContextMenu(oucm);
 		
-		// Start pulse
+		// Start Background Pulse
 		
 		Thread pulse = new Thread(new HeartBeat());
 		pulse.start();
 				
-		
+		// Create TabPane
 
 		TabPane tabPane = new TabPane();
 		tabPane.getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
@@ -229,6 +237,9 @@ public class AdminUI extends Task<Void>{
 
 		tabPane.getTabs().addAll(Components.user, Components.stud, Components.dprt);
 		
+		
+		//	Add all nodes to their panes.
+		
 		Components.center.getChildren().add(tabPane);
 
 		Components.accNamePane.getChildren().add(Components.admin);
@@ -284,6 +295,11 @@ public class AdminUI extends Task<Void>{
 
 	}
 
+	/*
+	 * Messenger to send a text to a given user.
+	 * @param user Name of Client to send text.
+	 */
+	
 	private void sendMessage(String user) {
 	
 		Dialog<String> dialog = new Dialog<>();
@@ -332,6 +348,11 @@ public class AdminUI extends Task<Void>{
 
 	}
 
+	/*
+	 * This method is invoked to load default values 
+	 * and other details involved.
+	 */
+	
 	private void loadProfiles() {
 		
 		Document tmpdoc = Engine.db.getCollection("Users").find(eq("user", "admin")).first();
@@ -491,6 +512,13 @@ public class AdminUI extends Task<Void>{
 		Components.srch.setItems(Students.studentList);
 	}
 
+	/*
+	 * This method is used to get a image stored  inside the
+	 * package and use it in case when the image is not available
+	 * from the database.
+	 * @return Base64 representation of image.
+	 */
+	
 	private String getDefaultImage() {
 		BufferedImage bf = SwingFXUtils.fromFXImage(new Image(getClass().getResourceAsStream("/ivn/typh/main/raw/pic.jpg")), null);
 		ByteArrayOutputStream array = new ByteArrayOutputStream();
@@ -503,6 +531,9 @@ public class AdminUI extends Task<Void>{
 		return  Base64.getEncoder().encodeToString(array.toByteArray());
 	}
 
+	/*
+	 * This method is called when user exits the application.
+	 */
 	private void logoutApplication() {
 		Alert ex = new Alert(AlertType.CONFIRMATION);
 		ex.setHeaderText("LogOut Typh™ ? ");
