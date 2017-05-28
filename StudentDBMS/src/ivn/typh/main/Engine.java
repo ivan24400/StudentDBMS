@@ -20,7 +20,11 @@ public class Engine {
 
 
 	public static void main(String[] args) {
-
+			
+		System.setProperty("javax.net.ssl.trustStore","C:\\Program Files\\MongoDB\\Server\\3.4\\bin\\cert\\typh.ks");
+		System.setProperty("javax.net.ssl.trustStorePassword","keystore");
+		System.setProperty("prism.forceGPU","true");
+		
 		Thread tliui = new Thread(new BasicUI());
 		tliui.start();
 	}
