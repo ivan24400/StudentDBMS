@@ -45,7 +45,9 @@ import org.json.JSONObject;
 
 import ivn.typh.main.Engine;
 
-
+/*
+ * This class creates a Search Box.
+ */
 
 public class Search extends TextField {
 	private final SortedSet<String> list;
@@ -95,13 +97,15 @@ public class Search extends TextField {
 		});
 	}
 
-	public SortedSet<String> getEntries() {
-		return list;
-	}
 
 	public void setItems(List<String> items){
 		list.addAll(items);
 	}
+	
+	/*
+	 * This method creates the UI list that matches the query.
+	 * @param searchResult the list containing final set of names.
+	 */
 	private void populatePopup(List<String> searchResult) {
 		List<CustomMenuItem> menuItems = new LinkedList<>();
 		int maxEntries = 10;
@@ -123,6 +127,10 @@ public class Search extends TextField {
 
 	}
 
+	/*
+	 * This method displays the report of the selected student.
+	 * @param result Name of the student.
+	 */
 	@SuppressWarnings("unchecked")
 	private void displayReport(String result) {
 		Dialog<?> report = new Dialog<>();
@@ -410,6 +418,9 @@ public class Search extends TextField {
 
 	}
 	
+	/*
+	 * This method loads the Academic Data corresponding to the student name.
+	 */
 	private void loadAcademicData() {
 		JSONArray jsona = null;
 		try {
@@ -451,10 +462,12 @@ public class Search extends TextField {
 			}
 		}
 
-		
-
 	}
 	
+	/*
+	 * This method calculates percentage of all the subject's marks.
+	 * @param i semester number.
+	 */
 	private float getSemesterPercent(int i) {
 		String data = Engine.db.getCollection("Students").find(eq("name", result)).first().toJson();
 		JSONObject json = new JSONObject(data);

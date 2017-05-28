@@ -26,6 +26,9 @@ import javafx.scene.shape.SVGPath;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
+/*
+ * This method creates the UI for the project pane.
+ */
 public class Project {
 	
 	public static Group recycle;
@@ -194,7 +197,10 @@ public class Project {
 
 	}
 	
-
+/*
+ * This method creates project data.
+ * @param yr The year value.
+ */
 	
 	static void loadProjectData(String yr) {
 		prList.getItems().clear();

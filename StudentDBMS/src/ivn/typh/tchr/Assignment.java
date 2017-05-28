@@ -31,6 +31,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.util.StringConverter;
 
+/*
+ * This class creates the user interface for Assignment.
+ */
 public class Assignment {
 
 	public static GridPane assignment;
@@ -67,7 +70,10 @@ public class Assignment {
 			}
 
 		};
+		
+		
 		asList.setCellFactory(CheckBoxListCell.forListView(AssignmentData::completedProperty, converter));
+		
 		addAssignment.setOnAction(arg0 -> {
 			Dialog<AssignmentData> dialog = new Dialog<>();
 			TextField asTitle = new TextField();
@@ -135,12 +141,16 @@ public class Assignment {
 		Components.scroll[Components.paneList.length - (Components.paneCount--)].setHbarPolicy(ScrollBarPolicy.NEVER);
 	}
 	
-	 static void loadAssignmentData(String n) {
+	/*
+	 * This method loads Assignment Data corresponding to the selected student name.
+	 * @param year The Year value.
+	 */
+	 static void loadAssignmentData(String year) {
 		JSONArray jsona = null;
 		try {
 			String data = Engine.db.getCollection("Students").find(eq("sid", Personal.tsid.getText())).first()
 					.toJson();
-			jsona = new JSONObject(data).getJSONArray(n.toLowerCase() + "Assignments");
+			jsona = new JSONObject(data).getJSONArray(year.toLowerCase() + "Assignments");
 			asList.getItems().clear();
 
 			Iterator<?> it = jsona.iterator();

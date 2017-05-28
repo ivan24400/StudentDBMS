@@ -37,6 +37,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
+/*
+ * This method creates user interface for Personal Pane.
+ */
 public class Personal {
 	
 	public static GridPane personal;
@@ -283,6 +286,10 @@ public class Personal {
 		Components.scroll[Components.paneList.length - (Components.paneCount--)].setContent(personal);
 	}
 	
+	/*
+	 * This method retrieves report data from database.
+	 * @param year Year value of which to load report.
+	 */
 	static void loadReport(String year) {
 
 		Personal.reportPane.getItems().clear();

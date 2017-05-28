@@ -30,6 +30,9 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.util.converter.IntegerStringConverter;
 
+/*
+ * This class creates the user interface for attendance pane.
+ */
 public class Attendance {
 
 	public static GridPane attendance;
@@ -158,7 +161,11 @@ public class Attendance {
 		Components.scroll[Components.paneList.length - (Components.paneCount--)].setHbarPolicy(ScrollBarPolicy.NEVER);
 
 	}
-
+	
+	
+	/*
+	 * This method creates the attendance chart.
+	 */
 	public static void loadAttendanceChart(String year, int semester) {
 		if (year.equals("SE"))
 			semester = semester + 2;
@@ -190,11 +197,15 @@ public class Attendance {
 		});
 	}
 
-	static void loadAttendanceData(String n) {
+	/*
+	 * This methods loads the attendance table with data
+	 * @param year The academic year. 
+	 */
+	static void loadAttendanceData(String year) {
 		JSONArray jsona = null;
 		try {
 			String data = Engine.db.getCollection("Students").find(eq("sid", Personal.tsid.getText())).first().toJson();
-			jsona = new JSONObject(data).getJSONArray(n.toLowerCase());
+			jsona = new JSONObject(data).getJSONArray(year.toLowerCase());
 		} catch (JSONException e) {
 		}
 		Iterator<?> it = jsona.iterator();

@@ -7,6 +7,9 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+/*
+ * This class stores Data for Assignment.
+ */
 public final class AssignmentData {
 
 	private final  IntegerProperty sem = new SimpleIntegerProperty();

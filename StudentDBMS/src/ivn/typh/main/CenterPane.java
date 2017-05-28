@@ -1,7 +1,6 @@
 package ivn.typh.main;
 
 import javafx.application.Platform;
-import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Node;

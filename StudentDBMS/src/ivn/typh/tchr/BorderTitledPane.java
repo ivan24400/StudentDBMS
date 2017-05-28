@@ -5,6 +5,10 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 
+/*
+ * This class creates a pane with a visible border along with title placed at
+ * top center.
+ */
 public class BorderTitledPane{
 	
 	public static StackPane addTitle(String title,Node node){

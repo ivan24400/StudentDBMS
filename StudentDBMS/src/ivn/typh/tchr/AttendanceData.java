@@ -3,6 +3,9 @@ package ivn.typh.tchr;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+/*
+ * This class is used to store Attendance Data.
+ */
 public class AttendanceData {
 
 	private SimpleStringProperty subject;

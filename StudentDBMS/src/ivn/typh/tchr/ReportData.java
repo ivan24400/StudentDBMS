@@ -7,6 +7,9 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+/*
+ * This class stores data for Reports.
+ */
 public class ReportData {
 
 	private BooleanProperty seen = new SimpleBooleanProperty();

@@ -23,6 +23,9 @@ import javafx.scene.layout.Priority;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Window;
 
+/*
+ * This class stores Data for Project Pane.
+ */
 public class ProjectData extends ListCell<String>{
 	
 	private HBox pane;

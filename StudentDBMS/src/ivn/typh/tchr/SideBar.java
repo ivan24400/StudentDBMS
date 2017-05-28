@@ -13,7 +13,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-
+/*
+ * This class creates side menu bar.
+ */
 public class SideBar extends VBox {
 
 	private Button menu;

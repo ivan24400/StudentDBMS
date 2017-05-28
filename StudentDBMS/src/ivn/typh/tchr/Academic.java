@@ -33,6 +33,9 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.util.converter.IntegerStringConverter;
 
+/*
+ * This method creates user interface for Academic Pane.
+ */
 public class Academic {
 
 	public static GridPane academic;
@@ -339,6 +342,10 @@ public class Academic {
 		
 	}
 
+	/*
+	 * This method loads academic data corresponding to the student.
+	 * @param year The year value.
+	 */
 	static void loadAcademicData(String year) {
 		JSONArray jsona = null;
 		try {

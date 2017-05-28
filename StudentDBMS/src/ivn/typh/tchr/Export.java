@@ -33,6 +33,9 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
+/*
+ * This class exports data in a SpreadSheet format
+ */
 public class Export {
 
 	private static int row_index = 0;
@@ -41,6 +44,10 @@ public class Export {
 	private static File path;
 	private static String institute;
 
+	
+	/*
+	 * Static method to export data
+	 */
 	static void export() {
 
 		FileChooser filechooser = new FileChooser();
@@ -71,6 +78,10 @@ public class Export {
 
 	}
 
+	/*
+	 * This method wraps the code that creates spreadsheet file into a Task
+	 * @return Task wrapped code that creates spreadsheet.
+	 */
 	private static Task<Boolean> createWriteTask() {
 		Task<Boolean> task = new Task<Boolean>() {
 
@@ -361,6 +372,8 @@ public class Export {
 						cell.setCellValue("Total");
 					}
 
+					// Fill the table with data
+					
 					List<Map<String, String>> sem_t = semData.get(i);
 					for (int k = 0; k < sem_t.size(); k++) {
 						col_index = 0;
@@ -418,6 +431,8 @@ public class Export {
 					total_counter += 4;
 				}
 
+				// Write to the file
+				
 				try {
 					FileOutputStream file = new FileOutputStream(path);
 					book.write(file);
@@ -433,6 +448,10 @@ public class Export {
 
 	}
 
+	/*
+	 * This method converts semester value to its corresponding year.
+	 * @return  year 
+	 */
 	private static String getYear(int sem) {
 		String year = null;
 

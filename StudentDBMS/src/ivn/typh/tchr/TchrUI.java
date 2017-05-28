@@ -68,11 +68,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+/*
+ * This class creates the user interface for teacher account.
+ */
 public class TchrUI extends Task<Void> {
 
 	private static ObservableList<String> studList;
 	private static ObservableMap<String, String> dprtList;
-	
 
 	public TchrUI(Stage s, BorderPane p, Scene scen, ToolBar tb) {
 
@@ -88,7 +90,6 @@ public class TchrUI extends Task<Void> {
 	}
 
 	public void startUI() {
-		System.out.println("First Line in tchr");
 
 		Components.tgpane = new GridPane();
 		Components.sctgpane = new ScrollPane();
@@ -115,7 +116,7 @@ public class TchrUI extends Task<Void> {
 		Components.pcls = new Label();
 		Components.tstuds = new Label("Total Students:");
 		Components.nstuds = new Label();
-		
+
 		Components.slist = new ComboBox<>();
 		Components.srch = new Label("Search");
 		Components.searchBox = new Search();
@@ -133,7 +134,6 @@ public class TchrUI extends Task<Void> {
 			Project.loadProjectData(n);
 			Assignment.loadAssignmentData(n);
 		});
-
 
 		Components.logout.setOnAction(arg -> {
 			logoutApplication();
@@ -160,10 +160,10 @@ public class TchrUI extends Task<Void> {
 
 		Components.aboveAcc.getChildren().addAll(Components.student, Components.slist, new Label("Select Year"),
 				Components.yrlst, Components.editable, Components.update, Components.report, Components.export);
-		
-		Components.paneCount = Components.paneList.length;           
-		Components.scroll = new ScrollPane[Components.paneCount];    
-		
+
+		Components.paneCount = Components.paneList.length;
+		Components.scroll = new ScrollPane[Components.paneCount];
+
 		// Setup All the components
 
 		Personal.setup();
@@ -177,13 +177,12 @@ public class TchrUI extends Task<Void> {
 		Assignment.setup();
 
 		loadData();
-		
-		
+
 		// Start the heart beat
 
 		Thread pulse = new Thread(new HeartBeat());
 		pulse.start();
-		
+
 		//
 		// Adding all panes to the accordion
 		//
@@ -195,70 +194,60 @@ public class TchrUI extends Task<Void> {
 
 		Components.slist.setPrefWidth(150);
 
-
 		Components.tgpane.setMaxSize(BasicUI.screenWidth, BasicUI.screenHeight);
 		Components.tgpane.setMinSize(BasicUI.screenWidth, BasicUI.screenHeight);
 		Components.sctgpane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		Components.sctgpane.setVbarPolicy(ScrollBarPolicy.NEVER);
-		
-			Components.accord.getPanes().addAll(Components.tp);
-			Components.accord.setExpandedPane(Components.tp[0]);
 
+		Components.accord.getPanes().addAll(Components.tp);
+		Components.accord.setExpandedPane(Components.tp[0]);
 
+		Components.top.getChildren().addAll(Components.srch, Components.searchBox);
+		Components.accUserPane.getChildren().add(Components.pname);
 
-			Components.top.getChildren().addAll(Components.srch, Components.searchBox);
-			Components.accUserPane.getChildren().add(Components.pname);
+		Components.accDescPane.getChildren().addAll(Components.dprt, Components.pdprt, Components.cls, Components.pcls,
+				Components.tstuds, Components.nstuds);
 
-			Components.accDescPane.getChildren().addAll(Components.dprt, Components.pdprt, Components.cls, Components.pcls,
-					Components.tstuds, Components.nstuds);
+		Components.tgpane.add(Components.top, 0, 0);
+		Components.tgpane.add(Components.aboveAcc, 0, 1);
+		Components.tgpane.add(Components.accord, 0, 2);
 
+		Components.sctgpane.setContent(Components.tgpane);
 
-			Components.tgpane.add(Components.top, 0, 0);
-			Components.tgpane.add(Components.aboveAcc, 0, 1);
-			Components.tgpane.add(Components.accord, 0, 2);
+		Platform.runLater(() -> {
+			Components.side = new SideBar();
 
+			Components.mb.getItems().remove(7);
+			Components.mb.getItems().add(7, Components.logout);
+			Components.mb.getItems().remove(0, 4);
+			Components.mb.getItems().add(0, CenterPane.menu);
+			Components.mb.getItems().get(2).setId("fullscreen");
 
-			Components.sctgpane.setContent(Components.tgpane);
-//
+			Components.setIdAll();
+			Components.setCacheAll();
 
-//
-			System.out.println("Before Last Line in tchr");
+			BasicUI.centerOfHomePane.changeRootPane(Components.sctgpane, Components.side);
 
-			Platform.runLater(()->{
-				Components.side = new SideBar();
+			GridPane.setHgrow(Components.accord, Priority.ALWAYS);
+			GridPane.setValignment(Components.accDescPane, VPos.CENTER);
+			StackPane.setAlignment(Components.side, Pos.CENTER_LEFT);
 
+			Components.stage.getScene().getStylesheets().remove(0);
+			Components.stage.getScene().getStylesheets()
+					.add(getClass().getResource(Resources.STYLE_SHEET.path).toExternalForm());
 
-					Components.mb.getItems().remove(7);
-					Components.mb.getItems().add(7, Components.logout);
-					Components.mb.getItems().remove(0, 4);
-					Components.mb.getItems().add(0, CenterPane.menu);
-					Components.mb.getItems().get(2).setId("fullscreen");
+			Components.pane.applyCss();
+			Components.pane.layout();
+			disableAll(true);
+			Components.slist.getSelectionModel().selectFirst();
 
-					Components.setIdAll();
-					Components.setCacheAll();
-
-					BasicUI.centerOfHomePane.changeRootPane(Components.sctgpane, Components.side);
-
-					GridPane.setHgrow(Components.accord, Priority.ALWAYS);
-					GridPane.setValignment(Components.accDescPane, VPos.CENTER);
-					StackPane.setAlignment(Components.side, Pos.CENTER_LEFT);
-
-
-					Components.stage.getScene().getStylesheets().remove(0);
-					Components.stage.getScene().getStylesheets().add(getClass().getResource(Resources.STYLE_SHEET.path).toExternalForm());
-					
-
-					Components.pane.applyCss();
-					Components.pane.layout();
-					disableAll(true);
-					Components.slist.getSelectionModel().selectFirst();
-
-				});
-
-
-		
-		System.out.println("Last Line in tchr");
+		});
 	}
+	
+	/*
+	 * This method uploads data to database.
+	 * @param sid The student ID.
+	 */
 
 	private void uploadData(String sid) {
 		Bson filter = new Document("sid", sid);
@@ -349,6 +338,8 @@ public class TchrUI extends Task<Void> {
 		Bson query = new Document("$set", newValue);
 		Engine.db.getCollection("Students").updateOne(filter, query);
 
+		// To upload project file. 
+		
 		GridFSBucket gfsBucket = GridFSBuckets.create(Engine.db, "projects");
 		Project.prPath.forEach((key, val) -> {
 			InputStream in = null;
@@ -361,6 +352,10 @@ public class TchrUI extends Task<Void> {
 		});
 	}
 
+	/*
+	 * This method loads the profile corresponding to the name selected in student's combo box.
+	 * @param student The student's name.
+	 */
 	@SuppressWarnings("unchecked")
 	private void loadStudentProfile(String student) {
 
@@ -368,9 +363,8 @@ public class TchrUI extends Task<Void> {
 		JSONObject jsonData = new JSONObject(json);
 
 		// Personal
-		
-		
-			byte[] deci;
+
+		byte[] deci;
 		BufferedImage bf = null;
 		try {
 			deci = Base64.getDecoder().decode(jsonData.getString("img"));
@@ -380,66 +374,62 @@ public class TchrUI extends Task<Void> {
 
 		} catch (IOException | JSONException e) {
 			Personal.dpImgView.setImage(new Image(getClass().getResourceAsStream(Resources.DEFAULT_PIC.path)));
-			
+
 		}
-	
-			Personal.tsname.setText(jsonData.getString("name"));
-			Personal.tsid.setText(jsonData.getString("sid"));
-			Personal.tsrno.getSelectionModel().select(jsonData.getString("rno"));
-			Personal.tsdprt.getSelectionModel().select(jsonData.getString("department"));
-			Personal.tsclass.getSelectionModel().select(jsonData.getString("batch"));
-			Personal.tsbatch.getSelectionModel().select(jsonData.getString("class"));
-			Personal.tsmail.setText(jsonData.getString("email"));
-			Personal.tsaddr.setText(jsonData.getString("address"));
-			Personal.tsphone.setText(jsonData.getString("studentPhone"));
-			Personal.tpphone.setText(jsonData.getString("parentPhone"));
-			Components.yrlst.getItems().clear();
-			
-			Components.tscsem = jsonData.getString("current_semester");
 
+		Personal.tsname.setText(jsonData.getString("name"));
+		Personal.tsid.setText(jsonData.getString("sid"));
+		Personal.tsrno.getSelectionModel().select(jsonData.getString("rno"));
+		Personal.tsdprt.getSelectionModel().select(jsonData.getString("department"));
+		Personal.tsclass.getSelectionModel().select(jsonData.getString("batch"));
+		Personal.tsbatch.getSelectionModel().select(jsonData.getString("class"));
+		Personal.tsmail.setText(jsonData.getString("email"));
+		Personal.tsaddr.setText(jsonData.getString("address"));
+		Personal.tsphone.setText(jsonData.getString("studentPhone"));
+		Personal.tpphone.setText(jsonData.getString("parentPhone"));
+		Components.yrlst.getItems().clear();
 
-			switch (Components.tscsem) {
-			case "SEM 7":
-			case "SEM 8":
-				Components.yrlst.getItems().add("BE");
-			case "SEM 5":
-			case "SEM 6":
-				Components.yrlst.getItems().add("TE");
-			case "SEM 3":
-			case "SEM 4":
-				Components.yrlst.getItems().add("SE");
-			case "SEM 1":
-			case "SEM 2":
-				Components.yrlst.getItems().add("FE");
-			}
+		Components.tscsem = jsonData.getString("current_semester");
 
-			Components.yrlst.getSelectionModel().selectFirst();
+		switch (Components.tscsem) {
+		case "SEM 7":
+		case "SEM 8":
+			Components.yrlst.getItems().add("BE");
+		case "SEM 5":
+		case "SEM 6":
+			Components.yrlst.getItems().add("TE");
+		case "SEM 3":
+		case "SEM 4":
+			Components.yrlst.getItems().add("SE");
+		case "SEM 1":
+		case "SEM 2":
+			Components.yrlst.getItems().add("FE");
+		}
 
-		
+		Components.yrlst.getSelectionModel().selectFirst();
+
 		// Academic
 
+		Academic.studProgress.getData().clear();
+		Academic.tsem1.setFixedCellSize(24);
+		Academic.tsem1.prefHeightProperty()
+				.bind(Bindings.size(Academic.tsem1.getItems()).multiply(Academic.tsem1.getFixedCellSize()).add(90));
+		Academic.tsem2.setFixedCellSize(24);
+		Academic.tsem2.prefHeightProperty()
+				.bind(Bindings.size(Academic.tsem2.getItems()).multiply(Academic.tsem2.getFixedCellSize()).add(90));
+		XYChart.Series<String, Number> data = new XYChart.Series<>();
+		for (int j = 1; j <= 8; j++) {
+			float p = getSemesterPercent(j);
+			if (p != 0)
+				data.getData().addAll(new XYChart.Data<>("Semester " + j, p));
+		}
 
-			Academic.studProgress.getData().clear();
-			Academic.tsem1.setFixedCellSize(24);
-			Academic.tsem1.prefHeightProperty()
-					.bind(Bindings.size(Academic.tsem1.getItems()).multiply(Academic.tsem1.getFixedCellSize()).add(90));
-			Academic.tsem2.setFixedCellSize(24);
-			Academic.tsem2.prefHeightProperty()
-					.bind(Bindings.size(Academic.tsem2.getItems()).multiply(Academic.tsem2.getFixedCellSize()).add(90));
-			XYChart.Series<String, Number> data = new XYChart.Series<>();
-			for (int j = 1; j <= 8; j++) {
-				float p = getSemesterPercent(j);
-				if (p != 0)
-					data.getData().addAll(new XYChart.Data<>("Semester " + j, p));
-			}
+		Academic.studProgress.getData().add(data);
 
-			Academic.studProgress.getData().add(data);
+		// Attendance
 
-			//		Attendance
-			
-			Attendance.atsem1.setFixedCellSize(24);
-			Attendance.atsem2.setFixedCellSize(24);
-
+		Attendance.atsem1.setFixedCellSize(24);
+		Attendance.atsem2.setFixedCellSize(24);
 
 		Attendance.atsem1.prefHeightProperty().bind(
 				Bindings.size(Attendance.atsem1.getItems()).multiply(Attendance.atsem1.getFixedCellSize()).add(90));
@@ -452,26 +442,35 @@ public class TchrUI extends Task<Void> {
 
 	}
 
-	static String getSId() {
+	/*
+	 * This method generates an ID for the student.
+	 * @return Student id.
+	 */
+	public static String getSId() {
 		String id = dprtList.entrySet().stream()
 				.filter(a -> a.getValue().equals(Personal.tsdprt.getSelectionModel().getSelectedItem()))
 				.map(map -> map.getKey()).collect(Collectors.joining());
 		return (id + String.format("%02d", sMatchesY(0, Components.yrlst.getValue())) + Personal.tsclass.getValue()
 				+ Personal.tsrno.getValue());
 	}
-
 	
-	private float getSemesterPercent(int i) {
+	/*
+	 * This method calculates percentage for each subject.
+	 * @param sem Semester number.
+	 * @return percentage for that semester.
+	 */
+
+	private float getSemesterPercent(int sem) {
 		String data = Engine.db.getCollection("Students").find(eq("sid", Personal.tsid.getText())).first().toJson();
 		JSONObject json = new JSONObject(data);
 		float percent = 0, scored, total;
 		int theory = 0, oral = 0, practical = 0, termwork = 0, theoryt = 0, oralt = 0, practicalt = 0, termworkt = 0;
-		if (i == 1 || i == 2) {
+		if (sem == 1 || sem == 2) {
 			JSONArray jsona = json.getJSONArray("fe");
 			Iterator<?> it = jsona.iterator();
 			while (it.hasNext()) {
 				JSONObject tmp = (JSONObject) it.next();
-				if (tmp.getInt("sem") == i) {
+				if (tmp.getInt("sem") == sem) {
 					theory = theory + tmp.getInt("thScored");
 					theoryt = theoryt + tmp.getInt("thTotal");
 					oral = oral + tmp.getInt("orScored");
@@ -483,12 +482,12 @@ public class TchrUI extends Task<Void> {
 
 				}
 			}
-		} else if (i == 3 || i == 4) {
+		} else if (sem == 3 || sem == 4) {
 			JSONArray jsona = json.getJSONArray("se");
 			Iterator<?> it = jsona.iterator();
 			while (it.hasNext()) {
 				JSONObject tmp = (JSONObject) it.next();
-				if (tmp.getInt("sem") == i) {
+				if (tmp.getInt("sem") == sem) {
 					theory = theory + tmp.getInt("thScored");
 					theoryt = theoryt + tmp.getInt("thTotal");
 					oral = oral + tmp.getInt("orScored");
@@ -500,12 +499,12 @@ public class TchrUI extends Task<Void> {
 
 				}
 			}
-		} else if (i == 5 || i == 6) {
+		} else if (sem == 5 || sem == 6) {
 			JSONArray jsona = json.getJSONArray("te");
 			Iterator<?> it = jsona.iterator();
 			while (it.hasNext()) {
 				JSONObject tmp = (JSONObject) it.next();
-				if (tmp.getInt("sem") == i) {
+				if (tmp.getInt("sem") == sem) {
 					theory = theory + tmp.getInt("thScored");
 					theoryt = theoryt + tmp.getInt("thTotal");
 					oral = oral + tmp.getInt("orScored");
@@ -517,12 +516,12 @@ public class TchrUI extends Task<Void> {
 
 				}
 			}
-		} else if (i == 7 || i == 8) {
+		} else if (sem == 7 || sem == 8) {
 			JSONArray jsona = json.getJSONArray("be");
 			Iterator<?> it = jsona.iterator();
 			while (it.hasNext()) {
 				JSONObject tmp = (JSONObject) it.next();
-				if (tmp.getInt("sem") == i) {
+				if (tmp.getInt("sem") == sem) {
 					theory = theory + tmp.getInt("thScored");
 					theoryt = theoryt + tmp.getInt("thTotal");
 					oral = oral + tmp.getInt("orScored");
@@ -543,6 +542,12 @@ public class TchrUI extends Task<Void> {
 		return percent;
 	}
 
+	/*
+	 * This method compares the sem value with that of year provided.
+	 * @param sem Semester Number.
+	 * @param year Year number.
+	 * @return integer value corresponding to year.
+	 */
 	public static int sMatchesY(int sem, String year) {
 		int y = 0;
 		if (year.equals("FE"))
@@ -563,15 +568,17 @@ public class TchrUI extends Task<Void> {
 
 	}
 
+	/*
+	 * This method loads the default values after creating the user interface.
+	 */
 	private void loadData() {
-		
-			Components.pname.setText(BasicUI.user);
-			Components.pdprt.setText(
-					(String) Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first().get("department"));
-			Components.classIncharge = (String) Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first()
-					.get("classIncharge");
-			Components.pcls.setText(Components.classIncharge);
 
+		Components.pname.setText(BasicUI.user);
+		Components.pdprt.setText(
+				(String) Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first().get("department"));
+		Components.classIncharge = (String) Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first()
+				.get("classIncharge");
+		Components.pcls.setText(Components.classIncharge);
 
 		MongoCursor<Document> cursor = Engine.db.getCollection("Students").find().iterator();
 		while (cursor.hasNext()) {
@@ -626,6 +633,10 @@ public class TchrUI extends Task<Void> {
 
 		Components.searchBox.setItems(name);
 	}
+	
+	/*
+	 * This method enables or disables nodes in the UI.
+	 */
 
 	private void disableAll(boolean flag) {
 		Components.update.setDisable(flag);
@@ -673,6 +684,9 @@ public class TchrUI extends Task<Void> {
 
 	}
 
+	/*
+	 * This method is called when the user exits the application.
+	 */
 	private void logoutApplication() {
 		Alert ex = new Alert(AlertType.CONFIRMATION);
 		ex.setHeaderText("LogOut " + BasicUI.user + " - Typh™ ? ");
@@ -690,7 +704,6 @@ public class TchrUI extends Task<Void> {
 			}
 		});
 	}
-
 
 	@Override
 	public Void call() throws Exception {

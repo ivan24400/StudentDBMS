@@ -5,6 +5,9 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+/*
+ * This method stores data for academic class.
+ */
 public class AcademicData {
 	
 	private final SimpleStringProperty subject;

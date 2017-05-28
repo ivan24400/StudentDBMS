@@ -18,6 +18,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+/*
+ * This class consists of all the variables common to the package.
+ */
 public class Components {
 	
 
