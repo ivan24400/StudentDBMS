@@ -240,12 +240,14 @@ public class TchrUI extends Task<Void> {
 			Components.pane.layout();
 			disableAll(true);
 			Components.slist.getSelectionModel().selectFirst();
+			BasicUI.centerOfHomePane.hideMessage();
 
 		});
 	}
-	
+
 	/*
 	 * This method uploads data to database.
+	 * 
 	 * @param sid The student ID.
 	 */
 
@@ -338,8 +340,8 @@ public class TchrUI extends Task<Void> {
 		Bson query = new Document("$set", newValue);
 		Engine.db.getCollection("Students").updateOne(filter, query);
 
-		// To upload project file. 
-		
+		// To upload project file.
+
 		GridFSBucket gfsBucket = GridFSBuckets.create(Engine.db, "projects");
 		Project.prPath.forEach((key, val) -> {
 			InputStream in = null;
@@ -353,7 +355,9 @@ public class TchrUI extends Task<Void> {
 	}
 
 	/*
-	 * This method loads the profile corresponding to the name selected in student's combo box.
+	 * This method loads the profile corresponding to the name selected in
+	 * student's combo box.
+	 * 
 	 * @param student The student's name.
 	 */
 	@SuppressWarnings("unchecked")
@@ -444,6 +448,7 @@ public class TchrUI extends Task<Void> {
 
 	/*
 	 * This method generates an ID for the student.
+	 * 
 	 * @return Student id.
 	 */
 	public static String getSId() {
@@ -453,10 +458,12 @@ public class TchrUI extends Task<Void> {
 		return (id + String.format("%02d", sMatchesY(0, Components.yrlst.getValue())) + Personal.tsclass.getValue()
 				+ Personal.tsrno.getValue());
 	}
-	
+
 	/*
 	 * This method calculates percentage for each subject.
+	 * 
 	 * @param sem Semester number.
+	 * 
 	 * @return percentage for that semester.
 	 */
 
@@ -544,8 +551,11 @@ public class TchrUI extends Task<Void> {
 
 	/*
 	 * This method compares the sem value with that of year provided.
+	 * 
 	 * @param sem Semester Number.
+	 * 
 	 * @param year Year number.
+	 * 
 	 * @return integer value corresponding to year.
 	 */
 	public static int sMatchesY(int sem, String year) {
@@ -633,7 +643,7 @@ public class TchrUI extends Task<Void> {
 
 		Components.searchBox.setItems(name);
 	}
-	
+
 	/*
 	 * This method enables or disables nodes in the UI.
 	 */
@@ -708,6 +718,7 @@ public class TchrUI extends Task<Void> {
 	@Override
 	public Void call() throws Exception {
 		startUI();
+		BasicUI.stage.setTitle(BasicUI.stage.getTitle() + " - " + BasicUI.user);
 		return null;
 	}
 }

@@ -136,7 +136,6 @@ public class BasicUI extends Application implements Runnable {
 				lLabel.setOnMouseClicked(login.getOnMouseClicked());
 				
 				about.setOnAction(new About());
-				
 				help.setOnAction(new Help());
 				
 				loginPane.getChildren().addAll(login, lLabel);

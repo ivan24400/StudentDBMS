@@ -12,50 +12,46 @@ import javafx.beans.property.StringProperty;
  */
 public final class AssignmentData {
 
-	private final  IntegerProperty sem = new SimpleIntegerProperty();
-	private final  StringProperty title = new SimpleStringProperty();
-	private final  BooleanProperty completed = new SimpleBooleanProperty();
-	
-	public AssignmentData(int y,String t,boolean c){
+	private final IntegerProperty sem = new SimpleIntegerProperty();
+	private final StringProperty title = new SimpleStringProperty();
+	private final BooleanProperty completed = new SimpleBooleanProperty();
+
+	public AssignmentData(int y, String t, boolean c) {
 		setSem(y);
 		setTitle(t);
 		setCompleted(c);
 	}
-	
 
-	public  int getSem() {
+	public int getSem() {
 		return sem.get();
 	}
 
-	public  String getTitle() {
+	public String getTitle() {
 		return title.get();
 	}
 
-	public  boolean getCompleted() {
+	public boolean getCompleted() {
 		return completed.get();
 	}
 
-	public  StringProperty titleProperty(){
+	public StringProperty titleProperty() {
 		return title;
 	}
-	
-	public  BooleanProperty completedProperty(){
+
+	public BooleanProperty completedProperty() {
 		return completed;
 	}
-	
-	public  void setSem(int y) {
+
+	public void setSem(int y) {
 		sem.set(y);
 	}
 
-	public  void setTitle(String t) {
+	public void setTitle(String t) {
 		title.set(t);
 	}
 
-	public  void setCompleted(boolean c) {
+	public void setCompleted(boolean c) {
 		completed.set(c);
 	}
-
-
-
 
 }

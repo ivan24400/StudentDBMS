@@ -44,7 +44,6 @@ public class Export {
 	private static File path;
 	private static String institute;
 
-	
 	/*
 	 * Static method to export data
 	 */
@@ -57,29 +56,30 @@ public class Export {
 		filechooser.getExtensionFilters().add(new ExtensionFilter("Excel Workbook", "*.xlsx"));
 		path = filechooser.showSaveDialog(Components.stage);
 
-		if(path!=null && path.exists()){
+		if (path != null && path.exists()) {
 
-		Task<Boolean> task = createWriteTask();
-		BasicUI.centerOfHomePane.showMessage("Exporting . . . ");
-		(new Thread(task)).start();
-		task.setOnSucceeded(arg -> {
-			BasicUI.centerOfHomePane.hideMessage();
-			if (task.getValue())
-				Notification.message(Components.stage, "File Exported  to :- \n "+path.getAbsolutePath());
-			else
-				Notification.message(Components.stage, AlertType.ERROR, "Error - Typh™",
-						"Error while writing data to file !\nClose other programs using it");
+			Task<Boolean> task = createWriteTask();
+			BasicUI.centerOfHomePane.showMessage("Exporting . . . ");
+			(new Thread(task)).start();
+			task.setOnSucceeded(arg -> {
+				BasicUI.centerOfHomePane.hideMessage();
+				if (task.getValue())
+					Notification.message(Components.stage, "File Exported  to :- \n " + path.getAbsolutePath());
+				else
+					Notification.message(Components.stage, AlertType.ERROR, "Error - Typh™",
+							"Error while writing data to file !\nClose other programs using it");
 
-		});
-		task.setOnCancelled(value->{
-			BasicUI.centerOfHomePane.hideMessage();
-		});
+			});
+			task.setOnCancelled(value -> {
+				BasicUI.centerOfHomePane.hideMessage();
+			});
 		}
 
 	}
 
 	/*
 	 * This method wraps the code that creates spreadsheet file into a Task
+	 * 
 	 * @return Task wrapped code that creates spreadsheet.
 	 */
 	private static Task<Boolean> createWriteTask() {
@@ -104,10 +104,10 @@ public class Export {
 				cell_font.setBold(true);
 				instituteFont.setBold(true);
 				instituteFont.setFontHeight(30);
-	
+
 				CellStyle cell_style = book.createCellStyle();
 				CellStyle inst_style = book.createCellStyle();
-				
+
 				inst_style.setFont(instituteFont);
 				inst_style.setAlignment(HorizontalAlignment.CENTER);
 
@@ -117,20 +117,20 @@ public class Export {
 				cell.setCellStyle(inst_style);
 				sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 13));
 				row_index++;
-				
+
 				// Name & Batch
-				
+
 				cell_style.setFont(cell_font);
 				row = sheet.createRow(row_index++);
 				cell = row.createCell(col_index);
 				cell.setCellValue("Name");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(col_index+=2);
+				cell = row.createCell(col_index += 2);
 				cell.setCellValue(Personal.tsname.getText());
-				cell = row.createCell(col_index+=2);
+				cell = row.createCell(col_index += 2);
 				cell.setCellValue("Batch");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(col_index+=2);
+				cell = row.createCell(col_index += 2);
 				cell.setCellValue(Personal.tsbatch.getSelectionModel().getSelectedItem());
 
 				sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 1)); // Name
@@ -140,17 +140,17 @@ public class Export {
 
 				// ID & Class
 
-				col_index=0;
+				col_index = 0;
 				row = sheet.createRow(row_index++);
 				cell = row.createCell(col_index);
 				cell.setCellValue("ID");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(col_index+=2);
+				cell = row.createCell(col_index += 2);
 				cell.setCellValue(Personal.tsid.getText());
-				cell = row.createCell(col_index+=2);
+				cell = row.createCell(col_index += 2);
 				cell.setCellValue("Class");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(col_index+=2);
+				cell = row.createCell(col_index += 2);
 				cell.setCellValue(Personal.tsclass.getSelectionModel().getSelectedItem());
 
 				sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 1)); // ID
@@ -160,17 +160,17 @@ public class Export {
 
 				// Roll No & Department
 
-				col_index=0;
+				col_index = 0;
 				row = sheet.createRow(row_index++);
 				cell = row.createCell(col_index);
 				cell.setCellValue("Roll No");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(col_index+=2);
+				cell = row.createCell(col_index += 2);
 				cell.setCellValue(Personal.tsrno.getSelectionModel().getSelectedItem());
-				cell = row.createCell(col_index+=2);
+				cell = row.createCell(col_index += 2);
 				cell.setCellValue("Department");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(col_index+=2);
+				cell = row.createCell(col_index += 2);
 				cell.setCellValue(Personal.tsdprt.getSelectionModel().getSelectedItem());
 
 				sheet.addMergedRegion(new CellRangeAddress(4, 4, 0, 1)); // Roll
@@ -180,18 +180,18 @@ public class Export {
 
 				// Phone No & Parent Phone No
 
-				col_index=0;
+				col_index = 0;
 				row = sheet.createRow(row_index++);
 
 				cell = row.createCell(col_index);
 				cell.setCellValue("Student Contact");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(col_index+=2);
+				cell = row.createCell(col_index += 2);
 				cell.setCellValue(Personal.tsphone.getText());
-				cell = row.createCell(col_index+=2);
+				cell = row.createCell(col_index += 2);
 				cell.setCellValue("Parent Contact");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(col_index+=2);
+				cell = row.createCell(col_index += 2);
 				cell.setCellValue(Personal.tpphone.getText());
 
 				sheet.addMergedRegion(new CellRangeAddress(5, 5, 0, 1)); // sphone
@@ -201,18 +201,18 @@ public class Export {
 
 				// Email & Address
 
-				col_index=0;
+				col_index = 0;
 				row = sheet.createRow(row_index++);
 
 				cell = row.createCell(col_index);
 				cell.setCellValue("Email");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(col_index+=2);
+				cell = row.createCell(col_index += 2);
 				cell.setCellValue(Personal.tsmail.getText());
-				cell = row.createCell(col_index+=2);
+				cell = row.createCell(col_index += 2);
 				cell.setCellValue("Address");
 				cell.setCellStyle(cell_style);
-				cell = row.createCell(col_index+=2);
+				cell = row.createCell(col_index += 2);
 				cell.setCellValue(Personal.tsaddr.getText());
 
 				sheet.addMergedRegion(new CellRangeAddress(6, 6, 0, 1)); // email
@@ -259,12 +259,13 @@ public class Export {
 				try {
 					data = Engine.db.getCollection("Students").find(eq("sid", Personal.tsid.getText())).first()
 							.toJson();
-				} catch (JSONException e) {	}
+				} catch (JSONException e) {
+				}
 
 				for (int i = 1; i <= sem_count; i++) {
 					List<Map<String, String>> sem_tl = new ArrayList<>();
 					jsona = new JSONObject(data).getJSONArray(getYear(i));
-					
+
 					Iterator<?> it = jsona.iterator();
 					while (it.hasNext()) {
 						JSONObject json = (JSONObject) it.next();
@@ -305,20 +306,20 @@ public class Export {
 					cell = row.createCell(col_index++);
 					cell.setCellValue("Semester");
 					cell.setCellStyle(sem_style);
-					cell = row.createCell(++col_index); 
+					cell = row.createCell(++col_index);
 					cell.setCellValue(i);
 					cell.setCellStyle(sem_style);
 					sheet.addMergedRegion(
 							new CellRangeAddress(row_index - 1, row_index - 1, col_index - 2, col_index - 1));
 
-					// 			Table data
-					
+					// Table data
+
 					col_index = 0;
 					CellStyle cells = book.createCellStyle();
 					cells.setVerticalAlignment(VerticalAlignment.CENTER);
 					cells.setAlignment(HorizontalAlignment.CENTER);
 					cells.setFont(cell_font);
-					
+
 					row = sheet.createRow(row_index++);
 					cell = row.createCell(col_index++);
 					cell.setCellValue("Subject");
@@ -373,7 +374,7 @@ public class Export {
 					}
 
 					// Fill the table with data
-					
+
 					List<Map<String, String>> sem_t = semData.get(i);
 					for (int k = 0; k < sem_t.size(); k++) {
 						col_index = 0;
@@ -432,7 +433,7 @@ public class Export {
 				}
 
 				// Write to the file
-				
+
 				try {
 					FileOutputStream file = new FileOutputStream(path);
 					book.write(file);
@@ -450,7 +451,8 @@ public class Export {
 
 	/*
 	 * This method converts semester value to its corresponding year.
-	 * @return  year 
+	 * 
+	 * @return year
 	 */
 	private static String getYear(int sem) {
 		String year = null;

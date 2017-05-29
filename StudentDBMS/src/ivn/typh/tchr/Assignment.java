@@ -41,8 +41,7 @@ public class Assignment {
 	public static Button addAssignment;
 	public static Button removeAssignment;
 
-
-	static void setup(){
+	static void setup() {
 		Components.scroll[Components.paneList.length - (Components.paneCount)] = new ScrollPane();
 		assignment = new GridPane();
 
@@ -70,10 +69,9 @@ public class Assignment {
 			}
 
 		};
-		
-		
+
 		asList.setCellFactory(CheckBoxListCell.forListView(AssignmentData::completedProperty, converter));
-		
+
 		addAssignment.setOnAction(arg0 -> {
 			Dialog<AssignmentData> dialog = new Dialog<>();
 			TextField asTitle = new TextField();
@@ -101,7 +99,8 @@ public class Assignment {
 
 			dialog.setResultConverter(value -> {
 				if (value.getButtonData().equals(ButtonData.OK_DONE) && !asTitle.getText().isEmpty()) {
-					return new AssignmentData(asYear.getSelectionModel().getSelectedIndex() + 1, asTitle.getText(), false);
+					return new AssignmentData(asYear.getSelectionModel().getSelectedIndex() + 1, asTitle.getText(),
+							false);
 				} else if (value.getButtonData().equals(ButtonData.OK_DONE) && asTitle.getText().isEmpty()) {
 
 				}
@@ -126,30 +125,30 @@ public class Assignment {
 		});
 
 		assignment.setId("assignmentP");
-		asList.setCache(true);               
-		asList.setCacheShape(true);          
+		asList.setCache(true);
+		asList.setCacheShape(true);
 		asList.setCacheHint(CacheHint.SPEED);
-		
-		Platform.runLater(()->{
+
+		Platform.runLater(() -> {
 			assignment.add(addAssignment, 2, 0);
 			assignment.add(removeAssignment, 3, 0);
 			assignment.add(spAssignment, 0, 1, 4, 1);
 
-			
 		});
 		Components.scroll[Components.paneList.length - (Components.paneCount)].setContent(assignment);
 		Components.scroll[Components.paneList.length - (Components.paneCount--)].setHbarPolicy(ScrollBarPolicy.NEVER);
 	}
-	
+
 	/*
-	 * This method loads Assignment Data corresponding to the selected student name.
+	 * This method loads Assignment Data corresponding to the selected student
+	 * name.
+	 * 
 	 * @param year The Year value.
 	 */
-	 static void loadAssignmentData(String year) {
+	static void loadAssignmentData(String year) {
 		JSONArray jsona = null;
 		try {
-			String data = Engine.db.getCollection("Students").find(eq("sid", Personal.tsid.getText())).first()
-					.toJson();
+			String data = Engine.db.getCollection("Students").find(eq("sid", Personal.tsid.getText())).first().toJson();
 			jsona = new JSONObject(data).getJSONArray(year.toLowerCase() + "Assignments");
 			asList.getItems().clear();
 
@@ -159,7 +158,7 @@ public class Assignment {
 				String title = json.getString("title");
 				int semester = json.getInt("sem");
 				boolean flag = json.getBoolean("completed");
-				Platform.runLater(()->{
+				Platform.runLater(() -> {
 					asList.getItems().add(new AssignmentData(semester, title, flag));
 
 				});

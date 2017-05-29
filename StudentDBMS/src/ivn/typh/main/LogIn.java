@@ -131,24 +131,24 @@ public class LogIn implements Runnable {
 
 		loginTask.setOnSucceeded(value -> {
 
-			Platform.runLater(() -> {
 
-				if (!loginTask.getValue()) {
-					BasicUI.centerOfHomePane.hideMessage();
-					Notification.message(stage, AlertType.ERROR, "Invalid credentials - Typh™",
-							"Either username or password is incorrect !");
-				} else {
+				if (loginTask.getValue()) {
 					Task<Void> loadUI = loadUI();
 					(new Thread(loadUI)).start();
 					
 					loadUI.setOnSucceeded(arg->{
-						BasicUI.centerOfHomePane.hideMessage();
-
+						Platform.runLater(() -> {
+							BasicUI.centerOfHomePane.hideMessage();
+						});
 					});
 
+				}else{
+					Platform.runLater(() -> {
+
+					BasicUI.centerOfHomePane.hideMessage();
+					});
 				}
 			});
-		});
 
 	}
 
@@ -160,20 +160,21 @@ public class LogIn implements Runnable {
 		Task<Boolean> loginTask = new Task<Boolean>() {
 			@Override
 			public Boolean call() {
-				Boolean result = false;
 				int flag = verifyCredential();
 				if (flag == 1) {
-					result = true;
+					return true;
 
 				} else if (flag == 2) {
-					result = false;
+					Platform.runLater(() -> {
+					Notification.message(stage, AlertType.ERROR, "Invalid credentials - Typh™",
+							"Either username or password is incorrect !");
+					});
 				} else if (flag == 4) {
 					Platform.runLater(() -> {
 						Notification.message(BasicUI.stage, AlertType.ERROR, "User - Typh™", "User Already Logged In");
 					});
-					result = false;
 				}
-				return result;
+				return false;
 			}
 		};
 		return loginTask;

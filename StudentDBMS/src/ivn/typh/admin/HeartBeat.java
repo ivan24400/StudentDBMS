@@ -47,6 +47,7 @@ public class HeartBeat implements Runnable {
 						try {
 							@SuppressWarnings("unchecked")
 							List<String> u = (List<String>) in.readObject();
+							System.out.println(u.toString());
 							Platform.runLater(() -> {
 								Components.onlineUser.getItems().clear();
 								u.forEach(item -> {

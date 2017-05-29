@@ -26,83 +26,81 @@ import javafx.stage.Window;
 /*
  * This class stores Data for Project Pane.
  */
-public class ProjectData extends ListCell<String>{
-	
+public class ProjectData extends ListCell<String> {
+
 	private HBox pane;
 	private Pane dummy;
 	private Button download;
 	private Label label;
 	private Window w;
-	
-	public ProjectData(Scene s){
-		w =s.getWindow();
+
+	public ProjectData(Scene s) {
+		w = s.getWindow();
 		pane = new HBox();
 		dummy = new Pane();
 		label = new Label();
 		download = new Button("Download");
-	
-		HBox.setHgrow(dummy,Priority.ALWAYS);
-		pane.getChildren().addAll(label,dummy,download);
+
+		HBox.setHgrow(dummy, Priority.ALWAYS);
+		pane.getChildren().addAll(label, dummy, download);
 		download.setId("project_download");
-		download.setOnAction(value->{
+		download.setOnAction(value -> {
 			DirectoryChooser dir = new DirectoryChooser();
 			dir.setTitle("Select a download path - Typh™");
 			dir.setInitialDirectory(new File(System.getProperty("user.home")));
 			File dPath = dir.showDialog(w);
-			if(dPath !=null && dPath.exists()){
-				Engine.gfs.find().forEach(new Block<GridFSFile>(){
-					public void apply(final GridFSFile file){
-						
-						if((label.getText()).equals(getItemName(file.getFilename().split(":")[1]))){
+			if (dPath != null && dPath.exists()) {
+				Engine.gfs.find().forEach(new Block<GridFSFile>() {
+					public void apply(final GridFSFile file) {
+
+						if ((label.getText()).equals(getItemName(file.getFilename().split(":")[1]))) {
 							OutputStream out = null;
 							try {
-								out = new FileOutputStream(dPath+File.separator+file.getFilename().split(":")[1]);
+								out = new FileOutputStream(dPath + File.separator + file.getFilename().split(":")[1]);
 							} catch (FileNotFoundException e) {
 								e.printStackTrace();
 							}
-							Engine.gfs.downloadToStream(file.getId(),out);
+							Engine.gfs.downloadToStream(file.getId(), out);
 						}
 					}
 				});
 			}
 		});
-		
+
 		setOnDragDetected(event -> {
-            if (getItem() == null) {
-                return;
-            }
+			if (getItem() == null) {
+				return;
+			}
 
-            Dragboard dragboard = startDragAndDrop(TransferMode.MOVE);
-            ClipboardContent content = new ClipboardContent();
-            content.putString(getItem());
-            dragboard.setDragView(new Image(getClass().getResourceAsStream("/ivn/typh/tchr/icons/project_drag.png")));
-            dragboard.setContent(content);
+			Dragboard dragboard = startDragAndDrop(TransferMode.MOVE);
+			ClipboardContent content = new ClipboardContent();
+			content.putString(getItem());
+			dragboard.setDragView(new Image(getClass().getResourceAsStream("/ivn/typh/tchr/icons/project_drag.png")));
+			dragboard.setContent(content);
 
-            event.consume();
-        });
+			event.consume();
+		});
 
-		
 	}
 
 	@Override
 	protected void updateItem(String item, boolean empty) {
 		super.updateItem(item, empty);
-		if(empty||item==null){
+		if (empty || item == null) {
 			setText(null);
 			setGraphic(null);
-		}else{
-			label.setText((item!=null) ? getItemName(item):null);
+		} else {
+			label.setText((item != null) ? getItemName(item) : null);
 			setGraphic(pane);
 		}
 	}
-	
+
 	private String getItemName(String n) {
 		int position = n.lastIndexOf(".");
-		if(position==-1)
+		if (position == -1)
 			return n;
-		
-		return n.substring(0,position);
+
+		return n.substring(0, position);
 	}
-	
-	
+
 }

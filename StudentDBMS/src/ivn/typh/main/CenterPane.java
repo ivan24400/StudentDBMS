@@ -86,7 +86,7 @@ public class CenterPane extends StackPane{
 	public void showMessage(String message,boolean isText){
 	
 		dialogPane = new HBox();
-		loading.setText("\t"+message);
+		loading.setText("\t"+message+"\t\t\t");
 
 		if(isText){
 			dialogPane.getChildren().add(loading);
@@ -139,7 +139,6 @@ public class CenterPane extends StackPane{
 	public void hideMessage(){
 	
 				Platform.runLater(()->{
-					System.out.println("CenterPane: hideMessage");
 					shade.setVisible(false);
 					CenterPane.alert.setResult(ButtonType.CLOSE);
 					CenterPane.alert.close();

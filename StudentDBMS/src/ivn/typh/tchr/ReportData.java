@@ -15,25 +15,25 @@ public class ReportData {
 	private BooleanProperty seen = new SimpleBooleanProperty();
 	private StringProperty report = new SimpleStringProperty();
 	private IntegerProperty sem = new SimpleIntegerProperty();
-	
-	public ReportData(boolean s,int sm,String r){
+
+	public ReportData(boolean s, int sm, String r) {
 		setSeen(s);
 		setSem(sm);
 		setReport(r);
 	}
 
-	public IntegerProperty semProperty(){
+	public IntegerProperty semProperty() {
 		return sem;
 	}
-	
-	public BooleanProperty seenProperty(){
+
+	public BooleanProperty seenProperty() {
 		return seen;
 	}
-	
-	public StringProperty reportProperty(){
+
+	public StringProperty reportProperty() {
 		return report;
 	}
-	
+
 	public boolean getSeen() {
 		return seen.get();
 	}
@@ -49,7 +49,7 @@ public class ReportData {
 	public void setSem(int s) {
 		this.sem.set(s);
 	}
-	
+
 	public void setSeen(boolean s) {
 		this.seen.set(s);
 	}

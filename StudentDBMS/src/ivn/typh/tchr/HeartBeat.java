@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import ivn.typh.admin.Components;
+import ivn.typh.tchr.Components;
 import ivn.typh.main.BasicUI;
 import ivn.typh.main.Notification;
 import ivn.typh.main.PortList;
@@ -31,78 +31,81 @@ public class HeartBeat implements Runnable {
 	public void run() {
 		try {
 			heartAttack = false;
-			socket = new Socket(BasicUI.ipAddr,PortList.USER.port);
+			socket = new Socket(BasicUI.ipAddr, PortList.USER.port);
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 			out.writeObject(BasicUI.user);
 			out.flush();
 			service = Executors.newSingleThreadScheduledExecutor();
 
-			Runnable beat = new Runnable(){
+			Runnable beat = new Runnable() {
 
 				@Override
 				public void run() {
-					if(!heartAttack){
-					try {
-						String text = (String) in.readObject();
-						if(!(text.equals("__BEAT__"))){
-							Platform.runLater(()->{
-								Notification.message(Components.stage, AlertType.INFORMATION, "Message from admin - Typh™", formatMessage(text));
-							});
-						}else{
-							
+					if (!heartAttack) {
+						try {
+							String text = (String) in.readObject();
+							if (!(text.equals("__BEAT__"))) {
+								Platform.runLater(() -> {
+									Notification.message(Components.stage, AlertType.INFORMATION,
+											"Message from admin - Typh™", formatMessage(text));
+								});
+							} else {
+
+							}
+						} catch (IOException | ClassNotFoundException e) {
+							serverFailed(false);
 						}
-					} catch (IOException | ClassNotFoundException e) {
-						serverFailed(false);
-					}
-					}else{
+					} else {
 						serverFailed(true);
 					}
 				}
 
 				/*
-				 * This method formats the message recieved from admin.
-				 * It adds a newline character after every twenty characters present
-				 * in the message.
+				 * This method formats the message recieved from admin. It adds
+				 * a newline character after every 40 characters present in the
+				 * message.
+				 * 
 				 * @param text message
+				 * 
 				 * @return formatted string
 				 */
 				private String formatMessage(String text) {
 					StringBuffer message = new StringBuffer();
-					for(int i=1;i<=text.length();i++){
-						message.append(text.charAt(i-1));
-						if(i%20 == 0)
-							message.append("\n");
+					for (int i = 1; i <= text.length(); i++) {
+						message.append(text.charAt(i - 1));
+						if (i % 40 == 0)
+							message.append(" --\n-- ");
 					}
 					return message.toString();
 				}
-				
+
 			};
 			service.scheduleAtFixedRate(beat, 0, 5, TimeUnit.SECONDS);
 		} catch (IOException e) {
 			serverFailed(false);
 		}
 	}
-	
+
 	/*
 	 * This method is called if any server fault occurs
+	 * 
 	 * @param logout status of server.
 	 */
 	private void serverFailed(boolean logout) {
-		
-		if(!logout){
-		Platform.runLater(()->{
-			Notification.message(Components.stage, AlertType.ERROR,"Connection - Typh™","Server Failed");	
-			Platform.exit();
-		});
+
+		if (!logout) {
+			Platform.runLater(() -> {
+				Notification.message(Components.stage, AlertType.ERROR, "Connection - Typh™", "Server Failed");
+				Platform.exit();
+			});
 		}
 		service.shutdown();
 		try {
 			socket.close();
 		} catch (IOException a) {
 		}
-		
-	}
 
+	}
 
 }

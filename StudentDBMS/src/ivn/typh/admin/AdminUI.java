@@ -27,13 +27,10 @@ import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
@@ -41,7 +38,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
@@ -51,12 +47,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import static com.mongodb.client.model.Filters.*;
@@ -137,7 +131,7 @@ public class AdminUI extends Task<Void>{
 							"First select a valid user.");
 				});
 			}else
-			sendMessage(item);
+			Messenger.sendMessage(item);
 		});
 
 		Components.onlineUser.setContextMenu(oucm);
@@ -162,6 +156,7 @@ public class AdminUI extends Task<Void>{
 		Components.dprt.setClosable(false);
 
 		tabPane.setEffect(new DropShadow());
+		tabPane.setTabMinWidth(200);
 
 		logout.setOnAction(arg -> {
 			logoutApplication();
@@ -288,66 +283,13 @@ public class AdminUI extends Task<Void>{
 			Components.pane.applyCss();
 			Components.pane.layout();
 			Components.pane.requestLayout();
-			
-			tabPane.setTabMinWidth(200);
+			BasicUI.centerOfHomePane.hideMessage();
 		});
 
 
 	}
 
-	/*
-	 * Messenger to send a text to a given user.
-	 * @param user Name of Client to send text.
-	 */
 	
-	private void sendMessage(String user) {
-	
-		Dialog<String> dialog = new Dialog<>();
-		dialog.setTitle("Messenger - Typh™");
-		dialog.initOwner(Components.stage);
-		
-		VBox mpane = new VBox();
-		HBox hpane = new HBox();
-		hpane.setSpacing(20);
-		mpane.setId("message_pane");
-		
-		Label characterLimit = new Label("255");
-		TextArea text = new TextArea();
-		Pane dummy = new Pane();
-		text.setPromptText("Enter message ...");
-		text.setPrefRowCount(8);
-		text.setPrefColumnCount(30);
-		text.setWrapText(true);
-		text.textProperty().addListener((obs,o,n)->{
-			characterLimit.setText(Integer.toString(255 - text.getText().length()));
-		});
-
-		HBox.setHgrow(dummy, Priority.ALWAYS);
-		hpane.getChildren().addAll(dummy,characterLimit,new Label("  characters"));
-		mpane.getChildren().addAll(new Label("Enter a message for [ "+user+" ]"),text,hpane);
-		ButtonType send = new ButtonType("Send", ButtonData.OK_DONE);
-		dialog.getDialogPane().setContent(mpane);
-		dialog.getDialogPane().getButtonTypes().addAll(send, ButtonType.CANCEL);
-		dialog.setResultConverter(value -> {
-			if (value.getButtonData().equals(ButtonData.OK_DONE))
-				return text.getText().trim();
-			return null;
-		});
-		Node snode = dialog.getDialogPane().lookupButton(send);
-		text.textProperty().addListener((observable, oldv, newv) -> {
-			snode.setDisable(newv.trim().isEmpty() || (newv.length()>255));
-			if(newv.length()>255)
-				characterLimit.setTextFill(Color.RED);
-			else
-				characterLimit.setTextFill(Color.BLACK);
-
-		});
-
-		Optional<String> result = dialog.showAndWait();
-		result.ifPresent(msg -> HeartBeat.message = msg);
-
-	}
-
 	/*
 	 * This method is invoked to load default values 
 	 * and other details involved.
@@ -557,6 +499,8 @@ public class AdminUI extends Task<Void>{
 	@Override
 	protected Void call() throws Exception {
 		startUI();
+		
+		BasicUI.stage.setTitle(BasicUI.stage.getTitle()+" - "+BasicUI.user);
 		return null;
 	}
 }

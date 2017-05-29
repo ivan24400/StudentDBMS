@@ -11,8 +11,8 @@ public class AttendanceData {
 	private SimpleStringProperty subject;
 	private SimpleIntegerProperty attended;
 	private SimpleIntegerProperty total;
-	
-	public AttendanceData(String subject,Integer attended,Integer total){
+
+	public AttendanceData(String subject, Integer attended, Integer total) {
 		this.subject = new SimpleStringProperty(subject);
 		this.attended = new SimpleIntegerProperty(attended);
 		this.total = new SimpleIntegerProperty(total);

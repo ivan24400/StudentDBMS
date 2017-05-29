@@ -44,6 +44,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /*
@@ -161,7 +162,6 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 			}
 		}
 		dpImgView.setEffect(new DropShadow());
-
 		Tooltip tool = new Tooltip();
 		tsname.textProperty().addListener((obs, o, n) -> {
 			if (!n.matches("\\D*")) {
@@ -211,6 +211,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 
 		dpImgView.setFitHeight(128);
 		dpImgView.setFitWidth(128);
+		Tooltip.install(dpImgView, new Tooltip("Drag N Drop here !"));
 		dpImgView.setOnDragOver(new EventHandler<DragEvent>() {
 			@Override
 			public void handle(DragEvent arg0) {
@@ -245,14 +246,15 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		upload.setOnAction(event -> {
 			FileChooser file = new FileChooser();
 			file.setTitle("Upload a picture - Typh™");
-			file.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PNG", "*.png"),
-					new FileChooser.ExtensionFilter("JPG", "*.jpg"));
-			File tmp = file.showOpenDialog(parent);
-			dpImgView.setImage(new Image(tmp.getAbsolutePath()));
+			file.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PNG Files", "*.png"));
+			File tmp = file.showOpenDialog(getOwner());
+			if(tmp != null)
+				dpImgView.setImage(new Image(tmp.getAbsolutePath()));
 		});
 
 		Label year = new Label("Current Semester");
 		GridPane.setHalignment(year, HPos.RIGHT);
+		
 		dPane.add(new Label("Name"), 0, 0);
 		dPane.add(tsname, 1, 0);
 		dPane.add(new Label("ID"), 0, 1);
@@ -260,9 +262,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		dPane.add(new Label("Roll No"), 0, 2);
 		dPane.add(tsrno, 1, 2);
 		dPane.add(new Label("Department"), 0, 3);
-
 		dPane.add(tsdprt, 1, 3);
-
 		dPane.add(new Label("Class"), 2, 1);
 		dPane.add(tsclass, 3, 1);
 		dPane.add(new Label("Batch"), 2, 0);
@@ -276,16 +276,17 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		dPane.add(new Label("Parent Phone"), 2, 4);
 		dPane.add(tpphone, 3, 4);
 		dPane.add(dpImgView, 4, 1, 1, 5);
-
 		dPane.add(year, 1, 5);
 		dPane.add(tssem, 2, 5);
+		
 		addEdit(dPane);
 
 		upload.setPrefWidth(dpImgView.getFitWidth());
 		GridPane.setFillWidth(upload, true);
-		dPane.add(upload, 4, 0);
+		dPane.add(upload, 4, 1);
 
 		getDialogPane().setContent(dPane);
+
 		if (!isFirst) {
 			if (saveAdded == 0) {
 				ButtonType save = new ButtonType("Save", ButtonData.OK_DONE);
@@ -386,31 +387,6 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		}
 	}
 
-	/*
-	 * This method enables or disables all of the nodes present inside
-	 * Students
-	 * @param flag A boolean value representing yes or no
-	 */
-	private void disableAll(Boolean flag) {
-
-		tsname.setEditable(!flag);
-		tsid.setEditable(!flag);
-		tsrno.setDisable(flag);
-		tsdprt.setDisable(flag);
-		tsclass.setDisable(flag);
-		tsbatch.setDisable(flag);
-		tsmail.setEditable(!flag);
-		tsaddr.setEditable(!flag);
-		tsphone.setEditable(!flag);
-		tpphone.setEditable(!flag);
-		tssem.setDisable(flag);
-		dpImgView.setDisable(flag);
-		upload.setDisable(flag);
-		if(!isFirst)
-			del.setDisable(flag);
-
-
-	}
 	
 	/*
 	 * This method adds a new Student entry to the database.
@@ -489,7 +465,32 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		return year;
 	}
 
+	/*
+	 * This method enables or disables all of the nodes present inside
+	 * Students
+	 * @param flag A boolean value representing yes or no
+	 */
+	private void disableAll(Boolean flag) {
 
+		tsname.setEditable(!flag);
+		tsid.setEditable(!flag);
+		tsrno.setDisable(flag);
+		tsdprt.setDisable(flag);
+		tsclass.setDisable(flag);
+		tsbatch.setDisable(flag);
+		tsmail.setEditable(!flag);
+		tsaddr.setEditable(!flag);
+		tsphone.setEditable(!flag);
+		tpphone.setEditable(!flag);
+		tssem.setDisable(flag);
+		dpImgView.setDisable(flag);
+		upload.setDisable(flag);
+		if(!isFirst)
+			del.setDisable(flag);
+
+
+	}
+	
 	public void begin() {
 		isFirst = true;
 		createUI();

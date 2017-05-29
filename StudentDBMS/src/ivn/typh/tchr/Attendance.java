@@ -155,14 +155,13 @@ public class Attendance {
 			attendance.add(atrbsem1, 3, 5);
 			attendance.add(atrbsem2, 4, 5);
 			attendance.add(atBarChart, 0, 4, 8, 1);
-			
+
 		});
 		Components.scroll[Components.paneList.length - (Components.paneCount)].setContent(attendance);
 		Components.scroll[Components.paneList.length - (Components.paneCount--)].setHbarPolicy(ScrollBarPolicy.NEVER);
 
 	}
-	
-	
+
 	/*
 	 * This method creates the attendance chart.
 	 */
@@ -191,7 +190,7 @@ public class Attendance {
 				cdata.getData().add(new XYChart.Data<>(name, at));
 			}
 		}
-		Platform.runLater(()->{
+		Platform.runLater(() -> {
 			atBarChart.getData().add(cdata);
 
 		});
@@ -199,7 +198,8 @@ public class Attendance {
 
 	/*
 	 * This methods loads the attendance table with data
-	 * @param year The academic year. 
+	 * 
+	 * @param year The academic year.
 	 */
 	static void loadAttendanceData(String year) {
 		JSONArray jsona = null;
@@ -217,8 +217,8 @@ public class Attendance {
 			int at = json.getInt("attended");
 			int att = json.getInt("attendedTotal");
 			int sem = json.getInt("sem");
-			
-			Platform.runLater(()->{
+
+			Platform.runLater(() -> {
 				if (sem % 2 == 1) {
 					atsem1.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
 					atrbsem1.setText("Semester: " + Integer.toString(sem));
@@ -229,7 +229,7 @@ public class Attendance {
 					atrbsem2.setText("Semester: " + Integer.toString(sem));
 				}
 			});
-			
+
 		}
 	}
 

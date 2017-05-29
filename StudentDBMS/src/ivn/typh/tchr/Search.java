@@ -52,16 +52,15 @@ import ivn.typh.main.Engine;
 public class Search extends TextField {
 	private final SortedSet<String> list;
 	private ContextMenu resultList;
-	private TableView<AcademicData> tsem1,tsem2;
-	private String result;	
+	private TableView<AcademicData> tsem1, tsem2;
+	private String result;
 	private Label year;
 	private Label sem1;
 	private Label sem2;
 	private ComboBox<String> yrlst;
 	private float percent = 0, scored, total;
 	private JSONObject data;
-	
-	
+
 	public Search() {
 		super();
 		yrlst = new ComboBox<>();
@@ -70,40 +69,39 @@ public class Search extends TextField {
 		sem2 = new Label("Semester 2");
 		list = new TreeSet<>();
 		resultList = new ContextMenu();
-		textProperty().addListener((obs,o,n)-> {
-				if (getText().length() == 0) {
-					resultList.hide();
-				} else {
-					LinkedList<String> searchResult = new LinkedList<>();
-					searchResult.addAll(list.subSet(getText(), getText() + Character.MAX_VALUE));
-					if (list.size() > 0) {
-						populatePopup(searchResult);
-						if (!resultList.isShowing()) {
-							resultList.show(Search.this, Side.BOTTOM, 0, 0);
-						}
-					} else {
-						resultList.hide();
+		textProperty().addListener((obs, o, n) -> {
+			if (getText().length() == 0) {
+				resultList.hide();
+			} else {
+				LinkedList<String> searchResult = new LinkedList<>();
+				searchResult.addAll(list.subSet(getText(), getText() + Character.MAX_VALUE));
+				if (list.size() > 0) {
+					populatePopup(searchResult);
+					if (!resultList.isShowing()) {
+						resultList.show(Search.this, Side.BOTTOM, 0, 0);
 					}
+				} else {
+					resultList.hide();
 				}
+			}
 		});
 
-		focusedProperty().addListener((obs,o,n)-> {
-				resultList.hide();
+		focusedProperty().addListener((obs, o, n) -> {
+			resultList.hide();
 		});
-		
-		
-		yrlst.getSelectionModel().selectedItemProperty().addListener((obs,o,n)->{
+
+		yrlst.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
 			loadAcademicData();
 		});
 	}
 
-
-	public void setItems(List<String> items){
+	public void setItems(List<String> items) {
 		list.addAll(items);
 	}
-	
+
 	/*
 	 * This method creates the UI list that matches the query.
+	 * 
 	 * @param searchResult the list containing final set of names.
 	 */
 	private void populatePopup(List<String> searchResult) {
@@ -115,11 +113,11 @@ public class Search extends TextField {
 			Label entryLabel = new Label(result);
 			entryLabel.setPrefWidth(this.getWidth());
 			CustomMenuItem item = new CustomMenuItem(entryLabel, true);
-			item.setOnAction(action->{
-					resultList.hide();
-					setText(result);
-					displayReport(result);
-				});
+			item.setOnAction(action -> {
+				resultList.hide();
+				setText(result);
+				displayReport(result);
+			});
 			menuItems.add(item);
 		}
 		resultList.getItems().clear();
@@ -129,6 +127,7 @@ public class Search extends TextField {
 
 	/*
 	 * This method displays the report of the selected student.
+	 * 
 	 * @param result Name of the student.
 	 */
 	@SuppressWarnings("unchecked")
@@ -137,7 +136,7 @@ public class Search extends TextField {
 		report.initOwner(Components.stage);
 		ScrollPane spAcad = new ScrollPane();
 		GridPane academic = new GridPane();
-		
+
 		ScrollPane sp1 = new ScrollPane();
 		ScrollPane sp2 = new ScrollPane();
 		ObservableList<AcademicData> subjects1 = FXCollections.observableArrayList();
@@ -147,7 +146,7 @@ public class Search extends TextField {
 
 		academic.setId("searchResultAcademic");
 		report.getDialogPane().setId("searchResultPane");
-		
+
 		academic.getColumnConstraints().add(accc0);
 
 		yrlst.getItems().clear();
@@ -210,7 +209,8 @@ public class Search extends TextField {
 		total3.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 
 		sub.setOnEditCommit(arg -> {
-			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow())).setSubject(arg.getNewValue());
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+					.setSubject(arg.getNewValue());
 		});
 		scr0.setOnEditCommit(arg -> {
 			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
@@ -312,7 +312,8 @@ public class Search extends TextField {
 		total31.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 
 		sub1.setOnEditCommit(arg -> {
-			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow())).setSubject(arg.getNewValue());
+			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
+					.setSubject(arg.getNewValue());
 		});
 		scr01.setOnEditCommit(arg -> {
 			((AcademicData) arg.getTableView().getItems().get(arg.getTablePosition().getRow()))
@@ -380,7 +381,7 @@ public class Search extends TextField {
 		NumberAxis yaxis = new NumberAxis(0.0, 100.0, 10.0);
 		yaxis.setLabel("Percentage");
 
-		LineChart<String,Number> studProgress = new LineChart<>(xaxis, yaxis);
+		LineChart<String, Number> studProgress = new LineChart<>(xaxis, yaxis);
 		studProgress.setTitle("Student Progress");
 		studProgress.setTitleSide(Side.TOP);
 		studProgress.setLegendVisible(false);
@@ -391,33 +392,33 @@ public class Search extends TextField {
 				data.getData().addAll(new XYChart.Data<>("Semester " + j, p));
 		}
 		studProgress.getData().add(data);
-		
 
-		academic.add(year,1,0);
+		academic.add(year, 1, 0);
 		academic.add(yrlst, 2, 0);
 		academic.add(sem1, 0, 1);
 		academic.add(sp1, 0, 2, 5, 1);
 		academic.add(sem2, 0, 3);
 		academic.add(sp2, 0, 4, 5, 1);
 		academic.add(studProgress, 0, 5, 5, 1);
-		
+
 		spAcad.setContent(academic);
 		spAcad.setPrefHeight(480);
 		spAcad.setVbarPolicy(ScrollBarPolicy.NEVER);
 		yrlst.getSelectionModel().selectFirst();
 
 		loadAcademicData();
-		report.setTitle(result.substring(0,1).toUpperCase()+result.split(" ")[0].substring(1)+result.split(" ")[1].substring(0,1).toUpperCase()+result.split(" ")[1].substring(1)+" - Academic Data - Typh™");
+		report.setTitle(result.substring(0, 1).toUpperCase() + result.split(" ")[0].substring(1)
+				+ result.split(" ")[1].substring(0, 1).toUpperCase() + result.split(" ")[1].substring(1)
+				+ " - Academic Data - Typh™");
 		report.getDialogPane().setContent(spAcad);
-		report.setY(Toolkit.getDefaultToolkit().getScreenSize().getHeight()/2 - 240);
-		report.setX(Toolkit.getDefaultToolkit().getScreenSize().getWidth()/2 - 320);
+		report.setY(Toolkit.getDefaultToolkit().getScreenSize().getHeight() / 2 - 240);
+		report.setX(Toolkit.getDefaultToolkit().getScreenSize().getWidth() / 2 - 320);
 		report.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
 
 		report.show();
-		
 
 	}
-	
+
 	/*
 	 * This method loads the Academic Data corresponding to the student name.
 	 */
@@ -425,8 +426,9 @@ public class Search extends TextField {
 		JSONArray jsona = null;
 		try {
 			jsona = data.getJSONArray(yrlst.getSelectionModel().getSelectedItem().toLowerCase());
-		} catch (JSONException e) {	}
-		
+		} catch (JSONException e) {
+		}
+
 		Iterator<?> it = jsona.iterator();
 
 		tsem1.getItems().clear();
@@ -449,23 +451,26 @@ public class Search extends TextField {
 			tool.setFont(new Font("serif", 18));
 			if (sem % 2 == 1) {
 				tsem1.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
-				tool.setText("Percentage :- "+getSemesterPercent(sem));
+				tool.setText("Percentage :- " + getSemesterPercent(sem));
 				sem1.setTooltip(tool);
-				sem1.setText("Semester: " + Integer.toString(sem)+"\t[ "+Float.toString(scored)+"/"+Float.toString(total)+" ]");
+				sem1.setText("Semester: " + Integer.toString(sem) + "\t[ " + Float.toString(scored) + "/"
+						+ Float.toString(total) + " ]");
 				tsem1.getItems().add(new AcademicData(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
 			} else {
 				tsem2.setTooltip(new Tooltip("Semester: " + Integer.toString(sem)));
-				tool.setText("Percentage :- "+getSemesterPercent(sem));
+				tool.setText("Percentage :- " + getSemesterPercent(sem));
 				sem2.setTooltip(tool);
-				sem2.setText("Semester: " + Integer.toString(sem)+"\t[ "+Float.toString(scored)+"/"+Float.toString(total)+" ]");
+				sem2.setText("Semester: " + Integer.toString(sem) + "\t[ " + Float.toString(scored) + "/"
+						+ Float.toString(total) + " ]");
 				tsem2.getItems().add(new AcademicData(name, ths, tht, ors, ort, prs, prt, tws, twt, back));
 			}
 		}
 
 	}
-	
+
 	/*
 	 * This method calculates percentage of all the subject's marks.
+	 * 
 	 * @param i semester number.
 	 */
 	private float getSemesterPercent(int i) {

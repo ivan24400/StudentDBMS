@@ -41,7 +41,7 @@ import javafx.util.StringConverter;
  * This method creates user interface for Personal Pane.
  */
 public class Personal {
-	
+
 	public static GridPane personal;
 	public static ImageView dpImgView;
 	public static TextField tsname;
@@ -59,10 +59,8 @@ public class Personal {
 	public static ObservableList<String> reportList;
 	public static Label reports;
 
+	public static void setup() {
 
-
-	public static void setup(){
-		
 		Components.scroll[Components.paneList.length - (Components.paneCount)] = new ScrollPane();
 		personal = new GridPane();
 		Label sname = new Label("Name:");
@@ -90,7 +88,6 @@ public class Personal {
 		tpphone = new TextField();
 		reportPane = new ListView<>();
 		reportList = FXCollections.observableArrayList();
-
 
 		tsname.setPromptText("Name");
 		tsid.setPromptText("ID");
@@ -131,22 +128,19 @@ public class Personal {
 			if (!n.matches("\\D*")) {
 				tool.setText("Enter alphabets only");
 				Point2D p = tsname.localToScene(0.0, 0.0);
-				tool.show(tsname, p.getX() + tsname.getCaretPosition(),
-						p.getY() + tsname.getHeight());
+				tool.show(tsname, p.getX() + tsname.getCaretPosition(), p.getY() + tsname.getHeight());
 				tsname.setText(n.replaceAll("[\\d]", ""));
 			}
 		});
 
-		 tsaddr.setOnMouseEntered(value->{
-		 tool.hide();
-		 if(!tsaddr.getText().isEmpty() && !tsaddr.isDisabled()){
-		 tool.setText(tsaddr.getText());
-		 Point2D p = tsaddr.localToScene(0.0, 0.0);
-		 tool.show(tsaddr, p.getX() +
-		 tsaddr.getWidth()/2,
-		 p.getY() + tsaddr.getHeight()+4);
-		 }
-		 });
+		tsaddr.setOnMouseEntered(value -> {
+			tool.hide();
+			if (!tsaddr.getText().isEmpty() && !tsaddr.isDisabled()) {
+				tool.setText(tsaddr.getText());
+				Point2D p = tsaddr.localToScene(0.0, 0.0);
+				tool.show(tsaddr, p.getX() + tsaddr.getWidth() / 2, p.getY() + tsaddr.getHeight() + 4);
+			}
+		});
 
 		tsaddr.setOnMouseExited(value -> {
 			tool.hide();
@@ -157,8 +151,7 @@ public class Personal {
 				System.out.println(obs.getValue() + "\t" + o + "\t" + n);
 				Point2D p = tsphone.localToScene(0.0, 0.0);
 				tool.setText("Enter numbers only");
-				tool.show(tsphone, p.getX() + tsphone.getCaretPosition(),
-						p.getY() + tsphone.getHeight());
+				tool.show(tsphone, p.getX() + tsphone.getCaretPosition(), p.getY() + tsphone.getHeight());
 				tsphone.setText(n.replaceAll("[^\\d]", ""));
 			}
 		});
@@ -168,8 +161,7 @@ public class Personal {
 				Point2D p = tpphone.localToScene(0.0, 0.0);
 				tool.setText("Enter numbers only");
 
-				tool.show(tpphone, p.getX() + tpphone.getCaretPosition(),
-						p.getY() + tpphone.getHeight());
+				tool.show(tpphone, p.getX() + tpphone.getCaretPosition(), p.getY() + tpphone.getHeight());
 				tpphone.setText(n.replaceAll("[^\\d]", ""));
 			}
 		});
@@ -204,7 +196,7 @@ public class Personal {
 
 		};
 		reportPane.setCellFactory(CheckBoxListCell.forListView(ReportData::seenProperty, rconvertor));
-		
+
 		Components.report.setOnAction(arg -> {
 			Dialog<String> dialog = new Dialog<>();
 			ButtonType reportb = new ButtonType("Report", ButtonData.OK_DONE);
@@ -252,8 +244,8 @@ public class Personal {
 
 		personal.setId("personalP");
 		dpImgView.setId("dpImgView");
-		
-		Platform.runLater(()->{
+
+		Platform.runLater(() -> {
 			personal.add(sname, 0, 1);
 			personal.add(tsname, 1, 1);
 			personal.add(sid, 0, 2);
@@ -280,14 +272,14 @@ public class Personal {
 			personal.setAlignment(Pos.CENTER);
 
 		});
-	
-		
+
 		Components.scroll[Components.paneList.length - (Components.paneCount)].setHbarPolicy(ScrollBarPolicy.NEVER);
 		Components.scroll[Components.paneList.length - (Components.paneCount--)].setContent(personal);
 	}
-	
+
 	/*
 	 * This method retrieves report data from database.
+	 * 
 	 * @param year Year value of which to load report.
 	 */
 	static void loadReport(String year) {
@@ -301,8 +293,8 @@ public class Personal {
 			boolean b = j.getBoolean("seen");
 			int sem = j.getInt("sem");
 			String r = j.getString("report");
-			if (TchrUI.sMatchesY(sem, year) == 1){
-				Platform.runLater(()->{
+			if (TchrUI.sMatchesY(sem, year) == 1) {
+				Platform.runLater(() -> {
 					Personal.reportPane.getItems().add(new ReportData(b, sem, r));
 				});
 			}

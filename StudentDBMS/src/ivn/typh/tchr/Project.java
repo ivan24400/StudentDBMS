@@ -30,17 +30,16 @@ import javafx.util.Duration;
  * This method creates the UI for the project pane.
  */
 public class Project {
-	
+
 	public static Group recycle;
 	public static GridPane projects;
 	public static ListView<String> prList;
 	public static Map<String, String> prPath;
 	public static SVGPath bin;
 	public static SVGPath bin_lid;
-	public static SVGPath bin_handle; 
+	public static SVGPath bin_handle;
 
-
-	static void setup(){
+	static void setup() {
 		Components.scroll[Components.paneList.length - (Components.paneCount)] = new ScrollPane();
 		projects = new GridPane();
 		prPath = new HashMap<>();
@@ -173,21 +172,21 @@ public class Project {
 			arg0.setDropCompleted(success);
 			arg0.consume();
 		});
-		
+
 		projects.setId("projectsP");
-		prList.setCache(true);               
-		prList.setCacheShape(true);          
+		prList.setCache(true);
+		prList.setCacheShape(true);
 		prList.setCacheHint(CacheHint.SPEED);
-		bin.setCache(true);                
-		bin.setCacheHint(CacheHint.SPEED); 
-		bin_lid.setCache(true);                
-		bin_lid.setCacheHint(CacheHint.SPEED); 
-		bin_handle.setCache(true);                
-	   bin_handle.setCacheHint(CacheHint.SPEED); 
-	   
+		bin.setCache(true);
+		bin.setCacheHint(CacheHint.SPEED);
+		bin_lid.setCache(true);
+		bin_lid.setCacheHint(CacheHint.SPEED);
+		bin_handle.setCache(true);
+		bin_handle.setCacheHint(CacheHint.SPEED);
+
 		recycle.getChildren().addAll(bin_handle, bin_lid, bin);
-		
-		Platform.runLater(()->{
+
+		Platform.runLater(() -> {
 			projects.add(upload, 0, 0);
 			projects.add(prList, 1, 0, 1, 2);
 			projects.add(recycle, 0, 1);
@@ -196,12 +195,13 @@ public class Project {
 		Components.scroll[Components.paneList.length - (Components.paneCount--)].setContent(projects);
 
 	}
-	
-/*
- * This method creates project data.
- * @param yr The year value.
- */
-	
+
+	/*
+	 * This method creates project data.
+	 * 
+	 * @param yr The year value.
+	 */
+
 	static void loadProjectData(String yr) {
 		prList.getItems().clear();
 		Engine.gfs.find().forEach(new Block<GridFSFile>() {
@@ -209,8 +209,8 @@ public class Project {
 				String name = file.getFilename().split(":")[1];
 				String gfsid = file.getFilename().split(":")[0];
 				int year = Integer.parseInt(gfsid.substring(2, 4));
-				if (year == TchrUI.sMatchesY(0, yr)){
-					Platform.runLater(()->{
+				if (year == TchrUI.sMatchesY(0, yr)) {
+					Platform.runLater(() -> {
 						prList.getItems().add(name);
 
 					});
@@ -218,6 +218,5 @@ public class Project {
 			}
 		});
 	}
-
 
 }
