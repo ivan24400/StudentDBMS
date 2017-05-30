@@ -33,10 +33,8 @@ public class Search extends TextField {
 					List<String> searchResult = new LinkedList<>();
 					searchResult.addAll(list.subSet(getText(), getText() + Character.MAX_VALUE));
 					if (list.size() > 0) {
-						populatePopup(searchResult);
-						if (!resultList.isShowing()) {
-							resultList.show(Search.this, Side.BOTTOM, 0, 0);
-						}
+						populatePopup(searchResult,10);
+						displayPopUp();
 					} else {
 						resultList.hide();
 					}
@@ -49,13 +47,19 @@ public class Search extends TextField {
 
 	}
 
+	void displayPopUp() {
+		if (!resultList.isShowing()) {
+			resultList.show(Search.this, Side.BOTTOM, 0, 0);
+		}
+	}
+
 	/*
 	 * This method gives a popup window if a user selects an entry from the result.
 	 */
-	private void loadData() {
+	private void firePopUp(String nameOfStudent) {
 		Components.studGrid.getChildren().forEach(arg->{
 			Button tmp = (Button)arg;
-			if(tmp.getText().equals(result))
+			if(tmp.getText().equals(nameOfStudent))
 				tmp.fire();
 		});
 	}
@@ -73,19 +77,19 @@ public class Search extends TextField {
 	 * This method creates the search result list.
 	 * @param searchResult the list of students matching the search query
 	 */
-	private void populatePopup(List<String> searchResult) {
+	void populatePopup(List<String> searchResult,int maxEntries) {
 		List<CustomMenuItem> menuItems = new LinkedList<>();
-		int maxEntries = 10;
 		int count = Math.min(searchResult.size(), maxEntries);
 		for (int i = 0; i < count; i++) {
 			result = searchResult.get(i);
 			Label entry = new Label(result);
 			entry.setPrefWidth(this.getWidth());
+			
 			CustomMenuItem item = new CustomMenuItem(entry, true);
 			item.setOnAction(action->{
 					resultList.hide();
-					setText(result);
-					loadData();
+					setText(entry.getText());
+					firePopUp(entry.getText());
 				});
 			menuItems.add(item);
 		}

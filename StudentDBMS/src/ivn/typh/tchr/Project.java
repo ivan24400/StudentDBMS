@@ -83,23 +83,14 @@ public class Project {
 
 		});
 
-		Tooltip tip = new Tooltip();
-
-		bin.setOnMouseEntered(value -> {
-			tip.hide();
-			tip.setText("Drag projects here to delete");
-			tip.show(bin, value.getScreenX(), value.getScreenY());
-		});
-
-		bin.setOnMouseExited(value -> {
-			tip.hide();
-		});
-
+		Tooltip.install(recycle, new Tooltip("Drag Projects here to delete them"));
+		ParallelTransition pt = new ParallelTransition();
+		TranslateTransition tt = new TranslateTransition();
+		TranslateTransition ttt = new TranslateTransition();
+		
 		bin.setOnDragEntered(event -> {
 			Platform.runLater(() -> {
-				ParallelTransition pt = new ParallelTransition();
-				TranslateTransition tt = new TranslateTransition();
-				TranslateTransition ttt = new TranslateTransition();
+
 
 				tt.setByY(-10.0);
 				tt.setNode(bin_lid);
@@ -115,10 +106,6 @@ public class Project {
 
 		bin.setOnDragExited(event -> {
 			Platform.runLater(() -> {
-				ParallelTransition pt = new ParallelTransition();
-				TranslateTransition tt = new TranslateTransition();
-				TranslateTransition ttt = new TranslateTransition();
-
 				tt.setByY(10.0);
 				tt.setNode(bin_lid);
 				tt.setDuration(Duration.millis(500));

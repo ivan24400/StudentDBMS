@@ -44,6 +44,9 @@ import javafx.util.StringConverter;
 public class Personal {
 
 
+	private final static int dpImgWidth=128;
+	private final static int dpImgHeight=128;
+	
 	public static GridPane personal;
 	public static ImageView dpImgView;
 	public static TextField tsname;
@@ -52,7 +55,7 @@ public class Personal {
 	public static ChoiceBox<String> tsrno;
 	public static ChoiceBox<String> tsdprt;
 	public static ChoiceBox<String> tsbatch;
-	public static Label tsyear;
+	public static Label tssem;
 	public static TextField tsmail;
 	public static TextField tsaddr;
 	public static TextField tsphone;
@@ -68,7 +71,7 @@ public class Personal {
 		Label sid = new Label("ID:");
 		Label srno = new Label("Roll No:");
 		Label sdprt = new Label("Department:");
-		Label syear = new Label("Year:");
+		Label ssem = new Label("Semester:");
 		Label sbatch = new Label("Batch:");
 		Label smail = new Label("Email:");
 		Label saddr = new Label("Address:");
@@ -81,7 +84,7 @@ public class Personal {
 		tsid = new TextField();
 		tsrno = new ChoiceBox<>();
 		tsdprt = new ChoiceBox<>();
-		tsyear = new Label();
+		tssem = new Label();
 		tsbatch = new ChoiceBox<>();
 		tsmail = new TextField();
 		tsaddr = new TextField();
@@ -96,9 +99,13 @@ public class Personal {
 		tsaddr.setPromptText("Address");
 		tsphone.setPromptText("Phone");
 		tpphone.setPromptText("Parent Phone");
+		
+		tssem.setId("cur_sem");
+		personal.setId("personalP");
+		dpImgView.setId("dpImgView");
 
-		dpImgView.setFitHeight(128);
-		dpImgView.setFitWidth(128);
+		dpImgView.setFitHeight(dpImgHeight);
+		dpImgView.setFitWidth(dpImgWidth);
 		dpImgView.setOnDragOver((arg0) -> {
 			Dragboard db = arg0.getDragboard();
 			if (db.hasFiles()) {
@@ -170,9 +177,9 @@ public class Personal {
 		ContextMenu tsidcm = new ContextMenu();
 		MenuItem tsida = new MenuItem("Generate ID");
 		tsida.setOnAction(arg -> {
-
 			tsid.setText(TchrUI.getSId());
 		});
+		
 		ScrollPane spReport = new ScrollPane();
 		ContextMenu repcm = new ContextMenu();
 		MenuItem del = new MenuItem("Delete this report");
@@ -243,9 +250,7 @@ public class Personal {
 		spReport.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		spReport.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 
-		personal.setId("personalP");
-		dpImgView.setId("dpImgView");
-
+		
 		Platform.runLater(() -> {
 			personal.add(sname, 0, 1);
 			personal.add(tsname, 1, 1);
@@ -255,8 +260,8 @@ public class Personal {
 			personal.add(tsrno, 1, 3);
 			personal.add(sdprt, 0, 4);
 			personal.add(tsdprt, 1, 4);
-			personal.add(syear, 2, 2);
-			personal.add(tsyear, 3, 2);
+			personal.add(ssem, 2, 2);
+			personal.add(tssem, 3, 2);
 			personal.add(sbatch, 2, 1);
 			personal.add(tsbatch, 3, 1);
 			personal.add(smail, 0, 5);
@@ -274,6 +279,7 @@ public class Personal {
 
 		});
 
+		
 		Components.scroll[Components.paneList.length - (Components.paneCount)].setHbarPolicy(ScrollBarPolicy.NEVER);
 		Components.scroll[Components.paneList.length - (Components.paneCount--)].setContent(personal);
 	}

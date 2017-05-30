@@ -76,10 +76,8 @@ public class Search extends TextField {
 				LinkedList<String> searchResult = new LinkedList<>();
 				searchResult.addAll(list.subSet(getText(), getText() + Character.MAX_VALUE));
 				if (list.size() > 0) {
-					populatePopup(searchResult);
-					if (!resultList.isShowing()) {
-						resultList.show(Search.this, Side.BOTTOM, 0, 0);
-					}
+					populatePopup(searchResult,10);
+					displayPopUp();
 				} else {
 					resultList.hide();
 				}
@@ -95,6 +93,18 @@ public class Search extends TextField {
 		});
 	}
 
+	/*
+	 * This method displays the popup.
+	 */
+	void displayPopUp() {
+		if (!resultList.isShowing()) {
+			resultList.show(Search.this, Side.BOTTOM, 0, 0);
+		}
+	}
+
+	/*
+	 * This method add items to the list.
+	 */
 	public void setItems(List<String> items) {
 		list.addAll(items);
 	}
@@ -104,19 +114,19 @@ public class Search extends TextField {
 	 * 
 	 * @param searchResult the list containing final set of names.
 	 */
-	private void populatePopup(List<String> searchResult) {
+	void populatePopup(List<String> searchResult,int maxEntries) {
 		List<CustomMenuItem> menuItems = new LinkedList<>();
-		int maxEntries = 10;
 		int count = Math.min(searchResult.size(), maxEntries);
 		for (int i = 0; i < count; i++) {
 			result = searchResult.get(i);
 			Label entryLabel = new Label(result);
 			entryLabel.setPrefWidth(this.getWidth());
+			
 			CustomMenuItem item = new CustomMenuItem(entryLabel, true);
 			item.setOnAction(action -> {
 				resultList.hide();
-				setText(result);
-				displayReport(result);
+				setText(entryLabel.getText());
+				displayReport(entryLabel.getText());
 			});
 			menuItems.add(item);
 		}
@@ -553,4 +563,6 @@ public class Search extends TextField {
 
 		return percent;
 	}
+
+
 }

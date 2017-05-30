@@ -151,7 +151,7 @@ public class Export {
 				cell.setCellValue("Year");
 				cell.setCellStyle(cell_style);
 				cell = row.createCell(col_index += 2);
-				cell.setCellValue(Personal.tsyear.getText());
+				cell.setCellValue(Personal.tssem.getText());
 
 				sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 1)); // ID
 				sheet.addMergedRegion(new CellRangeAddress(3, 3, 2, 3)); // vID

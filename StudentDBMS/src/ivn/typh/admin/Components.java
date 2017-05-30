@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -24,7 +25,6 @@ public class Components {
 	public static ScrollPane sgpane;
 	public static GridPane userGrid;
 	public static GridPane dprtGrid;
-	public static ListView<String> onlineUser;
 	public static ToolBar menuBar;
 	public static BorderPane pane;
 	
@@ -39,8 +39,12 @@ public class Components {
 	public static Label rLastLogin;
 	public static SideBar side;
 	
-	public static Search srch;
-
+	public static Search searchBox;
+	public static Label srch;
+	
+	public static ListView<String> onlineUser;
+	public static Label ou;
+	
 	public static GridPane studGrid;
 	public static Button addAcc;
 	public static Button addDepartment;
@@ -52,6 +56,7 @@ public class Components {
 	public static HBox center;
 	public static HBox top; 
 	
+	public static TabPane tabPane;
 	public static Tab user; 
 	public static Tab stud; 
 	public static Tab dprt; 
@@ -63,7 +68,7 @@ public class Components {
 		Components.rTotalStudents.setId("logInfo");
 		Components.rTotalUsers.setId("logInfo");
 		Components.rLastLogin.setId("logInfo");
-		Components.srch.setId("searchBox");
+		Components.searchBox.setId("searchBox");
 		Components.user.setId("tabU");
 		Components.stud.setId("tabS");
 		Components.dprt.setId("tabD");

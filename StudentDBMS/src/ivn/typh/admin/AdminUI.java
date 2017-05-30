@@ -27,7 +27,9 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.EventHandler;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -44,6 +46,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -94,6 +97,7 @@ public class AdminUI extends Task<Void>{
 		rc0.setPercentHeight(15);
 		rc1.setPercentHeight(75);
 
+		Button logout = new Button("Log Out");
 
 		Components.admin = new Label("Admin");
 		Components.admin.setFont(new Font(30));
@@ -108,14 +112,25 @@ public class AdminUI extends Task<Void>{
 		CenterPane.menu = new Button("Menu");
 		CenterPane.menu.setGraphic(new ImageView(new Image("/ivn/typh/main/icons/menu.png")));
 
-		Label search = new Label("Search");
-		Label au = new Label("Online Users");
-		Button logout = new Button("Log Out");
-		Components.srch = new Search();
+		Components.srch = new Label("Search");
+		Components.searchBox = new Search();
+		Components.srch.setCursor(Cursor.HAND);
+		Components.srch.setTooltip(new Tooltip("Click to Display List of All Students"));
+		Components.srch.setOnMouseClicked(new EventHandler<MouseEvent>(){
+
+			@Override
+			public void handle(MouseEvent event) {
+				Components.searchBox.populatePopup(Students.studentList,Integer.MAX_VALUE);
+				Components.searchBox.displayPopUp();
+			}
+			
+		});
+		
 
 		logout.setId("logout");
-		search.setId("search");
+		Components.srch.setId("search");
 
+		Components.ou = new Label("Online Users");
 		Components.onlineUser = new ListView<>();
 		Components.onlineUser.getItems().add("No User is online !");
 		
@@ -144,8 +159,8 @@ public class AdminUI extends Task<Void>{
 				
 		// Create TabPane
 
-		TabPane tabPane = new TabPane();
-		tabPane.getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
+		Components.tabPane = new TabPane();
+		Components.tabPane.getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
 
 		Components.user = new Tab("Users");
 		Components.stud = new Tab("Students");
@@ -156,8 +171,8 @@ public class AdminUI extends Task<Void>{
 		Components.stud.setClosable(false);
 		Components.dprt.setClosable(false);
 
-		tabPane.setEffect(new DropShadow());
-		tabPane.setTabMinWidth(200);
+		Components.tabPane.setEffect(new DropShadow());
+		Components.tabPane.setTabMinWidth(200);
 
 		logout.setOnAction(arg -> {
 			logoutApplication();
@@ -231,18 +246,18 @@ public class AdminUI extends Task<Void>{
 		Components.stud.setContent(scrollStud);
 		Components.dprt.setContent(scrollDprt);
 
-		tabPane.getTabs().addAll(Components.user, Components.stud, Components.dprt);
+		Components.tabPane.getTabs().addAll(Components.user, Components.stud, Components.dprt);
 		
 		
 		//	Add all nodes to their panes.
 		
-		Components.center.getChildren().add(tabPane);
+		Components.center.getChildren().add(Components.tabPane);
 
 		Components.accNamePane.getChildren().add(Components.admin);
 		Components.accDescPane.getChildren().addAll(Components.accNamePane, Components.totalStudents, Components.rTotalStudents,
 		Components.totalUsers, Components.rTotalUsers, Components.lastLogin, Components.rLastLogin);
-		Components.onlineUserPane.getChildren().addAll(au, Components.onlineUser);
-		Components.top.getChildren().addAll(search, Components.srch);
+		Components.onlineUserPane.getChildren().addAll(Components.ou, Components.onlineUser);
+		Components.top.getChildren().addAll(Components.srch, Components.searchBox);
 
 		Components.gpane.getColumnConstraints().addAll(cc0, cc1);
 		Components.gpane.getRowConstraints().addAll(rc0, rc1);
@@ -274,7 +289,7 @@ public class AdminUI extends Task<Void>{
 			BasicUI.centerOfHomePane.changeRootPane(Components.sgpane, Components.side);
 
 			StackPane.setAlignment(Components.side, Pos.CENTER_LEFT);
-			HBox.setHgrow(tabPane, Priority.ALWAYS);
+			HBox.setHgrow(Components.tabPane, Priority.ALWAYS);
 			VBox.setVgrow(Components.onlineUser, Priority.ALWAYS);
 			
 			Components.stage.getScene().getStylesheets().remove(0);
@@ -413,24 +428,21 @@ public class AdminUI extends Task<Void>{
 				JSONObject json = new JSONObject(cursorUser.next().toJson());
 				String username = json.getString("user");
 				if (!username.equals("admin")) {
-					String password = null, email = null, dprt = null, full = null, cli = null, yin = null, ll = null;
+					String password = null, email = null, dprt = null, full = null, yin = null, ll = null;
 					boolean stat = false;
 					try {
 						password = json.getString("passwd");
 						email = json.getString("email");
 						dprt = json.getString("department");
 						full = json.getString("fullname");
-					//	cli = json.getString("classIncharge");
 						yin = json.getString("yearIncharge");
 						ll = json.getString("lastLogin");
-						stat = json.getBoolean("status");
+						stat = json.getBoolean("freeze");
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
 					UserAccounts.userList.add(json.getString("user"));
 					Button tmp = new Button(username);
-//					tmp.setOnAction(new UserAccounts(Components.stage, Components.userGrid, username, full, password,
-//							email, dprt, cli, yin, ll, stat));
 					tmp.setOnAction(new UserAccounts(Components.stage, Components.userGrid, username, full, password,
 							email, dprt, yin, ll, stat));
 					if (UserAccounts.x < 6) {
@@ -454,7 +466,7 @@ public class AdminUI extends Task<Void>{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Components.srch.setItems(Students.studentList);
+		Components.searchBox.setItems(Students.studentList);
 	}
 
 	/*
@@ -502,8 +514,6 @@ public class AdminUI extends Task<Void>{
 	@Override
 	protected Void call() throws Exception {
 		startUI();
-		
-		BasicUI.stage.setTitle(BasicUI.stage.getTitle()+" - "+BasicUI.user);
 		return null;
 	}
 }

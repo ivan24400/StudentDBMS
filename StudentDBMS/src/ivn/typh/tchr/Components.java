@@ -74,7 +74,7 @@ public class Components {
 	public static void setIdAll() {
 
 		logout.setId("logout");
-
+		
 		tgpane.setId("home");
 		center.setId("center");
 		accDescPane.setId("leftP");

@@ -41,8 +41,10 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Accordion;
@@ -60,8 +62,10 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -73,7 +77,7 @@ import javafx.stage.Stage;
  */
 public class TchrUI extends Task<Void> {
 
-	private static ObservableList<String> studList;
+	public static ObservableList<String> studList;
 	private static ObservableMap<String, String> dprtList;
 
 	public TchrUI(Stage s, BorderPane p, Scene scen, ToolBar tb) {
@@ -124,8 +128,26 @@ public class TchrUI extends Task<Void> {
 		Components.accord = new Accordion();
 		Components.update = new Button("Update");
 		Components.report = new Button("Report");
-
 		Components.yrlst = new ComboBox<>();
+
+		Components.srch.setCursor(Cursor.HAND);
+		Components.srch.setTooltip(new Tooltip("Click to Display List of All Students"));
+		Components.srch.setOnMouseClicked(new EventHandler<MouseEvent>(){
+
+			@Override
+			public void handle(MouseEvent event) {
+				System.out.println("Clicked Search");
+				List<String> tmpSearchResult = new ArrayList<String>();
+				
+				TchrUI.studList.forEach(stud->{
+					tmpSearchResult.add(stud.split(": ")[1]);
+				});
+				Components.searchBox.populatePopup(tmpSearchResult,Integer.MAX_VALUE);
+				Components.searchBox.displayPopUp();
+			}
+			
+		});
+		
 		Components.yrlst.getItems().addAll(FXCollections.observableArrayList("FE", "SE", "TE", "BE"));
 		Components.yrlst.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
 			Personal.loadReport(n);
@@ -148,7 +170,7 @@ public class TchrUI extends Task<Void> {
 		});
 
 		Components.slist.getSelectionModel().selectedItemProperty().addListener((arg, o, n) -> {
-			loadStudentProfile(n.split(": ")[1]);
+			loadStudentProfile(n);
 		});
 
 		// Export Data
@@ -238,10 +260,12 @@ public class TchrUI extends Task<Void> {
 
 			Components.pane.applyCss();
 			Components.pane.layout();
+			
 			disableAll(true);
 			Components.slist.getSelectionModel().selectFirst();
+			
 			BasicUI.centerOfHomePane.hideMessage();
-
+		
 		});
 	}
 
@@ -362,7 +386,7 @@ public class TchrUI extends Task<Void> {
 	@SuppressWarnings("unchecked")
 	private void loadStudentProfile(String student) {
 
-		String json = Engine.db.getCollection("Students").find(eq("name", student.substring(1))).first().toJson();
+		String json = Engine.db.getCollection("Students").find(eq("name", student)).first().toJson();
 		JSONObject jsonData = new JSONObject(json);
 
 		// Personal
@@ -389,9 +413,11 @@ public class TchrUI extends Task<Void> {
 		Personal.tsaddr.setText(jsonData.getString("address"));
 		Personal.tsphone.setText(jsonData.getString("studentPhone"));
 		Personal.tpphone.setText(jsonData.getString("parentPhone"));
-		Components.yrlst.getItems().clear();
-
+		
 		Components.tscsem = jsonData.getString("current_semester");
+		Personal.tssem.setText(Components.tscsem);
+
+		Components.yrlst.getItems().clear();
 
 		switch (Components.tscsem) {
 		case "SEM 7":
@@ -453,7 +479,7 @@ public class TchrUI extends Task<Void> {
 		String id = dprtList.entrySet().stream()
 				.filter(a -> a.getValue().equals(Personal.tsdprt.getSelectionModel().getSelectedItem()))
 				.map(map -> map.getKey()).collect(Collectors.joining());
-		return (id + String.format("%02d", sMatchesY(0, Components.yrlst.getValue())) + Personal.tsyear.getText()
+		return (id + String.format("%02d", sMatchesY(0, Components.yrlst.getValue())) + Personal.tssem.getText()
 				+ Personal.tsrno.getValue());
 	}
 
@@ -633,11 +659,9 @@ public class TchrUI extends Task<Void> {
 		List<String> name = new ArrayList<>();
 		Components.counter = 0;
 
-		System.out.println(studList.toString());
 		studList.forEach(student -> {
 			name.add(student.split(": ")[1]);
 			String tmp = student.split("]")[0].substring(1);
-			System.out.println(tmp);
 			if (Components.classIncharge.equals(tmp)) {
 				Components.slist.getItems().add(student.split(": ")[1]);
 				Components.counter++;
@@ -661,10 +685,10 @@ public class TchrUI extends Task<Void> {
 
 		Personal.dpImgView.setDisable(flag);
 		Personal.tsname.setEditable(flag);
-		Personal.tsid.setEditable(false);
-		Personal.tsrno.setDisable(false);
-		Personal.tsdprt.setDisable(false);
-		Personal.tsyear.setDisable(false);
+		Personal.tsid.setEditable(flag);
+		Personal.tsrno.setDisable(flag);
+		Personal.tsdprt.setDisable(flag);
+		Personal.tssem.setDisable(false);
 		Personal.tsbatch.setDisable(flag);
 		Personal.tsmail.setEditable(!flag);
 		Personal.tsaddr.setEditable(!flag);
@@ -722,7 +746,6 @@ public class TchrUI extends Task<Void> {
 	@Override
 	public Void call() throws Exception {
 		startUI();
-		BasicUI.stage.setTitle(BasicUI.stage.getTitle() + " - " + BasicUI.user);
 		return null;
 	}
 }

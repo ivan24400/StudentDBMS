@@ -22,10 +22,16 @@
 	-fx-background-radius: 0.0;
 	-fx-faint-focus-color: transparent;
 }
+
 .button:hover{
 	-fx-background: derive(-fx-base,-10.0%)
 }
 
+.tooltip {
+    -fx-background-radius: 5.0 5.0 5.0 5.0;
+    -fx-background-color: linear-gradient(derive(-fx-base,-10.0%), -fx-base);
+    -fx-text-fill: #000000
+}
 /*
  * 	Tab Panes 
  */
@@ -33,7 +39,8 @@
 .tab-pane > .tab-header-area > .headers-region > .tab {
 	 -fx-focus-color: transparent;
     -fx-background-radius: 10.0 10.0 0.0 0.0, 9.0 9.0 0.0 0.0, 8.0 8.0 0.0 0.0;
-	}
+}
+
 .tab-pane > .tab-header-area > .tab-header-background {
     -fx-background-color: transparent;
 }
@@ -42,11 +49,10 @@
     -fx-padding: 0.0 0.0 2.0 5.0; 
 }
 
-
-
 .tab-pane.floating .tab:selected > .tab-content-area{
 	-fx-background-color: derive(#3c3c3c,50.0%)
 }
+
 .tab:selected {	
 	-fx-background-color: #3c3c3c; 
 }
@@ -73,9 +79,9 @@
 }
 
 #side-menu-button {
-	-fx-background-color: derive(-fx-base,50%);
-	-fx-min-width: 280;
-	-fx-background-radius: 20
+	-fx-background-color: derive(-fx-base,50.0%);
+	-fx-min-width: 280.0;
+	-fx-background-radius: 20.0
 }
 
 #side-menu-button:hover{
@@ -118,8 +124,8 @@
 }
 
 #institute_dialog{
-	-fx-padding: 40;
-	-fx-spacing: 35;
+	-fx-padding: 40.0;
+	-fx-spacing: 35.0;
 }
 /*
  * 	Grids inside tab pane
@@ -175,8 +181,8 @@
 }
 
 #message_pane {
-	-fx-padding: 20;
-	-fx-spacing: 20
+	-fx-padding: 20.0;
+	-fx-spacing: 20.0
 }
 
 /*
@@ -186,21 +192,21 @@
 
 #about_pane_contents{
 	-fx-background-color: white;
-	-fx-spacing: 20;
-	-fx-padding: 30;
+	-fx-spacing: 20.0;
+	-fx-padding: 30.0;
 	
 }
 #about_pane_window{
-	-fx-padding: 10;
+	-fx-padding: 10.0;
 }
 
 #about_pane_title{
-	-fx-padding: 30;
-	-fx-font-size: 26;
-	-fx-effect: dropshadow(gaussian,black,10.0,0.0,3,3)
+	-fx-padding: 30.0;
+	-fx-font-size: 26.0;
+	-fx-effect: dropshadow(gaussian,black,10.0,0.0,3.0,3.0)
 }
 #about_pane_close{
-	-fx-font-size: 17;
+	-fx-font-size: 17.0;
 	-fx-background-color: transparent
 }
 #about_pane_close:hover{
@@ -213,16 +219,16 @@
  
 
 #help_pane_window{
-	-fx-padding: 10;
+	-fx-padding: 10.0;
 	
 }
 #help_pane_close{
-	-fx-font-size: 17;
+	-fx-font-size: 17.0;
 	-fx-background-color: transparent
 }
 #help_pane_close:hover{
 		-fx-text-fill: red;
 }
 #help_pane_title{
-	-fx-font-size: 15;
+	-fx-font-size: 15.0;
 }
