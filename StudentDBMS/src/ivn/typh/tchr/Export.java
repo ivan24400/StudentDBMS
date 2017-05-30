@@ -148,10 +148,10 @@ public class Export {
 				cell = row.createCell(col_index += 2);
 				cell.setCellValue(Personal.tsid.getText());
 				cell = row.createCell(col_index += 2);
-				cell.setCellValue("Class");
+				cell.setCellValue("Year");
 				cell.setCellStyle(cell_style);
 				cell = row.createCell(col_index += 2);
-				cell.setCellValue(Personal.tsclass.getSelectionModel().getSelectedItem());
+				cell.setCellValue(Personal.tsyear.getText());
 
 				sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 1)); // ID
 				sheet.addMergedRegion(new CellRangeAddress(3, 3, 2, 3)); // vID

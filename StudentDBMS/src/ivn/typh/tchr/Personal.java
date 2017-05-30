@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import ivn.typh.main.Engine;
+import ivn.typh.main.Resources;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -42,6 +43,7 @@ import javafx.util.StringConverter;
  */
 public class Personal {
 
+
 	public static GridPane personal;
 	public static ImageView dpImgView;
 	public static TextField tsname;
@@ -49,9 +51,8 @@ public class Personal {
 	public static ListView<ReportData> reportPane;
 	public static ChoiceBox<String> tsrno;
 	public static ChoiceBox<String> tsdprt;
-	public static ChoiceBox<String> tsclass;
 	public static ChoiceBox<String> tsbatch;
-	public static ChoiceBox<String> tsyear;
+	public static Label tsyear;
 	public static TextField tsmail;
 	public static TextField tsaddr;
 	public static TextField tsphone;
@@ -67,7 +68,7 @@ public class Personal {
 		Label sid = new Label("ID:");
 		Label srno = new Label("Roll No:");
 		Label sdprt = new Label("Department:");
-		Label sclass = new Label("Class:");
+		Label syear = new Label("Year:");
 		Label sbatch = new Label("Batch:");
 		Label smail = new Label("Email:");
 		Label saddr = new Label("Address:");
@@ -75,12 +76,12 @@ public class Personal {
 		Label pphone = new Label("Parent Phone:");
 		reports = new Label("Reports");
 
-		dpImgView = new ImageView(new Image(TchrUI.class.getResourceAsStream("/ivn/typh/main/raw/pic.jpg")));
+		dpImgView = new ImageView(new Image(TchrUI.class.getResourceAsStream(Resources.DEFAULT_PIC.path)));
 		tsname = new TextField();
 		tsid = new TextField();
 		tsrno = new ChoiceBox<>();
 		tsdprt = new ChoiceBox<>();
-		tsclass = new ChoiceBox<>();
+		tsyear = new Label();
 		tsbatch = new ChoiceBox<>();
 		tsmail = new TextField();
 		tsaddr = new TextField();
@@ -254,8 +255,8 @@ public class Personal {
 			personal.add(tsrno, 1, 3);
 			personal.add(sdprt, 0, 4);
 			personal.add(tsdprt, 1, 4);
-			personal.add(sclass, 2, 2);
-			personal.add(tsclass, 3, 2);
+			personal.add(syear, 2, 2);
+			personal.add(tsyear, 3, 2);
 			personal.add(sbatch, 2, 1);
 			personal.add(tsbatch, 3, 1);
 			personal.add(smail, 0, 5);

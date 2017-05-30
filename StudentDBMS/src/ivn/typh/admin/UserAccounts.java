@@ -1,5 +1,6 @@
 package ivn.typh.admin;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -64,14 +65,27 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 	private ToggleButton freeze;
 	private ToggleButton edit;
 	private ChoiceBox<String> dprtMember;
-	private ChoiceBox<String> classIncharge;
+//	private ChoiceBox<String> classIncharge;
 	private ChoiceBox<String> yearIncharge;
 	private String dm;
-	private String ci;
+//	private String ci;
 	private String yi;
 
-	public UserAccounts(Stage s, GridPane pane, String u, String f, String p, String e, String dprt, String clin,
-			String yin,String ll,boolean fr) {
+//	public UserAccounts(Stage s, GridPane pane, String u, String f, String p, String e, String dprt, String clin,
+//			String yin,String ll,boolean fr) {
+//		this(s);
+//		home = pane;
+//		lastLogin=ll;
+//		fullname.setText(f);
+//		username.setText(u);
+//		password.setText(p);
+//		email.setText(e);
+//		dm = dprt;
+//		ci = clin;
+//		yi = yin;
+//		freez=fr;
+//	}
+	public UserAccounts(Stage s, GridPane pane, String u, String f, String p, String e, String dprt, String yin,String ll,boolean fr) {
 		this(s);
 		home = pane;
 		lastLogin=ll;
@@ -80,11 +94,10 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		password.setText(p);
 		email.setText(e);
 		dm = dprt;
-		ci = clin;
+	//	ci = clin;
 		yi = yin;
 		freez=fr;
 	}
-
 	public UserAccounts(Stage arg) {
 		stage = arg;
 		lastLogin = "Not logged in yet !";
@@ -93,7 +106,7 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		password = new PasswordField();
 		email = new TextField();
 		dprtMember = new ChoiceBox<>();
-		classIncharge = new ChoiceBox<>();
+//		classIncharge = new ChoiceBox<>();
 		yearIncharge = new ChoiceBox<>();
 		fullname = new TextField();
 		saveAdded = false;
@@ -138,7 +151,7 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		if (!isFirst) {
 			if (!saveAdded) {
 				dprtMember.getSelectionModel().selectFirst();
-				classIncharge.getSelectionModel().selectFirst();
+		//		classIncharge.getSelectionModel().selectFirst();
 				yearIncharge.getSelectionModel().selectFirst();
 				ButtonType save = new ButtonType("Save", ButtonData.OK_DONE);
 				getDialogPane().getButtonTypes().clear();
@@ -148,7 +161,7 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 			saveAdded = true;
 			setHeaderText("User:-\t" + username.getText());
 			dprtMember.getSelectionModel().select(dm);
-			classIncharge.getSelectionModel().select(ci);
+	//		classIncharge.getSelectionModel().select(ci);
 			yearIncharge.getSelectionModel().select(yi);
 			freeze.setSelected(freez);
 			disableAll(true);
@@ -167,7 +180,7 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 			setHeaderText("Fill in required fields to add a user account");
 			initRoom();
 			dprtMember.getSelectionModel().selectFirst();
-			classIncharge.getSelectionModel().selectFirst();
+		//	classIncharge.getSelectionModel().selectFirst();
 			yearIncharge.getSelectionModel().selectFirst();
 			getDialogPane().getButtonTypes().clear();
 			getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -200,10 +213,11 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		dPane.add(email, 1, 3);
 		dPane.add(new Label("Department"), 0, 4);
 		dPane.add(dprtMember, 1, 4);
-		dPane.add(new Label("Course Year"), 0, 5);
+//		dPane.add(new Label("Course Year"), 0, 5);
+		dPane.add(new Label("Class Incharge"), 0, 5);
 		dPane.add(yearIncharge, 1, 5);
-		dPane.add(new Label("Class Incharge"), 0, 6);
-		dPane.add(classIncharge, 1, 6);
+//		dPane.add(new Label("Class Incharge"), 0, 6);
+	//	dPane.add(classIncharge, 1, 6);
 		getDialogPane().setContent(dPane);
 
 		Platform.runLater(()->{
@@ -224,10 +238,10 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		while (cursor.hasNext()) {
 			JSONObject json = new JSONObject(cursor.next().toJson());
 			String tmp = json.getString("class");
-			classList = classIncharge.getItems().stream().filter(c-> !c.equals(tmp)).collect(Collectors.toList());
+		//	classList = classIncharge.getItems().stream().filter(c-> !c.equals(tmp)).collect(Collectors.toList());
 			classList.add(tmp);
 		}
-		classIncharge.getItems().addAll(classList);
+	//	classIncharge.getItems().addAll(classList);
 		
 	}
 
@@ -253,7 +267,7 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 			
 			freeze.selectedProperty().addListener((arg, o, n) -> {
 				Bson filter = new Document("user",username.getText());
-				Bson query = new Document("$set",new Document("status",n));
+				Bson query = new Document("$set",new Document("freeze",n));
 				Engine.db.getCollection("Users").updateOne(filter, query);
 				});
 			
@@ -282,8 +296,8 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 			});
 			
 			seBox.getChildren().addAll(edit,freeze,del);
-			dPane.add(new Label("[ Last Login: "+lastLogin+"]"), 0, 7,2,1);
-			dPane.add(seBox, 0, 8, 2, 1);
+			dPane.add(new Label("[ Last Login: "+lastLogin+"]"), 0, 6,2,1);
+			dPane.add(seBox, 0, 7, 2, 1);
 		}
 	}
 	
@@ -311,7 +325,7 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		password.setEditable(!flag);
 		email.setEditable(!flag);
 		yearIncharge.setDisable(flag);
-		classIncharge.setDisable(flag);
+	//	classIncharge.setDisable(flag);
 		dprtMember.setDisable(flag);
 		fullname.setEditable(!flag);
 		if(!isFirst){
@@ -329,9 +343,9 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		Button tmp = new Button(username.getText());
 		Document doc = new Document("passwd", encryptedPassword(password.getText()))
 				.append("fullname", fullname.getText()).append("email", email.getText())
-				.append("department", dprtMember.getValue()).append("classIncharge", classIncharge.getValue())
-				.append("yearIncharge", yearIncharge.getValue()).append("status",false);
-
+				.append("department", dprtMember.getValue()).append("yearIncharge", yearIncharge.getValue()).append("freeze",freeze.isArmed());
+//.append("classIncharge", classIncharge.getValue())
+		
 		if (isFirst) {
 			doc.append("user", username.getText());
 			Engine.db.getCollection("Users").insertOne(doc);
@@ -364,14 +378,16 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 	 * @return A String which is sha256 hashed
 	 */
 	private String encryptedPassword(String text) {
-
 		StringBuffer hash = new StringBuffer();
 		try {
 			MessageDigest sha = MessageDigest.getInstance("SHA-256");
-			byte[] digest = sha.digest(text.getBytes());
-			for (byte b : digest) {
-				hash.append(Integer.toString(b & 0xff + 0x100, 16).substring(1));
-			}
+			byte[] digest = sha.digest(text.getBytes(StandardCharsets.UTF_8));
+			 for (int i = 0; i < digest.length; i++) {
+		            String hex = Integer.toHexString(0xff & digest[i]);
+		            if(hex.length() == 1)
+		            	hash.append('0');
+		            hash.append(hex);
+		        }
 
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();

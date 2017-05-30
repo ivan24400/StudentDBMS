@@ -21,6 +21,7 @@ import ivn.typh.main.BasicUI;
 import ivn.typh.main.CenterPane;
 import ivn.typh.main.Engine;
 import ivn.typh.main.Notification;
+import ivn.typh.main.Resources;
 import ivn.typh.admin.Components;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -361,12 +362,12 @@ public class AdminUI extends Task<Void>{
 				String tsname = json.getString("name");
 				String tsid = json.getString("sid");
 				String tsrno = json.getString("rno");
-				String tsclass = json.getString("class");
+				String tsclass = json.getString("year");
 				String tsbatch = json.getString("batch");
 				String tsmail = json.getString("email");
 				String tsaddr = json.getString("address");
-				String tsphone = Integer.toString(json.getInt("studentPhone"));
-				String tpphone = Integer.toString(json.getInt("parentPhone"));
+				String tsphone = json.getString("studentPhone");
+				String tpphone = json.getString("parentPhone");
 				String tsdprt = json.getString("department");
 				String img = null;
 				try{
@@ -419,7 +420,7 @@ public class AdminUI extends Task<Void>{
 						email = json.getString("email");
 						dprt = json.getString("department");
 						full = json.getString("fullname");
-						cli = json.getString("classIncharge");
+					//	cli = json.getString("classIncharge");
 						yin = json.getString("yearIncharge");
 						ll = json.getString("lastLogin");
 						stat = json.getBoolean("status");
@@ -428,8 +429,10 @@ public class AdminUI extends Task<Void>{
 					}
 					UserAccounts.userList.add(json.getString("user"));
 					Button tmp = new Button(username);
+//					tmp.setOnAction(new UserAccounts(Components.stage, Components.userGrid, username, full, password,
+//							email, dprt, cli, yin, ll, stat));
 					tmp.setOnAction(new UserAccounts(Components.stage, Components.userGrid, username, full, password,
-							email, dprt, cli, yin, ll, stat));
+							email, dprt, yin, ll, stat));
 					if (UserAccounts.x < 6) {
 						UserAccounts.x++;
 						GridPane.setColumnIndex(Components.addAcc, UserAccounts.x);
@@ -462,7 +465,7 @@ public class AdminUI extends Task<Void>{
 	 */
 	
 	private String getDefaultImage() {
-		BufferedImage bf = SwingFXUtils.fromFXImage(new Image(getClass().getResourceAsStream("/ivn/typh/main/raw/pic.jpg")), null);
+		BufferedImage bf = SwingFXUtils.fromFXImage(new Image(getClass().getResourceAsStream(Resources.DEFAULT_PIC.path)), null);
 		ByteArrayOutputStream array = new ByteArrayOutputStream();
 		try {
 			ImageIO.write(bf, "jpg", array);

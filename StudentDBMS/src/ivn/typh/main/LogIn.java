@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
@@ -186,14 +187,16 @@ public class LogIn implements Runnable {
 	 * @return SHA-256 hash of text
 	 */
 	private String encryptedPassword(String text) {
-
 		StringBuffer hash = new StringBuffer();
 		try {
 			MessageDigest sha = MessageDigest.getInstance("SHA-256");
-			byte[] digest = sha.digest(text.getBytes());
-			for (byte b : digest) {
-				hash.append(Integer.toString(b & 0xff + 0x100, 16).substring(1));
-			}
+			byte[] digest = sha.digest(text.getBytes(StandardCharsets.UTF_8));
+			 for (int i = 0; i < digest.length; i++) {
+		            String hex = Integer.toHexString(0xff & digest[i]);
+		            if(hex.length() == 1)
+		            	hash.append('0');
+		            hash.append(hex);
+		        }
 
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
@@ -276,7 +279,7 @@ public class LogIn implements Runnable {
 		} else {
 			String freeze = Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first().toJson();
 			JSONObject json = new JSONObject(freeze);
-			if (!json.getBoolean("status"))
+			if (!json.getBoolean("freeze"))
 				loadUI = new TchrUI(stage, pane, scene, mb);
 			else
 				Notification.message(stage, AlertType.ERROR, "User Accounts - Typh™",

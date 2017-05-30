@@ -199,8 +199,7 @@ public class Departments extends Dialog<String> implements EventHandler<ActionEv
 			tlabs.getItems().add(String.format("%02d", counter));
 			tsrooms.getItems().add(String.format("%02d", counter));
 			tcrooms.getItems().add(String.format("%02d", counter));
-			if(!dprtList.keySet().contains(String.format("%02d", counter)))
-				departmentId.getItems().add(String.format("%02d", counter));
+			departmentId.getItems().add(String.format("%02d", counter));
 			}
 	}
 

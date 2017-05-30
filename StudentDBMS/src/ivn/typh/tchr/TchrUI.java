@@ -110,17 +110,17 @@ public class TchrUI extends Task<Void> {
 
 		Components.pname = new Label();
 		Components.pname.setFont(new Font(30));
-		Components.dprt = new Label("Department:");
+		Components.dprt = new Label("Department :");
 		Components.pdprt = new Label();
-		Components.cls = new Label("Class:");
+		Components.cls = new Label("Class :");
 		Components.pcls = new Label();
-		Components.tstuds = new Label("Total Students:");
+		Components.tstuds = new Label("Total Students :");
 		Components.nstuds = new Label();
 
 		Components.slist = new ComboBox<>();
 		Components.srch = new Label("Search");
 		Components.searchBox = new Search();
-		Components.student = new Label("Student");
+		Components.student = new Label("Student :");
 		Components.accord = new Accordion();
 		Components.update = new Button("Update");
 		Components.report = new Button("Report");
@@ -148,7 +148,7 @@ public class TchrUI extends Task<Void> {
 		});
 
 		Components.slist.getSelectionModel().selectedItemProperty().addListener((arg, o, n) -> {
-			loadStudentProfile(n.split(":")[1]);
+			loadStudentProfile(n.split(": ")[1]);
 		});
 
 		// Export Data
@@ -255,9 +255,8 @@ public class TchrUI extends Task<Void> {
 		Bson filter = new Document("sid", sid);
 		Document newValue = new Document("name", Personal.tsname.getText().trim())
 				.append("rno", Personal.tsrno.getValue()).append("batch", Personal.tsbatch.getValue())
-				.append("class", Personal.tsclass.getValue()).append("email", Personal.tsmail.getText())
-				.append("address", Personal.tsaddr.getText()).append("studentPhone", Personal.tsphone.getText())
-				.append("parentPhone", Personal.tpphone.getText())
+				.append("email", Personal.tsmail.getText()).append("address", Personal.tsaddr.getText())
+				.append("studentPhone", Personal.tsphone.getText()).append("parentPhone", Personal.tpphone.getText())
 				.append("department", Personal.tsdprt.getSelectionModel().getSelectedItem());
 
 		int[] sem = null;
@@ -385,8 +384,7 @@ public class TchrUI extends Task<Void> {
 		Personal.tsid.setText(jsonData.getString("sid"));
 		Personal.tsrno.getSelectionModel().select(jsonData.getString("rno"));
 		Personal.tsdprt.getSelectionModel().select(jsonData.getString("department"));
-		Personal.tsclass.getSelectionModel().select(jsonData.getString("batch"));
-		Personal.tsbatch.getSelectionModel().select(jsonData.getString("class"));
+		Personal.tsbatch.getSelectionModel().select(jsonData.getString("batch"));
 		Personal.tsmail.setText(jsonData.getString("email"));
 		Personal.tsaddr.setText(jsonData.getString("address"));
 		Personal.tsphone.setText(jsonData.getString("studentPhone"));
@@ -455,7 +453,7 @@ public class TchrUI extends Task<Void> {
 		String id = dprtList.entrySet().stream()
 				.filter(a -> a.getValue().equals(Personal.tsdprt.getSelectionModel().getSelectedItem()))
 				.map(map -> map.getKey()).collect(Collectors.joining());
-		return (id + String.format("%02d", sMatchesY(0, Components.yrlst.getValue())) + Personal.tsclass.getValue()
+		return (id + String.format("%02d", sMatchesY(0, Components.yrlst.getValue())) + Personal.tsyear.getText()
 				+ Personal.tsrno.getValue());
 	}
 
@@ -583,19 +581,23 @@ public class TchrUI extends Task<Void> {
 	 */
 	private void loadData() {
 
+		// Load side menu data
+		
 		Components.pname.setText(BasicUI.user);
 		Components.pdprt.setText(
 				(String) Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first().get("department"));
 		Components.classIncharge = (String) Engine.db.getCollection("Users").find(eq("user", BasicUI.user)).first()
-				.get("classIncharge");
+				.get("yearIncharge");
 		Components.pcls.setText(Components.classIncharge);
 
+		// Create a student list
+		
 		MongoCursor<Document> cursor = Engine.db.getCollection("Students").find().iterator();
 		while (cursor.hasNext()) {
 			JSONObject json = new JSONObject(cursor.next().toJson());
 			if ((Components.pdprt.getText().equals(json.getString("department")))
 					&& (Components.pcls.getText().equals(Components.classIncharge)))
-				studList.add("[" + json.getString("class") + "]" + ": " + json.getString("name"));
+				studList.add("[" + json.getString("year") + "]" + ": " + json.getString("name"));
 		}
 
 		cursor = Engine.db.getCollection("Departments").find().iterator();
@@ -613,14 +615,14 @@ public class TchrUI extends Task<Void> {
 						+ "h:" + String.format("%02d", LocalDateTime.now().getMinute()) + "m:"
 						+ String.format("%02d", LocalDateTime.now().getSecond()) + "s")));
 
+		
 		Personal.tsdprt.getItems().addAll(dprtList.values());
 		for (int i = 1; i <= 200; i++) {
+			if (i <= 100)
+				Personal.tsbatch.getItems().add(String.format("%02d", i));
 			Personal.tsrno.getItems().add(String.format("%03d", i));
 		}
-		for (int i = 1; i < 100; i++) {
-			Personal.tsclass.getItems().add(String.format("%02d", i));
-			Personal.tsbatch.getItems().add(String.format("%02d", i));
-		}
+
 		for (int i = 0; i < 26; i++) {
 			Personal.tsbatch.getItems().add(Character.toString((char) ('A' + i)));
 			Personal.tsbatch.getItems().add(Character.toString((char) ('a' + i)));
@@ -631,11 +633,13 @@ public class TchrUI extends Task<Void> {
 		List<String> name = new ArrayList<>();
 		Components.counter = 0;
 
+		System.out.println(studList.toString());
 		studList.forEach(student -> {
 			name.add(student.split(": ")[1]);
 			String tmp = student.split("]")[0].substring(1);
+			System.out.println(tmp);
 			if (Components.classIncharge.equals(tmp)) {
-				Components.slist.getItems().add(student);
+				Components.slist.getItems().add(student.split(": ")[1]);
 				Components.counter++;
 			}
 			Components.nstuds.setText(Integer.toString(Components.counter));
@@ -660,7 +664,7 @@ public class TchrUI extends Task<Void> {
 		Personal.tsid.setEditable(false);
 		Personal.tsrno.setDisable(false);
 		Personal.tsdprt.setDisable(false);
-		Personal.tsclass.setDisable(false);
+		Personal.tsyear.setDisable(false);
 		Personal.tsbatch.setDisable(flag);
 		Personal.tsmail.setEditable(!flag);
 		Personal.tsaddr.setEditable(!flag);
