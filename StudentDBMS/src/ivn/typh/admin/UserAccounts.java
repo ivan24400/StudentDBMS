@@ -5,8 +5,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.json.JSONObject;
@@ -68,23 +66,9 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 //	private ChoiceBox<String> classIncharge;
 	private ChoiceBox<String> yearIncharge;
 	private String dm;
-//	private String ci;
 	private String yi;
 
-//	public UserAccounts(Stage s, GridPane pane, String u, String f, String p, String e, String dprt, String clin,
-//			String yin,String ll,boolean fr) {
-//		this(s);
-//		home = pane;
-//		lastLogin=ll;
-//		fullname.setText(f);
-//		username.setText(u);
-//		password.setText(p);
-//		email.setText(e);
-//		dm = dprt;
-//		ci = clin;
-//		yi = yin;
-//		freez=fr;
-//	}
+
 	public UserAccounts(Stage s, GridPane pane, String u, String f, String p, String e, String dprt, String yin,String ll,boolean fr) {
 		this(s);
 		home = pane;
@@ -94,7 +78,6 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		password.setText(p);
 		email.setText(e);
 		dm = dprt;
-	//	ci = clin;
 		yi = yin;
 		freez=fr;
 	}
@@ -106,7 +89,6 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		password = new PasswordField();
 		email = new TextField();
 		dprtMember = new ChoiceBox<>();
-//		classIncharge = new ChoiceBox<>();
 		yearIncharge = new ChoiceBox<>();
 		fullname = new TextField();
 		saveAdded = false;
@@ -151,7 +133,6 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		if (!isFirst) {
 			if (!saveAdded) {
 				dprtMember.getSelectionModel().selectFirst();
-		//		classIncharge.getSelectionModel().selectFirst();
 				yearIncharge.getSelectionModel().selectFirst();
 				ButtonType save = new ButtonType("Save", ButtonData.OK_DONE);
 				getDialogPane().getButtonTypes().clear();
@@ -161,7 +142,6 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 			saveAdded = true;
 			setHeaderText("User:-\t" + username.getText());
 			dprtMember.getSelectionModel().select(dm);
-	//		classIncharge.getSelectionModel().select(ci);
 			yearIncharge.getSelectionModel().select(yi);
 			freeze.setSelected(freez);
 			disableAll(true);
@@ -180,7 +160,6 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 			setHeaderText("Fill in required fields to add a user account");
 			initRoom();
 			dprtMember.getSelectionModel().selectFirst();
-		//	classIncharge.getSelectionModel().selectFirst();
 			yearIncharge.getSelectionModel().selectFirst();
 			getDialogPane().getButtonTypes().clear();
 			getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -213,11 +192,8 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		dPane.add(email, 1, 3);
 		dPane.add(new Label("Department"), 0, 4);
 		dPane.add(dprtMember, 1, 4);
-//		dPane.add(new Label("Course Year"), 0, 5);
 		dPane.add(new Label("Class Incharge"), 0, 5);
 		dPane.add(yearIncharge, 1, 5);
-//		dPane.add(new Label("Class Incharge"), 0, 6);
-	//	dPane.add(classIncharge, 1, 6);
 		getDialogPane().setContent(dPane);
 
 		Platform.runLater(()->{
@@ -238,11 +214,9 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		while (cursor.hasNext()) {
 			JSONObject json = new JSONObject(cursor.next().toJson());
 			String tmp = json.getString("class");
-		//	classList = classIncharge.getItems().stream().filter(c-> !c.equals(tmp)).collect(Collectors.toList());
 			classList.add(tmp);
 		}
-	//	classIncharge.getItems().addAll(classList);
-		
+
 	}
 
 	/*
@@ -325,7 +299,6 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		password.setEditable(!flag);
 		email.setEditable(!flag);
 		yearIncharge.setDisable(flag);
-	//	classIncharge.setDisable(flag);
 		dprtMember.setDisable(flag);
 		fullname.setEditable(!flag);
 		if(!isFirst){
@@ -344,7 +317,6 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		Document doc = new Document("passwd", encryptedPassword(password.getText()))
 				.append("fullname", fullname.getText()).append("email", email.getText())
 				.append("department", dprtMember.getValue()).append("yearIncharge", yearIncharge.getValue()).append("freeze",freeze.isArmed());
-//.append("classIncharge", classIncharge.getValue())
 		
 		if (isFirst) {
 			doc.append("user", username.getText());

@@ -49,7 +49,7 @@ public class CenterPane extends StackPane{
 		alert.initStyle(StageStyle.TRANSPARENT);
 
 		loading = new Label("Loading . . .");
-		loading.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(Resources.LOADING.path))));
+		loading.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(Resources.LOADING.VALUE))));
 		
 		shade.setVisible(false);
 		shade.setBackground(new Background(new BackgroundFill(Color.rgb(0,0,0,0.2),CornerRadii.EMPTY,Insets.EMPTY)));

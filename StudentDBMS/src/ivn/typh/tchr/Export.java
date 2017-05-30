@@ -56,7 +56,7 @@ public class Export {
 		filechooser.getExtensionFilters().add(new ExtensionFilter("Excel Workbook", "*.xlsx"));
 		path = filechooser.showSaveDialog(Components.stage);
 
-		if (path != null && path.exists()) {
+		if (path != null) {
 
 			Task<Boolean> task = createWriteTask();
 			BasicUI.centerOfHomePane.showMessage("Exporting . . . ");
@@ -148,7 +148,7 @@ public class Export {
 				cell = row.createCell(col_index += 2);
 				cell.setCellValue(Personal.tsid.getText());
 				cell = row.createCell(col_index += 2);
-				cell.setCellValue("Year");
+				cell.setCellValue("Semester");
 				cell.setCellStyle(cell_style);
 				cell = row.createCell(col_index += 2);
 				cell.setCellValue(Personal.tssem.getText());
@@ -260,6 +260,7 @@ public class Export {
 					data = Engine.db.getCollection("Students").find(eq("sid", Personal.tsid.getText())).first()
 							.toJson();
 				} catch (JSONException e) {
+					e.printStackTrace();
 				}
 
 				for (int i = 1; i <= sem_count; i++) {

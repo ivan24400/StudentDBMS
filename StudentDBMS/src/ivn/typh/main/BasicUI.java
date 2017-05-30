@@ -10,6 +10,7 @@ import javafx.animation.FillTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -20,6 +21,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -139,6 +141,8 @@ public class BasicUI extends Application implements Runnable {
 				help.setOnAction(new Help());
 				
 				loginPane.getChildren().addAll(login, lLabel);
+				loginPane.setCursor(Cursor.HAND);
+				
 				dummy.getChildren().add(institute);
 				dummy.setAlignment(Pos.CENTER);
 				
@@ -182,6 +186,7 @@ public class BasicUI extends Application implements Runnable {
 		stage = st;
 		stage.setTitle("Typh™ - Student Database");
 		stage.setFullScreenExitHint("");
+		stage.getIcons().add(new Image(Resources.APP_ICON.VALUE));
 		stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 		stage.setFullScreen(true);
 		stage.setAlwaysOnTop(true);

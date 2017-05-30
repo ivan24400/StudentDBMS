@@ -77,7 +77,7 @@ public class HeartBeat implements Runnable {
 				
 			};
 
-			service.scheduleAtFixedRate(users, 0, 5, TimeUnit.SECONDS);
+			service.scheduleAtFixedRate(users, 0, 3, TimeUnit.SECONDS);
 		} catch (IOException e) {
 			serverFailed();
 		}

@@ -477,7 +477,7 @@ public class AdminUI extends Task<Void>{
 	 */
 	
 	private String getDefaultImage() {
-		BufferedImage bf = SwingFXUtils.fromFXImage(new Image(getClass().getResourceAsStream(Resources.DEFAULT_PIC.path)), null);
+		BufferedImage bf = SwingFXUtils.fromFXImage(new Image(getClass().getResourceAsStream(Resources.DEFAULT_PIC.VALUE)), null);
 		ByteArrayOutputStream array = new ByteArrayOutputStream();
 		try {
 			ImageIO.write(bf, "jpg", array);

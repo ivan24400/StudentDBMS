@@ -7,6 +7,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -37,8 +39,8 @@ public class About implements EventHandler<ActionEvent>{
 		
 		Button close = new Button("x");
 		Pane space = new Pane();
-		Label titleText = new Label("Typh™");
-		//titleText.setGraphic(value);
+		Label titleText = new Label("Typh™\t\t");
+		titleText.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(Resources.APP_ICON.VALUE))));
 		Label description = new Label("Typh™ Students Database Management System.\nVersion 1.0\nCopyright © 2017\nAuthor :- Ivan Pillay");
 		
 		xOffset = yOffset = 0;

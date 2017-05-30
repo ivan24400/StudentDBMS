@@ -23,6 +23,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -54,10 +55,12 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 
 	static ObservableList<String> studentList;
 	static int x, y;
+
 	private String sy, sb, dp, semester, srno;
 	private int saveAdded;
 	private boolean isFirst;
 	private String dpImg;
+	
 	private GridPane home;
 	private Button addS;
 	private Button del;
@@ -151,7 +154,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 		});
 		tsid.setContextMenu(cm);
 		if (dpImg.isEmpty())
-			dpImgView = new ImageView(new Image(getClass().getResourceAsStream(Resources.DEFAULT_PIC.path)));
+			dpImgView = new ImageView(new Image(getClass().getResourceAsStream(Resources.DEFAULT_PIC.VALUE)));
 		else {
 			try {
 				byte[] imgd = Base64.getDecoder().decode(dpImg);
@@ -161,7 +164,10 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 				e.printStackTrace();
 			}
 		}
+		
 		dpImgView.setEffect(new DropShadow());
+		dpImgView.setCursor(Cursor.CLOSED_HAND);
+		Tooltip.install(dpImgView, new Tooltip("You can Drag N Drop picture"));
 		
 		Tooltip tool = new Tooltip();
 		tsname.textProperty().addListener((obs, o, n) -> {
@@ -212,6 +218,7 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 
 		dpImgView.setFitHeight(128);
 		dpImgView.setFitWidth(128);
+		
 		Tooltip.install(dpImgView, new Tooltip("Drag N Drop here !"));
 		dpImgView.setOnDragOver(new EventHandler<DragEvent>() {
 			@Override
@@ -234,7 +241,6 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 				if (db.hasFiles()) {
 					db.getFiles().forEach(file -> {
 						dpImgView.setImage(new Image(file.toURI().toString()));
-						System.out.println(file.getAbsolutePath());
 					});
 					success = true;
 				}

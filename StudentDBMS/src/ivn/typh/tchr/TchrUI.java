@@ -98,7 +98,7 @@ public class TchrUI extends Task<Void> {
 		Components.tgpane = new GridPane();
 		Components.sctgpane = new ScrollPane();
 		CenterPane.menu = new Button("Menu");
-		CenterPane.menu.setGraphic(new ImageView(new Image(Resources.MENU_ICON.path)));
+		CenterPane.menu.setGraphic(new ImageView(new Image(Resources.MENU_ICON.VALUE)));
 
 		Components.center = new GridPane();
 		Components.accDescPane = new VBox();
@@ -256,7 +256,7 @@ public class TchrUI extends Task<Void> {
 
 			Components.stage.getScene().getStylesheets().remove(0);
 			Components.stage.getScene().getStylesheets()
-					.add(getClass().getResource(Resources.STYLE_SHEET.path).toExternalForm());
+					.add(getClass().getResource(Resources.STYLE_SHEET.VALUE).toExternalForm());
 
 			Components.pane.applyCss();
 			Components.pane.layout();
@@ -400,7 +400,7 @@ public class TchrUI extends Task<Void> {
 			Personal.dpImgView.setImage(SwingFXUtils.toFXImage(bf, null));
 
 		} catch (IOException | JSONException e) {
-			Personal.dpImgView.setImage(new Image(getClass().getResourceAsStream(Resources.DEFAULT_PIC.path)));
+			Personal.dpImgView.setImage(new Image(getClass().getResourceAsStream(Resources.DEFAULT_PIC.VALUE)));
 
 		}
 

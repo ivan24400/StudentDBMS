@@ -79,7 +79,7 @@ public class Personal {
 		Label pphone = new Label("Parent Phone:");
 		reports = new Label("Reports");
 
-		dpImgView = new ImageView(new Image(TchrUI.class.getResourceAsStream(Resources.DEFAULT_PIC.path)));
+		dpImgView = new ImageView(new Image(TchrUI.class.getResourceAsStream(Resources.DEFAULT_PIC.VALUE)));
 		tsname = new TextField();
 		tsid = new TextField();
 		tsrno = new ChoiceBox<>();

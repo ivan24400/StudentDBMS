@@ -21,8 +21,8 @@ public class Engine {
 
 	public static void main(String[] args) {
 			
-		System.setProperty("javax.net.ssl.trustStore","C:\\Program Files\\MongoDB\\Server\\3.4\\bin\\cert\\typh.ks");
-		System.setProperty("javax.net.ssl.trustStorePassword","keystore");
+		System.setProperty("javax.net.ssl.trustStore",Resources.KEY_STORE_PATH.VALUE);
+		System.setProperty("javax.net.ssl.trustStorePassword",Resources.KEY_STORE_PASSWD.VALUE);
 		System.setProperty("prism.forceGPU","true");
 		
 		Thread tliui = new Thread(new BasicUI());
