@@ -64,11 +64,7 @@ public class HeartBeat implements Runnable {
 						}
 						message = "__BEAT__";
 					} else {
-						service.shutdown();
-						try {
-							socket.close();
-						} catch (IOException e) {
-						}
+						serverFailed();
 					}
 				}
 
@@ -87,12 +83,12 @@ public class HeartBeat implements Runnable {
 	 */
 	private void serverFailed() {
 		Platform.runLater(()->{
-			Notification.message(Components.stage, AlertType.ERROR,"Connection - Typh™","Server Failed");	
 			service.shutdown();
 			try {
 				socket.close();
-			} catch (IOException a) {
+			} catch (IOException e) {
 			}
+			Notification.message(Components.stage, AlertType.ERROR,"Connection - Typh™","Server Failed");	
 			Platform.exit();
 		});
 					
