@@ -10,10 +10,6 @@ import javax.imageio.ImageIO;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.json.JSONException;
-import org.json.JSONObject;
-import static com.mongodb.client.model.Filters.*;
-
 import ivn.typh.main.Engine;
 import ivn.typh.main.Resources;
 import javafx.application.Platform;
@@ -448,41 +444,44 @@ public class Students extends Dialog<String> implements EventHandler<ActionEvent
 			Bson query = new Document("$set", doc);
 			Engine.db.getCollection("Students").updateOne(filter, query);
 		}
-		syncData();
+		//syncData();
 
 	}
 
-	private void syncData() {
+	//	You may need to logout to see the update !
 
-		JSONObject json = new JSONObject(Engine.db.getCollection("Students").find(eq("name", tsname.getText())).first().toJson());
-
-		tsname.setText(json.getString("name"));
-		tsid.setText(json.getString("sid"));
-		tsmail.setText(json.getString("email"));
-		tsaddr.setText(json.getString("address"));
-		tsphone.setText(json.getString("studentPhone"));
-		tpphone.setText(json.getString("parentPhone"));
-		tsdprt.setValue(json.getString("department"));
-		tsrno.getSelectionModel().select(json.getString("rno"));
-		tsyear.getSelectionModel().select(json.getString("year"));
-		tsbatch.getSelectionModel().select(json.getString("batch"));
-		tssem.getSelectionModel().select(json.getString("current_semester"));
-
-		String img = null;
-		try {
-			img = json.getString("img");
-			try {
-				byte[] imgd = Base64.getDecoder().decode(img);
-				BufferedImage bf = ImageIO.read(new ByteArrayInputStream(imgd));
-				dpImgView = new ImageView(SwingFXUtils.toFXImage(bf, null));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} catch (JSONException e) {
-			dpImgView.setImage(new Image(getClass().getResourceAsStream(Resources.DEFAULT_PIC.VALUE)));
-		}
-
-	}
+	
+//	private void syncData() {
+//
+//		JSONObject json = new JSONObject(Engine.db.getCollection("Students").find(eq("name", tsname.getText())).first().toJson());
+//
+//		tsname.setText(json.getString("name"));
+//		tsid.setText(json.getString("sid"));
+//		tsmail.setText(json.getString("email"));
+//		tsaddr.setText(json.getString("address"));
+//		tsphone.setText(json.getString("studentPhone"));
+//		tpphone.setText(json.getString("parentPhone"));
+//		tsdprt.setValue(json.getString("department"));
+//		tsrno.getSelectionModel().select(json.getString("rno"));
+//		tsyear.getSelectionModel().select(json.getString("year"));
+//		tsbatch.getSelectionModel().select(json.getString("batch"));
+//		tssem.getSelectionModel().select(json.getString("current_semester"));
+//
+//		String img = null;
+//		try {
+//			img = json.getString("img");
+//			try {
+//				byte[] imgd = Base64.getDecoder().decode(img);
+//				BufferedImage bf = ImageIO.read(new ByteArrayInputStream(imgd));
+//				dpImgView = new ImageView(SwingFXUtils.toFXImage(bf, null));
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		} catch (JSONException e) {
+//			dpImgView.setImage(new Image(getClass().getResourceAsStream(Resources.DEFAULT_PIC.VALUE)));
+//		}
+//
+//	}
 
 	/*
 	 * This method converts semester value to its corresponding academic year.
