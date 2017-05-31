@@ -16,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.mongodb.client.MongoCursor;
+import static com.mongodb.client.model.Filters.*;
 
 import ivn.typh.main.BasicUI;
 import ivn.typh.main.CenterPane;
@@ -57,7 +58,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import static com.mongodb.client.model.Filters.*;
 
 /*
  *This class creates user interface for Admin user,
@@ -128,6 +128,7 @@ public class AdminUI extends Task<Void>{
 		
 
 		logout.setId("logout");
+		logout.setCursor(Cursor.HAND);
 		Components.srch.setId("search");
 
 		Components.ou = new Label("Online Users");
@@ -284,7 +285,6 @@ public class AdminUI extends Task<Void>{
 			Components.menuBar.getItems().remove(0, 4);
 			Components.menuBar.getItems().add(0, CenterPane.menu);
 			Components.menuBar.getItems().get(1).setId("fullscreen");
-
 			
 			BasicUI.centerOfHomePane.changeRootPane(Components.sgpane, Components.side);
 
@@ -296,9 +296,11 @@ public class AdminUI extends Task<Void>{
 			Components.stage.getScene().getStylesheets().add(getClass().getResource("raw/style.css").toExternalForm());
 	
 			loadProfiles();
+			
 			Components.pane.applyCss();
 			Components.pane.layout();
 			Components.pane.requestLayout();
+			
 			BasicUI.centerOfHomePane.hideMessage();
 		});
 

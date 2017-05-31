@@ -34,7 +34,6 @@ public class HeartBeat implements Runnable {
 
 		try {
 			socket = new Socket(BasicUI.ipAddr, PortList.ADMIN.port);
-			System.out.println(socket.getRemoteSocketAddress());
 			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 
@@ -47,7 +46,6 @@ public class HeartBeat implements Runnable {
 						try {
 							@SuppressWarnings("unchecked")
 							List<String> u = (List<String>) in.readObject();
-							System.out.println(u.toString());
 							Platform.runLater(() -> {
 								Components.onlineUser.getItems().clear();
 								u.forEach(item -> {

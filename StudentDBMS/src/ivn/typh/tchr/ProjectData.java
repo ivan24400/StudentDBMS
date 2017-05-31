@@ -71,7 +71,6 @@ public class ProjectData extends ListCell<String> {
 			if (getItem() == null) {
 				return;
 			}
-
 			Dragboard dragboard = startDragAndDrop(TransferMode.MOVE);
 			ClipboardContent content = new ClipboardContent();
 			content.putString(getItem());

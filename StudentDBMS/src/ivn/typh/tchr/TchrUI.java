@@ -97,7 +97,9 @@ public class TchrUI extends Task<Void> {
 
 		Components.tgpane = new GridPane();
 		Components.sctgpane = new ScrollPane();
+		
 		CenterPane.menu = new Button("Menu");
+		CenterPane.menu.setCursor(Cursor.HAND);
 		CenterPane.menu.setGraphic(new ImageView(new Image(Resources.MENU_ICON.VALUE)));
 
 		Components.center = new GridPane();
@@ -157,6 +159,7 @@ public class TchrUI extends Task<Void> {
 			Assignment.loadAssignmentData(n);
 		});
 
+		Components.logout.setCursor(Cursor.HAND);
 		Components.logout.setOnAction(arg -> {
 			logoutApplication();
 		});
@@ -165,6 +168,7 @@ public class TchrUI extends Task<Void> {
 			uploadData(Personal.tsid.getText());
 		});
 
+		Components.editable.setCursor(Cursor.HAND);
 		Components.editable.selectedProperty().addListener((arg, o, n) -> {
 			disableAll(!n);
 		});
@@ -244,6 +248,7 @@ public class TchrUI extends Task<Void> {
 			Components.mb.getItems().remove(0, 4);
 			Components.mb.getItems().add(0, CenterPane.menu);
 			Components.mb.getItems().get(2).setId("fullscreen");
+			Components.mb.getItems().get(2).setCursor(Cursor.HAND);
 
 			Components.setIdAll();
 			Components.setCacheAll();
@@ -677,6 +682,7 @@ public class TchrUI extends Task<Void> {
 	 */
 
 	private void disableAll(boolean flag) {
+		
 		Components.update.setDisable(flag);
 		Components.report.setDisable(flag);
 		Components.export.setDisable(flag);
@@ -688,7 +694,6 @@ public class TchrUI extends Task<Void> {
 		Personal.tsid.setEditable(flag);
 		Personal.tsrno.setDisable(flag);
 		Personal.tsdprt.setDisable(flag);
-		Personal.tssem.setDisable(false);
 		Personal.tsbatch.setDisable(flag);
 		Personal.tsmail.setEditable(!flag);
 		Personal.tsaddr.setEditable(!flag);

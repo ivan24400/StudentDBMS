@@ -68,11 +68,13 @@ public class BasicUI extends Application implements Runnable {
 
 				homePane = new BorderPane();
 				loginPane = new StackPane();
+				Label lLabel = new Label("Login");
 
 				ToolBar tool = new ToolBar();
 								
 				HBox dummy = new HBox();
 				HBox.setHgrow(dummy, Priority.ALWAYS);
+				
 				exit = new Button("Exit");
 				about = new Button("About");
 				help = new Button("Help");
@@ -134,14 +136,13 @@ public class BasicUI extends Application implements Runnable {
 				});
 
 				login.setId("login");
-				Label lLabel = new Label("Login");
 				lLabel.setOnMouseClicked(login.getOnMouseClicked());
 				
 				about.setOnAction(new About());
 				help.setOnAction(new Help());
 				
+				lLabel.setCursor(Cursor.HAND);
 				loginPane.getChildren().addAll(login, lLabel);
-				loginPane.setCursor(Cursor.HAND);
 				
 				dummy.getChildren().add(institute);
 				dummy.setAlignment(Pos.CENTER);

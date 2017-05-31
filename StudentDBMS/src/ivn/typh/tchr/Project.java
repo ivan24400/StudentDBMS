@@ -90,8 +90,7 @@ public class Project {
 		
 		bin.setOnDragEntered(event -> {
 			Platform.runLater(() -> {
-
-
+				pt.getChildren().clear();
 				tt.setByY(-10.0);
 				tt.setNode(bin_lid);
 				tt.setDuration(Duration.millis(500));
@@ -106,6 +105,7 @@ public class Project {
 
 		bin.setOnDragExited(event -> {
 			Platform.runLater(() -> {
+				pt.getChildren().clear();
 				tt.setByY(10.0);
 				tt.setNode(bin_lid);
 				tt.setDuration(Duration.millis(500));
@@ -121,6 +121,7 @@ public class Project {
 			if (value.getGestureSource() != null) {
 				value.acceptTransferModes(TransferMode.MOVE);
 			}
+
 		});
 		bin.setOnDragDropped(value -> {
 			Dragboard db = value.getDragboard();

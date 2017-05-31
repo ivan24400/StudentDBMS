@@ -111,7 +111,6 @@ public class Search extends TextField {
 
 	/*
 	 * This method creates the UI list that matches the query.
-	 * 
 	 * @param searchResult the list containing final set of names.
 	 */
 	void populatePopup(List<String> searchResult,int maxEntries) {
