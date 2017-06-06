@@ -3,14 +3,8 @@ package ivn.typh.admin;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.json.JSONObject;
-
-import com.mongodb.client.MongoCursor;
-
 import ivn.typh.main.Engine;
 import ivn.typh.main.Notification;
 import javafx.application.Platform;
@@ -57,13 +51,11 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 	private String lastLogin;
 	private TextField username;
 	private TextField fullname;
-	private List<String> classList;
 	private PasswordField password;
 	private TextField email;
 	private ToggleButton freeze;
 	private ToggleButton edit;
 	private ChoiceBox<String> dprtMember;
-//	private ChoiceBox<String> classIncharge;
 	private ChoiceBox<String> yearIncharge;
 	private String dm;
 	private String yi;
@@ -81,6 +73,7 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		yi = yin;
 		freez=fr;
 	}
+	
 	public UserAccounts(Stage arg) {
 		stage = arg;
 		lastLogin = "Not logged in yet !";
@@ -137,7 +130,6 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 				ButtonType save = new ButtonType("Save", ButtonData.OK_DONE);
 				getDialogPane().getButtonTypes().clear();
 				getDialogPane().getButtonTypes().addAll(save, ButtonType.CANCEL);
-				initRoom();
 			}
 			saveAdded = true;
 			setHeaderText("User:-\t" + username.getText());
@@ -158,7 +150,6 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 			
 		} else if (isFirst) {
 			setHeaderText("Fill in required fields to add a user account");
-			initRoom();
 			dprtMember.getSelectionModel().selectFirst();
 			yearIncharge.getSelectionModel().selectFirst();
 			getDialogPane().getButtonTypes().clear();
@@ -201,23 +192,6 @@ public class UserAccounts extends Dialog<String> implements EventHandler<ActionE
 		});
 	}
 	
-	/*
-	 * This method creates a list of class rooms existing in department and which 
-	 * are attended by students.
-	 */
-
-	private void initRoom() {
-		
-		MongoCursor<Document> cursor = Engine.db.getCollection("Students").find().iterator();
-		classList = new ArrayList<String>();
-
-		while (cursor.hasNext()) {
-			JSONObject json = new JSONObject(cursor.next().toJson());
-			String tmp = json.getString("class");
-			classList.add(tmp);
-		}
-
-	}
 
 	/*
 	 * This method adds additional buttons onto the dialog.
