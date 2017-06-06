@@ -19,5 +19,6 @@ The project uses the same certificate file (to keep things simple).
 If you want to use your own certificate then:
   1. Use OpenSSL to create the PEM file.
   2. Add that to the keystore ( create it via "keytool" which is by default available in JDKs ).
+  3. Make the corresponding changes in the source code and typh.cfg.
   
 
