@@ -132,8 +132,10 @@ public class AdminUI extends Task<Void>{
 		Components.srch.setId("search");
 
 		Components.ou = new Label("Online Users");
+		Components.ou.setEffect(new DropShadow());
 		Components.onlineUser = new ListView<>();
 		Components.onlineUser.getItems().add("No User is online !");
+		Components.onlineUser.setEffect(new DropShadow());
 		
 		// Setup context menu for the messenger
 		
@@ -504,10 +506,9 @@ public class AdminUI extends Task<Void>{
 		Optional<ButtonType> result = ex.showAndWait();
 		result.ifPresent(arg -> {
 			if (arg.equals(ButtonType.OK)) {
+				HeartBeat.heartAttack = true;
 				if (!(Engine.mongo == null))
 					Engine.mongo.close();
-				HeartBeat.heartAttack = true;
-				Platform.exit();
 			}
 		});
 	}

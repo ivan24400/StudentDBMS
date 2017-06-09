@@ -170,7 +170,7 @@ public class BasicUI extends Application implements Runnable {
 		ex.setTitle("Exit - Typh™");
 		ex.initOwner(stage);
 		ex.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
-
+		
 		Optional<ButtonType> result = ex.showAndWait();
 		result.ifPresent(arg -> {
 			if (arg.equals(ButtonType.OK)) {

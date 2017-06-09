@@ -40,57 +40,63 @@ public class HeartBeat implements Runnable {
 			service = Executors.newSingleThreadScheduledExecutor();
 
 			Runnable users = new Runnable() {
+				@SuppressWarnings("unchecked")
 				@Override
 				public void run() {
 					if (!heartAttack) {
 						try {
-							@SuppressWarnings("unchecked")
-							List<String> u = (List<String>) in.readObject();
-							Platform.runLater(() -> {
-								Components.onlineUser.getItems().clear();
-								u.forEach(item -> {
-									Components.onlineUser.getItems().add((String) item);
+							System.out.println("Admin:client\t" + Boolean.toString(heartAttack));
+							List<String> u;
+							if ((u = (List<String>) in.readObject()) != null) {
+								Platform.runLater(() -> {
+									Components.onlineUser.getItems().clear();
+									u.forEach(item -> {
+										Components.onlineUser.getItems().add((String) item);
 
+									});
+									if (Components.onlineUser.getItems().isEmpty())
+										Components.onlineUser.getItems().add("No User is online !");
 								});
-								if (Components.onlineUser.getItems().isEmpty())
-									Components.onlineUser.getItems().add("No User is online !");
-							});
+							} else {
+								throw new IOException();
+							}
 							out.writeObject(message);
 							out.reset();
 							out.flush();
 
 						} catch (ClassNotFoundException | IOException e) {
-							serverFailed();
+							serverFailed(true);
 						}
 						message = "__BEAT__";
 					} else {
-						serverFailed();
+						serverFailed(false);
 					}
 				}
 
-				
 			};
 
 			service.scheduleAtFixedRate(users, 0, 3, TimeUnit.SECONDS);
 		} catch (IOException e) {
-			serverFailed();
+			serverFailed(true);
 		}
 	}
-	
+
 	/*
 	 * This method is called if any server fault occurs
+	 * 
 	 * @param logout status of server.
 	 */
-	private void serverFailed() {
-		Platform.runLater(()->{
+	private void serverFailed(boolean isServerFailed) {
+		Platform.runLater(() -> {
 			service.shutdown();
 			try {
 				socket.close();
 			} catch (IOException e) {
 			}
-			Notification.message(Components.stage, AlertType.ERROR,"Connection - Typh™","Server Failed");	
+			if(isServerFailed)
+				Notification.message(Components.stage, AlertType.ERROR, "Connection - Typh™", "Server Failed");
 			Platform.exit();
 		});
-					
+
 	}
 }

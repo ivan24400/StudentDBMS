@@ -18,6 +18,7 @@ import ivn.typh.tchr.TchrUI;
 
 import static com.mongodb.client.model.Filters.*;
 
+import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
@@ -46,7 +47,7 @@ public class LogIn implements Runnable {
 	private BorderPane pane;
 	private Scene scene;
 	private ToolBar mb;
-
+	
 	public LogIn(Stage arg, BorderPane p, Scene s, ToolBar menu) {
 		mb = menu;
 		scene = s;
@@ -59,8 +60,8 @@ public class LogIn implements Runnable {
 		CenterPane.shade.setVisible(true);
 
 		gpane = new GridPane();
-		Label user = new Label("User :");
-		Label pass = new Label("Password :");
+		Label user = new Label("User");
+		Label pass = new Label("Password");
 		TextField userText = new TextField();
 		PasswordField passText = new PasswordField();
 
@@ -69,10 +70,38 @@ public class LogIn implements Runnable {
 		
 		userText.setPromptText("UserName");
 		passText.setPromptText("Password");
-		Platform.runLater(()->{
-			userText.requestFocus();
+
+		ScaleTransition st = new ScaleTransition();
+		ScaleTransition pst = new ScaleTransition();
+		
+		st.setNode(user);
+		pst.setNode(pass);
+
+		userText.focusedProperty().addListener(arg0->{
+		
+			if(userText.isFocused()){
+				st.setByX(0.5);
+				st.setByY(0.5);
+				st.play();
+			}else{
+				st.setByX(-0.5);
+				st.setByY(-0.5);
+				st.play();
+			}
 		});
 		
+
+		passText.focusedProperty().addListener(arg->{
+			if(passText.isFocused()){
+				pst.setByX(0.5);
+				pst.setByY(0.5);
+				pst.play();
+			}else{
+				pst.setByX(-0.5);
+				pst.setByY(-0.5);
+				pst.play();
+			}
+		});
 		Dialog<LoginData> dialog = new Dialog<>();
 		dialog.setTitle("Typh™ Login");
 		dialog.setHeaderText("Enter your login information");
@@ -95,7 +124,7 @@ public class LogIn implements Runnable {
 
 		Node logined = dialog.getDialogPane().lookupButton(login);
 		logined.getStyleClass().add("dialogOKButton");
-
+		
 		
 		passText.textProperty().addListener((observable, oldv, newv) -> {
 			logined.setDisable(newv.trim().isEmpty() || userText.getText().trim().isEmpty());
@@ -114,6 +143,7 @@ public class LogIn implements Runnable {
 		dialog.initOwner(stage);
 
 		Optional<LoginData> result = dialog.showAndWait();
+		
 		Task<Boolean> loginTask = checkCredTask();
 
 		result.ifPresent(arg -> {
@@ -150,7 +180,6 @@ public class LogIn implements Runnable {
 					});
 				}
 			});
-
 	}
 
 	/*

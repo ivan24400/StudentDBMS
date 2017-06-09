@@ -24,7 +24,6 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.FileChooser;
-import javafx.util.Duration;
 
 /*
  * This method creates the UI for the project pane.
@@ -85,19 +84,17 @@ public class Project {
 
 		Tooltip.install(recycle, new Tooltip("Drag Projects here to delete them"));
 		ParallelTransition pt = new ParallelTransition();
-		TranslateTransition tt = new TranslateTransition();
-		TranslateTransition ttt = new TranslateTransition();
-		
+		TranslateTransition bint = new TranslateTransition();
+		TranslateTransition binldt = new TranslateTransition();
+		bint.setNode(bin_lid);
+		binldt.setNode(bin_handle);
+
 		bin.setOnDragEntered(event -> {
 			Platform.runLater(() -> {
 				pt.getChildren().clear();
-				tt.setByY(-10.0);
-				tt.setNode(bin_lid);
-				tt.setDuration(Duration.millis(500));
-				ttt.setByY(-10.0);
-				ttt.setNode(bin_handle);
-				ttt.setDuration(Duration.millis(500));
-				pt.getChildren().addAll(tt, ttt);
+				bint.setByY(-10.0);
+				binldt.setByY(-10.0);
+				pt.getChildren().addAll(bint, binldt);
 				pt.play();
 			});
 
@@ -106,13 +103,9 @@ public class Project {
 		bin.setOnDragExited(event -> {
 			Platform.runLater(() -> {
 				pt.getChildren().clear();
-				tt.setByY(10.0);
-				tt.setNode(bin_lid);
-				tt.setDuration(Duration.millis(500));
-				ttt.setByY(10.0);
-				ttt.setNode(bin_handle);
-				ttt.setDuration(Duration.millis(500));
-				pt.getChildren().addAll(tt, ttt);
+				bint.setByY(10.0);
+				binldt.setByY(10.0);
+				pt.getChildren().addAll(bint, binldt);
 				pt.play();
 			});
 		});

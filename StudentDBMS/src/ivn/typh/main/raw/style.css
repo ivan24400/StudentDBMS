@@ -7,12 +7,15 @@
 	 src: url("Comfortaa.ttf");
 }
 
+*{
+-fx-base-global: #00b3a1;
+}
 
 .root {
     -fx-font-size: 9pt;
     -fx-font-family: "Comfortaa";
     -fx-background-color : white;
-    -fx-base:  #00b3a1;
+    -fx-base:  -fx-base-global;
     -fx-control-inner-background: white;
     -fx-focus-color: transparent;
   }
@@ -27,11 +30,11 @@
 	-fx-alignment: center;
 	-fx-background-color: white;
     -fx-border-width: 2px;
-    -fx-border-color:transparent transparent derive(-fx-base,-5%) transparent
+    -fx-border-color:transparent transparent derive(-fx-base-global,-5%) transparent
 }
 
 .text-field:focused {
-	-fx-background-color:  derive(-fx-base,95%);
+	-fx-background-color:  derive(-fx-base-global,95%);
 }
 
 .progress-bar > .bar {
@@ -43,6 +46,7 @@
 	-fx-alignment: baseline-left;
 	-fx-min-width: 150
 }
+
 #fullscreen{
 	-fx-graphic: url('/ivn/typh/main/icons/fullscreen.png')
 }
@@ -64,13 +68,14 @@
 }
 
 .dialogOKButton{
-	-fx-background-color: linear-gradient(derive(#00b3a1,70%),#00b3a1);
+	-fx-background-color: derive(-fx-base-global,10%);
 	-fx-text-fill: white;
+	-fx-effect: dropshadow(gaussian,black,10.0,0.0,0.0,0.0)
 }
 
 .dialogOKButton:hover {
 	-fx-cursor: hand;
-	-fx-background-color: linear-gradient(#00b3a1,derive(#00b3a1,-30%));
+	-fx-background-color: linear-gradient(-fx-base-global,derive(-fx-base-global,-30%));
 }
 
 #logout{

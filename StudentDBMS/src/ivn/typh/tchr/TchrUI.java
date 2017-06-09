@@ -138,7 +138,6 @@ public class TchrUI extends Task<Void> {
 
 			@Override
 			public void handle(MouseEvent event) {
-				System.out.println("Clicked Search");
 				List<String> tmpSearchResult = new ArrayList<String>();
 				
 				TchrUI.studList.forEach(stud->{
@@ -743,7 +742,6 @@ public class TchrUI extends Task<Void> {
 				if (!(Engine.mongo == null))
 					Engine.mongo.close();
 				HeartBeat.heartAttack = true;
-				Platform.exit();
 			}
 		});
 	}

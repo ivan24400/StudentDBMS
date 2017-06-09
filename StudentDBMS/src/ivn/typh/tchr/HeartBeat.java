@@ -54,10 +54,10 @@ public class HeartBeat implements Runnable {
 
 							}
 						} catch (IOException | ClassNotFoundException e) {
-							serverFailed();
+							serverFailed(true);
 						}
 					} else {
-						serverFailed();
+						serverFailed(false);
 					}
 				}
 
@@ -83,7 +83,7 @@ public class HeartBeat implements Runnable {
 			};
 			service.scheduleAtFixedRate(beat, 0, 3, TimeUnit.SECONDS);
 		} catch (IOException e) {
-			serverFailed();
+			serverFailed(true);
 		}
 	}
 
@@ -92,16 +92,17 @@ public class HeartBeat implements Runnable {
 	 * 
 	 * @param logout status of server.
 	 */
-	private void serverFailed() {
+	private void serverFailed(boolean isServerFailed) {
 		service.shutdown();
 		try {
 			socket.close();
 		} catch (IOException a) {
 		}
-		
-			Platform.runLater(() -> {
-				Notification.message(Components.stage, AlertType.ERROR, "Connection - Typh™", "Server Failed");
-				Platform.exit();
-			});
-		}
+
+		Platform.runLater(() -> {
+			if(isServerFailed)
+			Notification.message(Components.stage, AlertType.ERROR, "Connection - Typh™", "Server Failed");
+			Platform.exit();
+		});
+	}
 }
